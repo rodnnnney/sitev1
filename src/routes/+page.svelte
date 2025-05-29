@@ -33,7 +33,6 @@
 <svelte:head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Rodney Shen</title>
     <link rel="icon" href="/pfp.png" type="image/x-icon">
     <meta name="description" content="Rodney Shen's personal website">
@@ -224,6 +223,7 @@
 {/if}
 
 <style>
+
   :global(body) {
     margin: 0;
     padding: 0;
@@ -300,25 +300,5 @@
   .ascii-art pre {
     margin: 0;
     padding: 0;
-  }
-
-  .loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #FFF;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-  }
-
-  @keyframes rotation {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
   }
 </style>
