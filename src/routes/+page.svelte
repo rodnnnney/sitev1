@@ -68,8 +68,8 @@
                     <img
                       src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
                       alt="GitHub"
-                      width="28"
-                      height="28"
+                      width="24"
+                      height="24"
                       class="invert"
                     />
                   </a>
@@ -77,8 +77,8 @@
                     <img
                       alt="X"
                       src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"
-                      width="28"
-                      height="28"
+                      width="24"
+                      height="24"
                       class="invert"
                     />
                   </a>
@@ -111,11 +111,11 @@
           <div class="flex flex-row-2 ">
 
               <p class="text-gray-300 text-sm text-left">
-                  I'm passionate about building cool tech that advances society.
+                  I'm Rodney, I'm passionate about building cool tech that advances society. Currently, I'm bouncing between Toront/NYC/Ottawa.
                   <br><br>
                   At Carleton, I founded the blockchain club, with the help of my friends, I grew it from 0-200 in ~1 semester hosting 6 unforgettable events. 
                   <br><br>
-                  Outside of school and work, I clear my head with runs, listen to music, chilling with the bros and traveling the world.
+                  Outside of school and work, I clear my head with runs, listen to music, hanging out with friends and traveling the world. 
               </p>
           </div>
         </div>
@@ -130,7 +130,7 @@
           <h3 class="text-xl font-bold  font-mono mb-4">Shower Thoughts</h3>
           <div class="space-y-4">
             {#each blogs as blog}
-              <a href="/blogs/{blog.title.toLowerCase().replace(/\s+/g, '-')}" class="block">
+              <a href="/blogs/{blog.link}" class="block">
                 <div class="border-b border-neutral-700 pb-4 hover:bg-neutral-700 transition-colors">
                   <h4 class="font-semibold text-md">{blog.title}</h4>
                   <p class="text-sm text-gray-400 text-sm">{blog.date}</p>
@@ -142,6 +142,9 @@
         </div>
 
         <div class="relative h-128" transition:fly={{y: -30, duration: 1000, delay: 800}}> 
+          
+        <img src="/apples.webp" alt="apple images" class="absolute h-12 w-12 right-4 top-4 z-1000">
+          
           {#each images as image, i}
             {#if i === currentImageIndex}
               <img 
@@ -154,9 +157,9 @@
           {/each}
 
           <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-            {#each projects as _, i}
+            {#each images as _, i}
               <div 
-                class="w-14 h-1 rounded-full transition-colors duration-300"
+                class="w-10 h-1 rounded-full transition-colors duration-300"
                 class:bg-white={i === currentImageIndex}
                 class:bg-gray-500={i !== currentImageIndex}
               ></div>
@@ -181,14 +184,18 @@
           <h3 class="text-xl font-bold font-mono mb-4">Experience</h3>
           <div class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar">
             {#each experiences as exp}
-            <div class="flex flex-row">
-                <img src={exp.logo} alt="" class="w-12 h-12 mr-2 object-cover mt-4">
-                <div class="border-b border-neutral-700 pb-4">
-                  <h4 class="font-semibold">{exp.title}</h4>
-                  <p class="text-sm text-gray-400">{exp.company} • {exp.period}</p>
-                  <p class="text-gray-300 mt-2">{exp.description}</p>
-                </div>
-            </div>
+            <div class="flex flex-col">
+              <div class="flex flex-row items-center">
+                  <img src={exp.logo} alt="" class="w-10 h-10 mr-2 mt-2 object-cover">
+                  <div>
+                      <h4 class="font-semibold">{exp.title}</h4>
+                      <p class="text-sm text-gray-400">{exp.company} • {exp.period}</p>
+                  </div>
+              </div>
+              <div class="border-b border-neutral-700 pb-4 mt-2">
+                  <p class="text-gray-300">{exp.description}</p>
+              </div>
+          </div>
             {/each}
           </div>
         </div>
@@ -200,7 +207,7 @@
               <img
                   src={project.src}
                   alt={project.name}
-                  class="absolute w-full h-full object-cover rounded-lg"
+                  class="absolute object-cover rounded-lg"
                   transition:fade={{duration: 750}}
               >
            </a>
@@ -210,13 +217,25 @@
           <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
             {#each projects as _, i}
               <div 
-                class="w-14 h-1 rounded-full transition-colors duration-300"
-                class:bg-black={i === currentProjectIndex}
-                class:bg-gray-500={i !== currentProjectIndex}
+                class="w-10 h-1 rounded-full transition-colors duration-300"
+                class:bg-white={i === currentImageIndex}
+                class:bg-gray-500={i !== currentImageIndex}
               ></div>
             {/each}
           </div>
+
+          <div class="absolute top-0 left-0 flex justify-center space-x-2 p-4">
+            {#each projects as project, i}
+             {#if i === currentProjectIndex}
+               <div class="flex flex-col">
+                <div class="text-black font-bold text-lg">{project.name}</div>
+                <div class="text-gray-500 text-sm">{project.description}</div>
+               </div>
+             {/if}
+            {/each}
+          </div>
         </div>
+
       </div>
     </div>
   </div>

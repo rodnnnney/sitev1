@@ -5,6 +5,11 @@ export const images = [
       description: "Chengdu, China // Jan 2024"
     },
     {
+      src: "/camera/to.png",
+      alt: "Toronto Islands",
+      description: "Toronto Islands, Canada //  2024"
+    },
+    {
       src: "/camera/shanghai.png",
       alt: "Shanghai",
       description: "Shanghai, China // Dec 2023"
@@ -24,34 +29,37 @@ export const images = [
 type Project = {
     name: string;
     src: string;
+
     description: string; 
     link: string;
+
 }
 
 export const projects: Project[] = [
     {
         name: "Lumalytics",
         src: "/projects/luma.png",
-        description: "A modern portfolio website built with Next.js and TypeScript",
-        link: "https://github.com/rodnnnney/lumalytics"
+
+        description: "Analyzes and transforms data for Luma hosts to find insights in their events (try today!).",
+        link: "https://lumalytics.app"
     },
     {
-        name: "Rizz Khalifa",
+        name: "RizzKhalifa",
         src: "/projects/rizz.png",
-        description: "Full-stack e-commerce solution with React and Node.js",
-        link: "https://devpost.com/software/irrizzistable-glasses#updates"
+        description: "Meta Raybans that listen to your conversations and help you rizz in real-time.",
+        link: "https://devpost.com/software/irrizzistable-glasses"
 
     },
     {
         name: "Cook or Cooked",
         src: "/projects/cook.png",
-        description: "A collaborative task management application with real-time updates",
+        description: "Budgeting food app for college students",
         link: "https://github.com/rodnnnney/cook_or_cooked"
     },
     {
         name: "ACAC Mobile",
         src: "/projects/acac.png",
-        description: "Interactive weather dashboard using OpenWeather API",
+        description: "Mobile app for school club that serves restaurant discounts to members",
         link: "https://github.com/rodnnnney/ACAC"
     }
 ]
@@ -61,22 +69,22 @@ export const experiences = [
     {
       title: "Software Engineer Intern",
       company: "Paytrie",
-      period: "2020 - Present // Toronto, ON",
-      description: "Mobile App",
+      period: "May 2025 - Present // Toronto, ON",
+      description: "Mobile app team",
       logo: "/comp/paytrie.png"
     },
     {
       title: "Software Engineer Intern",
       company: "Jackal Labs",
       period: "Jan 2025 - May 2025 // Remote",
-      description: "Decentralized cloud infrastructure",
+      description: "Decentralized cloud storage",
       logo: "/comp/jackie.png"
     },
     {
       title: "Founder",
       company: "Carleton Blockchain",
       period: "Nov 2024 - Present // Ottawa, ON",
-      description: "Grew from 0-200 members in ~1 semester, partnered with Coinbase",
+      description: "Grew from 0-200 members in ~1 semester, raised >$15,000, partnered with Coinbase",
       logo: "/comp/cu.png"
     },
     {
@@ -98,6 +106,7 @@ export const experiences = [
 export const blogs = [
     {
       title: "Why Stablecoins are cool",
+      link: "stables",
       date: "Dec 10, 2024",
       excerpt: "They provide the best of both worlds by pegging to real-world assets..."
     },
