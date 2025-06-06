@@ -91,7 +91,7 @@ export const experiences = [
       title: "Scholar",
       company: "Scholar",
       period: "Oct 2024 - Present // Toronto, Vancouver, SF",
-      description: "Met the coolest, kindest and most ambitious people.",
+      description: "Met the most ambitious, brave, and kind (abk) people.",
       logo: "/comp/cs.png"
     },
     {
@@ -105,12 +105,47 @@ export const experiences = [
 
 export const blogs = [
     {
-      title: "Why Stablecoins are cool",
-      link: "stables",
-      date: "Dec 10, 2024",
-      excerpt: "They provide the best of both worlds by pegging to real-world assets..."
-    },
+      title: "Pace Factor",
+      link: "pacing",
+      date: "June 6, 2025",
+      excerpt: "",
+      cover_img: "/blog/aura.avif"
+    }
   ];
+
+export const bangers = [
+  {
+    title: "跳楼机 (Jumping Machine)",
+    link: "https://open.spotify.com/track/1XZE0InCx3SdCnLpVsPpZl?si=992084569f6d4efb",
+    cover_img: "/bangers/jump.jpg"
+  },
+  {
+    title: "Starlight",
+    link: "https://open.spotify.com/track/531KGXtBroSrOX9LVmiIgc?si=94fa4b72d53443e5",
+    cover_img: "/bangers/star.png"
+  },
+  
+  {
+    title: "Lady Of Namek",
+    link: "https://open.spotify.com/track/3UqWPDav8MenwVNwUIZFA8?si=077391a31384434f",
+    cover_img: "/bangers/tory.png"
+  },
+  {
+    title: "Peak",
+    link: "https://open.spotify.com/track/11L064movtyopGdLiX4sVg?si=e88ed473c7a7461c",
+    cover_img: "/bangers/dri.png"
+  },
+  {
+    title: "Atmosphere",
+    link: "https://open.spotify.com/track/63HwAAXuSV2tzIUPoHOwZa?si=4997ee66507f455b",
+    cover_img: "/bangers/atmo.png"
+  },
+  {
+    title: "Feel No Ways",
+    link: "https://open.spotify.com/track/3cjF2OFRmip8spwZYQRKxP?si=454a07bab5a740c1",
+    cover_img: "/bangers/dri2.png"
+  }
+]
 
 export const rodney = `
 ██████╗  ██████╗ ██████╗ ███╗   ██╗███████╗██╗   ██╗

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition';
   import { onMount } from 'svelte';
-  import { images, projects, experiences, blogs, rodney, shen } from '$lib/utils/consts';
+  import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
 
   let currentImageIndex = 0;
   let interval: number;
@@ -10,9 +10,10 @@
   let isLoading = true;
 
   onMount(() => {
+    // Set loading to false after 2 seconds
     setTimeout(() => {
       isLoading = false;
-    }, 1500);
+    }, 2000);
 
     interval = setInterval(() => {
       currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -34,7 +35,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <title>Rodney Shen</title>
-    <link rel="icon" href="/pfp.png" type="image/x-icon">
+    <link rel="icon" href="/pfp12.png" type="image/x-icon">
     <meta name="description" content="Rodney Shen's personal website">
     <meta name="keywords" content="Rodney Shen, Rodney, Shen, website, personal website, portfolio, blog, projects, experience, about me, contact">
     <meta name="author" content="Rodney Shen">
@@ -52,6 +53,7 @@
   </div>
 {:else}
   <div class="min-h-screen bg-f1eee9 text-white p-8 flex items-center justify-center" transition:fade={{duration: 800}}>
+    
     <div class="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-8" transition:fly={{y: -50, duration: 1200, delay: 200}}>
       <!-- Left Column -->
       <div class="space-y-6 mt-24" transition:fly={{y: -50, duration: 1200, delay: 400}}>
@@ -127,7 +129,7 @@
       <div class="space-y-6" transition:fly={{y: -50, duration: 1200, delay: 600}}>
         <!-- Blogs Card -->
         <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -30, duration: 1000, delay: 700}}>
-          <h3 class="text-xl font-bold  font-mono mb-4">Shower Thoughts</h3>
+          <h3 class="text-xl font-bold  font-mono mb-4">Writing</h3>
           <div class="space-y-4">
             {#each blogs as blog}
               <a href="/blogs/{blog.link}" class="block">
@@ -135,6 +137,35 @@
                   <h4 class="font-semibold text-md">{blog.title}</h4>
                   <p class="text-sm text-gray-400 text-sm">{blog.date}</p>
                   <p class="text-gray-300 mt-2 text-sm">{blog.excerpt}</p>
+                </div>
+              </a>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Song Marquee -->
+        <div class="bg-neutral-800 rounded-lg p-2 shadow-lg overflow-hidden" transition:fly={{y: -30, duration: 1000, delay: 900}}>
+          <div class="flex flex-row gap-2 animate-marquee whitespace-nowrap">
+
+            {#each bangers as banger}
+              <a class="hover:opacity-75 transition-opacity flex-shrink-0" href={banger.link}>
+                <div class="relative w-18 h-18">
+                  <img 
+                    src={banger.cover_img} 
+                    alt={banger.title || "Album cover"} 
+                    class="object-cover rounded-lg"
+                  >
+                </div>
+              </a>
+            {/each}
+            {#each bangers as banger}
+              <a class="hover:opacity-75 transition-opacity flex-shrink-0" href={banger.link}>
+                <div class="relative w-18 h-18">
+                  <img 
+                    src={banger.cover_img} 
+                    alt={banger.title || "Album cover"} 
+                    class="object-cover rounded-lg"
+                  >
                 </div>
               </a>
             {/each}
@@ -149,7 +180,7 @@
             {#if i === currentImageIndex}
               <img 
                 src={image.src} 
-                alt={image.alt} 
+                alt={image.alt}
                 class="absolute w-full h-full object-cover rounded-lg"
                 transition:fade={{ duration: 500 }}
               >
@@ -180,7 +211,7 @@
       <!-- Right Column -->
       <div class="space-y-6" transition:fly={{y: -100, duration: 1200, delay: 800}}>
         <!-- Experience Card -->
-        <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -50, duration: 1000, delay: 900}}>
+        <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -50, duration: 1000, delay: 1100}}>
           <h3 class="text-xl font-bold font-mono mb-4">Experience</h3>
           <div class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar">
             {#each experiences as exp}
@@ -319,5 +350,18 @@
   .ascii-art pre {
     margin: 0;
     padding: 0;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 20s linear infinite;
   }
 </style>
