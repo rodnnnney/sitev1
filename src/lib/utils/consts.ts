@@ -1,23 +1,23 @@
 export const images = [
     {
-      src: "/camera/chengdu.png",
-      alt: "Chengdu",
-      description: "Chengdu, China // Jan 2024"
-    },
-    {
       src: "/camera/nyc.png",
       alt: "New York City",
       description: "New York City, USA // May 2025"
     },
     {
-      src: "/camera/to.png",
-      alt: "Toronto Islands",
-      description: "Toronto Islands, Canada //  2024"
-    },
-    {
       src: "/camera/shanghai.png",
       alt: "Shanghai",
       description: "Shanghai, China // Dec 2023"
+    },
+    {
+      src: "/camera/chengdu.png",
+      alt: "Chengdu",
+      description: "Chengdu, China // Jan 2024"
+    },
+    {
+      src: "/camera/to.png",
+      alt: "Toronto Islands",
+      description: "Toronto Islands, Canada //  2024"
     },
     {
       src: "/camera/toronto.png",
@@ -98,6 +98,13 @@ export const experiences = [
       period: "Oct 2024 - Present // Toronto, Vancouver, SF",
       description: "Met the most ambitious, brave, and kind (abk) people.",
       logo: "/comp/cs.png"
+    },
+    {
+      title: "VP of Mobile",
+      company: "UofTHacks",
+      period: "May 2024 - Present // Toronto, ON",
+      description: "Mobile app team, internal + external tooling",
+      logo: "/comp/thacks.png"
     },
     {
       title: "Software Engineer Intern",
