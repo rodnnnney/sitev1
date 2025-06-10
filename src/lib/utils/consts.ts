@@ -5,6 +5,11 @@ export const images = [
       description: "Chengdu, China // Jan 2024"
     },
     {
+      src: "/camera/nyc.png",
+      alt: "New York City",
+      description: "New York City, USA // May 2025"
+    },
+    {
       src: "/camera/to.png",
       alt: "Toronto Islands",
       description: "Toronto Islands, Canada //  2024"
