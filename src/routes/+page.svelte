@@ -115,7 +115,7 @@
               <p class="text-gray-300 text-sm text-left">
                   I'm Rodney, I'm passionate about building cool tech that advances society. Currently, I'm bouncing between Toront/NYC/Ottawa.
                   <br><br>
-                  At Carleton, I racked up ~1k in parking tickets and founded the blockchain club, with the help of my friends. We grew it from 0-200 in ~1 semester hosting 6 unforgettable events. 
+                  At Carleton, I racked up ~1k in parking tickets and founded the blockchain club. We grew it from 0-200 in ~1 semester hosting 6 unforgettable events. 
                   <br><br>
                   Outside of school and work, I clear my head with runs, listen to music, hanging out with friends and traveling the world. 
               </p>
