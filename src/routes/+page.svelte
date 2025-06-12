@@ -1,367 +1,403 @@
 <script lang="ts">
-  import { fade, fly } from 'svelte/transition';
-  import { onMount } from 'svelte';
-  import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
+	import { fade, fly } from 'svelte/transition';
+	import { onMount } from 'svelte';
+	import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
 
-  let currentImageIndex = 0;
-  let interval: number;
-  let currentProjectIndex = 0;
-  let interval1: number;
-  let isLoading = true;
+	let currentImageIndex = 0;
+	let interval: number;
+	let currentProjectIndex = 0;
+	let interval1: number;
+	let isLoading = true;
 
-  onMount(() => {
-    // Set loading to false after 2 seconds
-    setTimeout(() => {
-      isLoading = false;
-    }, 2000);
+	onMount(() => {
+		// Set loading to false after 2 seconds
+		setTimeout(() => {
+			isLoading = false;
+		}, 2000);
 
-    interval = setInterval(() => {
-      currentImageIndex = (currentImageIndex + 1) % images.length;
-    }, 5000);
+		interval = setInterval(() => {
+			currentImageIndex = (currentImageIndex + 1) % images.length;
+		}, 5000);
 
-    interval1 = setInterval(() => {
-      currentProjectIndex = (currentProjectIndex + 1) % projects.length;
-    }, 10000);
+		interval1 = setInterval(() => {
+			currentProjectIndex = (currentProjectIndex + 1) % projects.length;
+		}, 10000);
 
-    return () => {
-      clearInterval(interval);
-      clearInterval(interval1);
-    };
-  });
-
+		return () => {
+			clearInterval(interval);
+			clearInterval(interval1);
+		};
+	});
 </script>
 
 <svelte:head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <title>Rodney Shen</title>
-    <link rel="icon" href="/pfp12.png" type="image/x-icon">
-    <meta name="description" content="Rodney Shen's personal website">
-    <meta name="keywords" content="Rodney Shen, Rodney, Shen, website, personal website, portfolio, blog, projects, experience, about me, contact">
-    <meta name="author" content="Rodney Shen">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="index, follow">
-    <meta name="googlebot" content="index, follow">
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+	/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<title>Rodney Shen</title>
+	<link rel="icon" href="/pfp12.png" type="image/x-icon" />
+	<meta name="description" content="Rodney Shen's personal website" />
+	<meta
+		name="keywords"
+		content="Rodney Shen, Rodney, Shen, website, personal website, portfolio, blog, projects, experience, about me, contact"
+	/>
+	<meta name="author" content="Rodney Shen" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="robots" content="index, follow" />
+	<meta name="googlebot" content="index, follow" />
 </svelte:head>
 
 {#if isLoading}
-  <div class="loading-screen" transition:fade={{duration: 1000}}>
-    <div class="ascii-art">
-      <pre class="rodney">{rodney}</pre>
-      <pre class="shen">{shen}</pre>
-    </div>
-  </div>
+	<div class="loading-screen" transition:fade={{ duration: 1000 }}>
+		<div class="ascii-art">
+			<pre class="rodney">{rodney}</pre>
+			<pre class="shen">{shen}</pre>
+		</div>
+	</div>
 {:else}
-  <div class="min-h-screen bg-f1eee9 text-white p-8 flex items-center justify-center" transition:fade={{duration: 800}}>
-    
-    <div class="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-8" transition:fly={{y: -50, duration: 1200, delay: 200}}>
-      <!-- Left Column -->
-      <div class="space-y-6 mt-24" transition:fly={{y: -50, duration: 1200, delay: 400}}>
-        <!-- Profile Card -->
-        <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -30, duration: 1000, delay: 500}}>
-          <div class="flex items-center">
+	<div
+		class="bg-f1eee9 flex min-h-screen items-center justify-center p-8 text-white"
+		transition:fade={{ duration: 800 }}
+	>
+		<div
+			class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 md:grid-cols-3"
+			transition:fly={{ y: -50, duration: 1200, delay: 200 }}
+		>
+			<!-- Left Column -->
+			<div class="mt-24 space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 400 }}>
+				<!-- Profile Card -->
+				<div
+					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
+					transition:fly={{ y: -30, duration: 1000, delay: 500 }}
+				>
+					<div class="flex items-center">
+						<div class="flex w-full flex-row justify-between">
+							<div class="font-mono text-xl font-bold">Rodney Shen</div>
 
-          <div class="flex flex-row justify-between w-full">
-              <div class="text-xl font-bold font-mono">Rodney Shen</div>
+							<div class="flex gap-4">
+								<a href="https://github.com/rodnnnney" target="_blank">
+									<img
+										src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
+										alt="GitHub"
+										width="24"
+										height="24"
+										class="invert"
+									/>
+								</a>
+								<a href="https://x.com/992rodney" target="_blank">
+									<img
+										alt="X"
+										src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"
+										width="24"
+										height="24"
+										class="invert"
+									/>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="mt-4 flex flex-row items-start">
+						<img
+							src="/logo.jpg"
+							alt="Carleton"
+							class="mt-2 mr-2 h-10 w-10 rounded-full object-cover"
+						/>
+						<div class="flex flex-col">
+							<p class="font-semibold">Computer Science @ Carleton University</p>
+							<div class="mt-1 mb-1 w-full border-b border-gray-300"></div>
+							<p class="text-left text-xs text-black text-gray-500">
+								🤏 close to dropping out (sorry mom!)
+							</p>
+						</div>
+					</div>
+				</div>
 
+				<!-- HAND -->
+				<div class="bg-neutral" transition:fly={{ y: -30, duration: 1000, delay: 600 }}>
+					<div class="w-full object-cover">
+						<img src="/hand.png" alt="" class="h-full w-full rounded-lg object-cover" />
+					</div>
+				</div>
+				<!-- About Card -->
+				<div
+					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
+					transition:fly={{ y: -30, duration: 1000, delay: 700 }}
+				>
+					<h3 class="mb-4 font-mono text-xl font-bold">About Me</h3>
 
-              <div class="flex gap-4">
-                  <a href="https://github.com/rodnnnney" target="_blank">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
-                      alt="GitHub"
-                      width="24"
-                      height="24"
-                      class="invert"
-                    />
-                  </a>
-                  <a href="https://x.com/992rodney" target="_blank">
-                    <img
-                      alt="X"
-                      src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"
-                      width="24"
-                      height="24"
-                      class="invert"
-                    />
-                  </a>
-              </div>
+					<div class="flex-row-2 flex">
+						<p class="text-left text-sm text-gray-300">
+							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
+							I'm bouncing between Toronto/NYC/Ottawa.
+							<br /><br />
+							At Carleton, I racked up ~1k in parking tickets and founded the blockchain club. We grew
+							it from 0-200 in ~1 semester hosting 6 unforgettable events.
+							<br /><br />
+							Outside of school and work, I like to clear my head with runs, listen to music, hang out
+							with friends and travel the world.
+						</p>
+					</div>
+				</div>
+			</div>
 
+			<!-- Middle Column -->
+			<div class="space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 600 }}>
+				<!-- Blogs Card -->
+				<div
+					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
+					transition:fly={{ y: -30, duration: 1000, delay: 700 }}
+				>
+					<h3 class="mb-4 font-mono text-xl font-bold">Writing</h3>
+					<div class="space-y-4">
+						{#each blogs as blog}
+							<a href="/blogs/{blog.link}" class="block">
+								<div
+									class="border-b border-neutral-700 pb-4 transition-colors hover:bg-neutral-700"
+								>
+									<h4 class="text-md font-semibold">{blog.title}</h4>
+									<p class="text-sm text-sm text-gray-400">{blog.date}</p>
+									<p class="mt-2 text-sm text-gray-300">{blog.excerpt}</p>
+								</div>
+							</a>
+						{/each}
+					</div>
+				</div>
 
-          </div>
+				<!-- Song Marquee -->
+				<div
+					class="overflow-hidden rounded-lg bg-neutral-800 p-2 shadow-lg"
+					transition:fly={{ y: -30, duration: 1000, delay: 900 }}
+				>
+					<div class="animate-marquee flex flex-row gap-2 whitespace-nowrap">
+						{#each bangers as banger}
+							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
+								<div class="relative h-18 w-18">
+									<img
+										src={banger.cover_img}
+										alt={banger.title || 'Album cover'}
+										class="rounded-lg object-cover"
+									/>
+								</div>
+							</a>
+						{/each}
+						{#each bangers as banger}
+							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
+								<div class="relative h-18 w-18">
+									<img
+										src={banger.cover_img}
+										alt={banger.title || 'Album cover'}
+										class="rounded-lg object-cover"
+									/>
+								</div>
+							</a>
+						{/each}
+					</div>
+				</div>
 
-          </div>
-          <div class="mt-4 flex flex-row items-start">
-            <img src="/logo.jpg" alt="Carleton" class="w-10 h-10 rounded-full mr-2 object-cover mt-2">
-            <div class="flex flex-col">
-              <p class="font-semibold">Computer Science @ Carleton University</p>
-              <div class="border-b border-gray-300 w-full mt-1 mb-1"></div>
-              <p class="text-black text-xs text-left text-gray-500">🤏 close to dropping out (sorry mom!)</p>
-            </div>
-          </div>
-        </div>
+				<div class="relative h-128" transition:fly={{ y: -30, duration: 1000, delay: 800 }}>
+					<img
+						src="/apples.webp"
+						alt="apple images"
+						class="absolute top-4 right-4 z-1000 h-12 w-12"
+					/>
 
-        <!-- HAND -->
-        <div class="bg-neutral" transition:fly={{y: -30, duration: 1000, delay: 600}}>
-          <div class="object-cover w-full">
-            <img src="/hand.png" alt="" class="w-full h-full object-cover rounded-lg">
-          </div>
-        </div>
-        <!-- About Card -->
-        <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -30, duration: 1000, delay: 700}}>
-          <h3 class="text-xl font-bold mb-4 font-mono">About Me</h3>
+					{#each images as image, i}
+						{#if i === currentImageIndex}
+							<img
+								src={image.src}
+								alt={image.alt}
+								class="absolute h-full w-full rounded-lg object-cover"
+								transition:fade={{ duration: 500 }}
+							/>
+						{/if}
+					{/each}
 
-          <div class="flex flex-row-2 ">
+					<div class="absolute right-0 bottom-4 left-0 flex justify-center space-x-2">
+						{#each images as _, i}
+							<div
+								class="h-1 w-10 rounded-full transition-colors duration-300"
+								class:bg-white={i === currentImageIndex}
+								class:bg-gray-500={i !== currentImageIndex}
+							></div>
+						{/each}
+					</div>
 
-              <p class="text-gray-300 text-sm text-left">
-                  I'm Rodney, I'm passionate about building cool tech that advances society. Currently, I'm bouncing between Toront/NYC/Ottawa.
-                  <br><br>
-                  At Carleton, I racked up ~1k in parking tickets and founded the blockchain club. We grew it from 0-200 in ~1 semester hosting 6 unforgettable events. 
-                  <br><br>
-                  Outside of school and work, I like to clear my head with runs, listen to music, hang out with friends and travel the world. 
-              </p>
-          </div>
-        </div>
+					<div class="absolute top-5 left-5 flex justify-center space-x-2">
+						{#each images as image, i}
+							{#if i === currentImageIndex}
+								<div class="text-bold text-sm text-white">{image.description}</div>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			</div>
 
-        
-      </div>
+			<!-- Right Column -->
+			<div class="space-y-6" transition:fly={{ y: -100, duration: 1200, delay: 800 }}>
+				<!-- Experience Card -->
+				<div
+					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
+					transition:fly={{ y: -50, duration: 1000, delay: 1100 }}
+				>
+					<h3 class="mb-4 font-mono text-xl font-bold">Experience</h3>
+					<div class="custom-scrollbar max-h-[300px] space-y-4 overflow-y-auto">
+						{#each experiences as exp}
+							<div class="flex flex-col">
+								<div class="flex flex-row items-center">
+									<img src={exp.logo} alt="" class="mt-2 mr-2 h-10 w-10 object-cover" />
+									<div>
+										<h4 class="font-semibold">{exp.title}</h4>
+										<p class="text-sm text-gray-400">{exp.company} • {exp.period}</p>
+									</div>
+								</div>
+								<div class="mt-2 border-b border-neutral-700 pb-4">
+									<p class="text-gray-300">{exp.description}</p>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
 
-      <!-- Middle Column -->
-      <div class="space-y-6" transition:fly={{y: -50, duration: 1200, delay: 600}}>
-        <!-- Blogs Card -->
-        <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -30, duration: 1000, delay: 700}}>
-          <h3 class="text-xl font-bold  font-mono mb-4">Writing</h3>
-          <div class="space-y-4">
-            {#each blogs as blog}
-              <a href="/blogs/{blog.link}" class="block">
-                <div class="border-b border-neutral-700 pb-4 hover:bg-neutral-700 transition-colors">
-                  <h4 class="font-semibold text-md">{blog.title}</h4>
-                  <p class="text-sm text-gray-400 text-sm">{blog.date}</p>
-                  <p class="text-gray-300 mt-2 text-sm">{blog.excerpt}</p>
-                </div>
-              </a>
-            {/each}
-          </div>
-        </div>
+				<div class="relative h-112" transition:fly={{ y: -30, duration: 1000, delay: 1000 }}>
+					{#each projects as project, i}
+						{#if i === currentProjectIndex}
+							<a href={project.link} target="_blank" class="transition-opacity hover:opacity-95">
+								<img
+									src={project.src}
+									alt={project.name}
+									class="absolute rounded-lg object-cover"
+									transition:fade={{ duration: 750 }}
+								/>
+							</a>
+						{/if}
+					{/each}
+					<!-- Progress Indicator -->
+					<div class="absolute right-0 bottom-4 left-0 flex justify-center space-x-2">
+						{#each projects as _, i}
+							<div
+								class="h-1 w-10 rounded-full transition-colors duration-300"
+								class:bg-white={i === currentImageIndex}
+								class:bg-gray-500={i !== currentImageIndex}
+							></div>
+						{/each}
+					</div>
 
-        <!-- Song Marquee -->
-        <div class="bg-neutral-800 rounded-lg p-2 shadow-lg overflow-hidden" transition:fly={{y: -30, duration: 1000, delay: 900}}>
-          <div class="flex flex-row gap-2 animate-marquee whitespace-nowrap">
-
-            {#each bangers as banger}
-              <a class="hover:opacity-75 transition-opacity flex-shrink-0" href={banger.link}>
-                <div class="relative w-18 h-18">
-                  <img 
-                    src={banger.cover_img} 
-                    alt={banger.title || "Album cover"} 
-                    class="object-cover rounded-lg"
-                  >
-                </div>
-              </a>
-            {/each}
-            {#each bangers as banger}
-              <a class="hover:opacity-75 transition-opacity flex-shrink-0" href={banger.link}>
-                <div class="relative w-18 h-18">
-                  <img 
-                    src={banger.cover_img} 
-                    alt={banger.title || "Album cover"} 
-                    class="object-cover rounded-lg"
-                  >
-                </div>
-              </a>
-            {/each}
-          </div>
-        </div>
-
-        <div class="relative h-128" transition:fly={{y: -30, duration: 1000, delay: 800}}> 
-          
-        <img src="/apples.webp" alt="apple images" class="absolute h-12 w-12 right-4 top-4 z-1000">
-          
-          {#each images as image, i}
-            {#if i === currentImageIndex}
-              <img 
-                src={image.src} 
-                alt={image.alt}
-                class="absolute w-full h-full object-cover rounded-lg"
-                transition:fade={{ duration: 500 }}
-              >
-            {/if}
-          {/each}
-
-          <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-            {#each images as _, i}
-              <div 
-                class="w-10 h-1 rounded-full transition-colors duration-300"
-                class:bg-white={i === currentImageIndex}
-                class:bg-gray-500={i !== currentImageIndex}
-              ></div>
-            {/each}
-          </div>
-
-          <div class="absolute top-5 left-5 flex justify-center space-x-2">
-            {#each images as image, i}
-              {#if i === currentImageIndex}
-                <div class="text-white text-bold text-sm">{image.description}</div>
-              {/if}
-            {/each}
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Right Column -->
-      <div class="space-y-6" transition:fly={{y: -100, duration: 1200, delay: 800}}>
-        <!-- Experience Card -->
-        <div class="bg-neutral-800 rounded-lg p-6 shadow-lg" transition:fly={{y: -50, duration: 1000, delay: 1100}}>
-          <h3 class="text-xl font-bold font-mono mb-4">Experience</h3>
-          <div class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar">
-            {#each experiences as exp}
-            <div class="flex flex-col">
-              <div class="flex flex-row items-center">
-                  <img src={exp.logo} alt="" class="w-10 h-10 mr-2 mt-2 object-cover">
-                  <div>
-                      <h4 class="font-semibold">{exp.title}</h4>
-                      <p class="text-sm text-gray-400">{exp.company} • {exp.period}</p>
-                  </div>
-              </div>
-              <div class="border-b border-neutral-700 pb-4 mt-2">
-                  <p class="text-gray-300">{exp.description}</p>
-              </div>
-          </div>
-            {/each}
-          </div>
-        </div>
-
-        <div class="relative h-112" transition:fly={{y: -30, duration: 1000, delay: 1000}}>
-          {#each projects as project, i }
-          {#if i === currentProjectIndex}
-          <a href={project.link} target="_blank" class="hover:opacity-95 transition-opacity">
-              <img
-                  src={project.src}
-                  alt={project.name}
-                  class="absolute object-cover rounded-lg"
-                  transition:fade={{duration: 750}}
-              >
-           </a>
-              {/if}
-              {/each}
-          <!-- Progress Indicator -->
-          <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-            {#each projects as _, i}
-              <div 
-                class="w-10 h-1 rounded-full transition-colors duration-300"
-                class:bg-white={i === currentImageIndex}
-                class:bg-gray-500={i !== currentImageIndex}
-              ></div>
-            {/each}
-          </div>
-
-          <div class="absolute top-0 left-0 flex justify-center space-x-2 p-4">
-            {#each projects as project, i}
-             {#if i === currentProjectIndex}
-               <div class="flex flex-col">
-                <div class="text-black font-bold text-lg">{project.name}</div>
-                <div class="text-gray-500 text-sm">{project.description}</div>
-               </div>
-             {/if}
-            {/each}
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
+					<div class="absolute top-0 left-0 flex justify-center space-x-2 p-4">
+						{#each projects as project, i}
+							{#if i === currentProjectIndex}
+								<div class="flex flex-col">
+									<div class="text-lg font-bold text-black">{project.name}</div>
+									<div class="text-sm text-gray-500">{project.description}</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {/if}
 
 <style>
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		font-family:
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
+	}
 
-  :global(body) {
-    margin: 0;
-    padding: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh; /* Ensure it takes full viewport height */
+		background-color: #1a1a1a; /* Dark base color */
 
-  :global(body) {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh; /* Ensure it takes full viewport height */
-            background-color: #1a1a1a; /* Dark base color */
-            
-            /* Create the repeating pattern */
-            background-image: 
-                radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
-                radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
-            background-size: 10px 10px, 20px 20px; /* Size of the pattern units */
-            background-position: 0 0, 5px 5px; /* Offset for the second pattern */
-        }
+		/* Create the repeating pattern */
+		background-image:
+			radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
+			radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+		background-size:
+			10px 10px,
+			20px 20px; /* Size of the pattern units */
+		background-position:
+			0 0,
+			5px 5px; /* Offset for the second pattern */
+	}
 
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    opacity: 0;
-  }
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 6px;
+		opacity: 0;
+	}
 
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 3px;
-  }
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+		border-radius: 3px;
+	}
 
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 3px;
-  }
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background: transparent;
+		border-radius: 3px;
+	}
 
-  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background: #ababab;
-  }
+	.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+		background: #ababab;
+	}
 
-  .custom-scrollbar:focus::-webkit-scrollbar-thumb {
-    background: #ababab;
-  }
+	.custom-scrollbar:focus::-webkit-scrollbar-thumb {
+		background: #ababab;
+	}
 
-  .loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: #1a1a1a;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    gap: 2rem;
+	.loading-screen {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100vh;
+		background-color: #1a1a1a;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		z-index: 1000;
+		gap: 2rem;
+	}
 
-  }
+	.ascii-art {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		color: white;
+		font-family: monospace;
+		font-size: 12px;
+		line-height: 1;
+		white-space: pre;
+	}
 
-  .ascii-art {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    color: white;
-    font-family: monospace;
-    font-size: 12px;
-    line-height: 1;
-    white-space: pre;
-  }
+	.ascii-art pre {
+		margin: 0;
+		padding: 0;
+	}
 
-  .ascii-art pre {
-    margin: 0;
-    padding: 0;
-  }
+	@keyframes marquee {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
+	}
 
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-
-  .animate-marquee {
-    animation: marquee 20s linear infinite;
-  }
+	.animate-marquee {
+		animation: marquee 20s linear infinite;
+	}
 </style>
