@@ -9,6 +9,42 @@
 	let interval1: number;
 	let isLoading = true;
 
+	// Navigation functions for images carousel
+	function nextImage() {
+		currentImageIndex = (currentImageIndex + 1) % images.length;
+		resetImageInterval();
+	}
+
+	function prevImage() {
+		currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+		resetImageInterval();
+	}
+
+	function resetImageInterval() {
+		clearInterval(interval);
+		interval = setInterval(() => {
+			currentImageIndex = (currentImageIndex + 1) % images.length;
+		}, 5000);
+	}
+
+	// Navigation functions for projects carousel
+	function nextProject() {
+		currentProjectIndex = (currentProjectIndex + 1) % projects.length;
+		resetProjectInterval();
+	}
+
+	function prevProject() {
+		currentProjectIndex = (currentProjectIndex - 1 + projects.length) % projects.length;
+		resetProjectInterval();
+	}
+
+	function resetProjectInterval() {
+		clearInterval(interval1);
+		interval1 = setInterval(() => {
+			currentProjectIndex = (currentProjectIndex + 1) % projects.length;
+		}, 10000);
+	}
+
 	onMount(() => {
 		// Set loading to false after 2 seconds
 		setTimeout(() => {
@@ -149,7 +185,12 @@
 					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
 					transition:fly={{ y: -30, duration: 1000, delay: 700 }}
 				>
-					<h3 class="mb-4 font-mono text-xl font-bold">Writing</h3>
+					
+					<div class="flex flex-row justify-between">
+						<h3 class="mb-4 font-mono text-xl font-bold">Blogs</h3>
+						<a href="/blogs" class="text-sm text-gray-400 underline">View All</a>
+					</div>
+					
 					<div class="space-y-4">
 						{#each blogs as blog}
 							<a href="/blogs/{blog.link}" class="block">
@@ -214,6 +255,22 @@
 						{/if}
 					{/each}
 
+					<!-- Navigation buttons for images -->
+					<button
+						class="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						on:click={prevImage}
+						aria-label="Previous image"
+					>
+						<i class="fas fa-chevron-left"></i>
+					</button>
+					<button
+						class="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						on:click={nextImage}
+						aria-label="Next image"
+					>
+						<i class="fas fa-chevron-right"></i>
+					</button>
+
 					<div class="absolute right-0 bottom-4 left-0 flex justify-center space-x-2">
 						{#each images as _, i}
 							<div
@@ -273,13 +330,30 @@
 							</a>
 						{/if}
 					{/each}
+
+					<!-- Navigation buttons for projects -->
+					<button
+						class="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						on:click={prevProject}
+						aria-label="Previous project"
+					>
+						<i class="fas fa-chevron-left"></i>
+					</button>
+					<button
+						class="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						on:click={nextProject}
+						aria-label="Next project"
+					>
+						<i class="fas fa-chevron-right"></i>
+					</button>
+
 					<!-- Progress Indicator -->
 					<div class="absolute right-0 bottom-4 left-0 flex justify-center space-x-2">
 						{#each projects as _, i}
 							<div
 								class="h-1 w-10 rounded-full transition-colors duration-300"
-								class:bg-white={i === currentImageIndex}
-								class:bg-gray-500={i !== currentImageIndex}
+								class:bg-white={i === currentProjectIndex}
+								class:bg-gray-500={i !== currentProjectIndex}
 							></div>
 						{/each}
 					</div>
