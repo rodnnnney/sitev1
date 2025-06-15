@@ -182,13 +182,12 @@
 			<div class="space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 600 }}>
 				<!-- Blogs Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
+					class="rounded-lg bg-neutral-800 p-6 shadow-lg relative"
 					transition:fly={{ y: -30, duration: 1000, delay: 700 }}
 				>
-					
 					<div class="flex flex-row justify-between">
 						<h3 class="mb-4 font-mono text-xl font-bold">Blogs</h3>
-						<a href="/blogs" class="text-sm text-gray-400 underline">View All</a>
+						<a href="/blogs" class="text-sm text-white absolute top-4 mt-4 right-4 z-30 bg-gradient-to-r from-neutral-800 to-gray-800 rounded-md px-3 border border-gray-500 rainbow-border">View All</a>
 					</div>
 					
 					<div class="space-y-4">
@@ -318,6 +317,7 @@
 				</div>
 
 				<div class="relative h-112" transition:fly={{ y: -30, duration: 1000, delay: 1000 }}>
+					<a href="/projects" class="text-sm text-black absolute top-4 right-4 z-30 bg-gradient-to-r from-neutral-400 to-gray-200 rounded-md px-3 border border-gray-400 rainbow-border">View All</a>
 					{#each projects as project, i}
 						{#if i === currentProjectIndex}
 							<a href={project.link} target="_blank" class="transition-opacity hover:opacity-95">
@@ -363,12 +363,13 @@
 							{#if i === currentProjectIndex}
 								<div class="flex flex-col">
 									<div class="text-lg font-bold text-black">{project.name}</div>
-									<div class="text-sm text-gray-500">{project.description}</div>
+									<div class="text-sm text-black">{project.description}</div>
 								</div>
 							{/if}
 						{/each}
 					</div>
 				</div>
+				
 			</div>
 		</div>
 	</div>
@@ -473,5 +474,14 @@
 
 	.animate-marquee {
 		animation: marquee 20s linear infinite;
+	}
+
+
+	.rainbow-border {
+		transition: all 0.3s ease;
+	}
+
+	.rainbow-border:hover {
+		transform: scale(1.02);
 	}
 </style>

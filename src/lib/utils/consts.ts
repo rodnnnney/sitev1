@@ -2,39 +2,38 @@ export const images = [
     {
       src: "/camera/nyc.png",
       alt: "New York City",
-      description: "New York City, USA // May 2025"
+      description: "New York City, USA // May 2025",
     },
     {
       src: "/camera/shanghai.png",
       alt: "Shanghai",
-      description: "Shanghai, China // Dec 2023"
+      description: "Shanghai, China // Dec 2023",
     },
     {
       src: "/camera/chengdu.png",
       alt: "Chengdu",
-      description: "Chengdu, China // Jan 2024"
+      description: "Chengdu, China // Jan 2024",
     },
     {
       src: "/camera/to.png",
       alt: "Toronto Islands",
-      description: "Toronto Islands, Canada //  2024"
+      description: "Toronto Islands, Canada //  2024",
     },
     {
       src: "/camera/toronto.png",
       alt: "Toronto",
-      description: "Toronto, Canada // May 2025"
+      description: "Toronto, Canada // May 2025",
     },
     {
       src: "/camera/vancouver.png",
       alt: "Vancouver",
-      description: "Vancouver, Canada // Dec 2024"
+      description: "Vancouver, Canada // Dec 2024",
     },
 ]
 
 type Project = {
     name: string;
     src: string;
-
     description: string; 
     link: string;
 
@@ -44,16 +43,14 @@ export const projects: Project[] = [
     {
         name: "Lumalytics",
         src: "/projects/luma.png",
-
         description: "Analyzes and transforms data for Luma hosts to find insights in their events (try today!).",
-        link: "https://lumalytics.app"
+        link: "https://lumalytics.app",
     },
     {
         name: "RizzKhalifa",
         src: "/projects/rizz.png",
         description: "Meta Raybans that listen to your conversations and help you rizz in real-time.",
-        link: "https://devpost.com/software/irrizzistable-glasses"
-
+        link: "https://devpost.com/software/irrizzistable-glasses",
     },
     {
         name: "Cook or Cooked",
@@ -64,7 +61,7 @@ export const projects: Project[] = [
     {
         name: "ACAC Mobile",
         src: "/projects/acac.png",
-        description: "Mobile app for school club that serves restaurant discounts to members",
+        description: "Mobile app for university club that serves restaurant discounts to members",
         link: "https://github.com/rodnnnney/ACAC"
     }
 ]
