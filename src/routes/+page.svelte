@@ -391,7 +391,7 @@
 		font-family:
 			system-ui,
 			-apple-system,
-			BlinkMacSystemFont,
+			BlinkMacSystemFont, 
 			'Segoe UI',
 			Roboto,
 			sans-serif;
@@ -477,5 +477,53 @@
 
 	.rainbow-border:hover {
 		transform: scale(1.02);
+	}
+
+	.svg-draw-bg {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: none;
+		z-index: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		opacity: 0.25;
+	}
+	.svg-bg-img {
+		width: 80vw;
+		height: auto;
+		max-width: 830px;
+		max-height: 587px;
+		display: block;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+		user-select: none;
+	}
+	.svg-draw-overlay {
+		width: 80vw;
+		height: auto;
+		max-width: 830px;
+		max-height: 587px;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+		user-select: none;
+	}
+	.svg-draw-rect {
+		stroke-dasharray: 2834;
+		stroke-dashoffset: 2834;
+		animation: draw-rect 2.5s cubic-bezier(0.77,0,0.175,1) 0.5s forwards;
+	}
+	@keyframes draw-rect {
+		to {
+			stroke-dashoffset: 0;
+		}
 	}
 </style>

@@ -12,8 +12,8 @@
   </script>
   
   <div class="min-h-screen text-white p-12">
-    <nav class="flex items-center space-x-2 text-sm text-gray-400 mb-8">
-      <a href="/" class="hover:text-white transition-colors">Home</a>
+    <nav class="flex items-center space-x-2 text-sm text-white mb-8">
+      <a href="/">Home</a>
       <span>/</span>
       <a href="/projects" class="text-white transition-colors">Projects</a>
     </nav>
