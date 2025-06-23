@@ -15,11 +15,6 @@ export const images = [
       description: "Chengdu, China // Jan 2024",
     },
     {
-      src: "/camera/to.png",
-      alt: "Toronto Islands",
-      description: "Toronto Islands, Canada //  2024",
-    },
-    {
       src: "/camera/toronto.png",
       alt: "Toronto",
       description: "Toronto, Canada // May 2025",

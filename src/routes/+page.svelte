@@ -46,10 +46,9 @@
 	}
 
 	onMount(() => {
-		// Set loading to false after 2 seconds
 		setTimeout(() => {
 			isLoading = false;
-		}, 2000);
+		}, 1000);
 
 		interval = setInterval(() => {
 			currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -99,14 +98,14 @@
 	>
 		<div
 			class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 md:grid-cols-3"
-			transition:fly={{ y: -50, duration: 1200, delay: 200 }}
+			transition:fly={{ y: -50, duration: 1200, delay: 800 }}
 		>
 			<!-- Left Column -->
-			<div class="mt-24 space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 400 }}>
+			<div class="mt-24 space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 1000 }}>
 				<!-- Profile Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
-					transition:fly={{ y: -30, duration: 1000, delay: 500 }}
+					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
+					transition:fly={{ y: -30, duration: 1000, delay: 1100 }}
 				>
 					<div class="flex items-center">
 						<div class="flex w-full flex-row justify-between">
@@ -151,15 +150,15 @@
 				</div>
 
 				<!-- HAND -->
-				<div class="bg-neutral" transition:fly={{ y: -30, duration: 1000, delay: 600 }}>
+				<div class="bg-neutral" transition:fly={{ y: -30, duration: 1000, delay: 1200 }}>
 					<div class="w-full object-cover">
 						<img src="/hand.png" alt="" class="h-full w-full rounded-lg object-cover" />
 					</div>
 				</div>
 				<!-- About Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
-					transition:fly={{ y: -30, duration: 1000, delay: 700 }}
+					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
+					transition:fly={{ y: -30, duration: 1000, delay: 1300 }}
 				>
 					<h3 class="mb-4 font-mono text-xl font-bold">About Me</h3>
 
@@ -179,11 +178,11 @@
 			</div>
 
 			<!-- Middle Column -->
-			<div class="space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 600 }}>
+			<div class="space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 1200 }}>
 				<!-- Blogs Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-lg relative"
-					transition:fly={{ y: -30, duration: 1000, delay: 700 }}
+					class="rounded-lg bg-neutral-800 p-6 shadow-sm relative"
+					transition:fly={{ y: -30, duration: 1000, delay: 1300 }}
 				>
 					<div class="flex flex-row justify-between">
 						<h3 class="mb-4 font-mono text-xl font-bold">Blogs</h3>
@@ -207,8 +206,8 @@
 
 				<!-- Song Marquee -->
 				<div
-					class="overflow-hidden rounded-lg bg-neutral-800 p-2 shadow-lg"
-					transition:fly={{ y: -30, duration: 1000, delay: 900 }}
+					class="overflow-hidden rounded-lg bg-neutral-800 p-2 shadow-sm"
+					transition:fly={{ y: -30, duration: 1000, delay: 1500 }}
 				>
 					<div class="animate-marquee flex flex-row gap-2 whitespace-nowrap">
 						{#each bangers as banger}
@@ -236,7 +235,7 @@
 					</div>
 				</div>
 
-				<div class="relative h-128" transition:fly={{ y: -30, duration: 1000, delay: 800 }}>
+				<div class="relative h-128" transition:fly={{ y: -30, duration: 1000, delay: 1400 }}>
 					<img
 						src="/apples.webp"
 						alt="apple images"
@@ -291,11 +290,11 @@
 			</div>
 
 			<!-- Right Column -->
-			<div class="space-y-6" transition:fly={{ y: -100, duration: 1200, delay: 800 }}>
+			<div class="space-y-6" transition:fly={{ y: -100, duration: 1200, delay: 1400 }}>
 				<!-- Experience Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-lg"
-					transition:fly={{ y: -50, duration: 1000, delay: 1100 }}
+					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
+					transition:fly={{ y: -50, duration: 1000, delay: 1700 }}
 				>
 					<h3 class="mb-4 font-mono text-xl font-bold">Experience</h3>
 					<div class="custom-scrollbar max-h-[300px] space-y-4 overflow-y-auto">
@@ -316,7 +315,7 @@
 					</div>
 				</div>
 
-				<div class="relative h-112" transition:fly={{ y: -30, duration: 1000, delay: 1000 }}>
+				<div class="relative h-112" transition:fly={{ y: -30, duration: 1000, delay: 1600 }}>
 					<a href="/projects" class="text-sm text-black absolute top-4 right-4 z-30 bg-gradient-to-r from-neutral-400 to-gray-200 rounded-md px-3 border border-gray-400 rainbow-border">View All</a>
 					{#each projects as project, i}
 						{#if i === currentProjectIndex}
@@ -369,10 +368,20 @@
 						{/each}
 					</div>
 				</div>
-				
+				<div class="text-center text-white text-lg text-xs font-mono mt-12 md:hidden">
+					Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline">cracked friends</a> 
+				</div>
+			
 			</div>
 		</div>
 	</div>
+	
+	<!-- Hi text after all content -->
+	
+<!-- Hi text positioned absolutely for desktop -->
+<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-xs text-grey-400 font-mono z-50 hidden md:block" transition:fly={{ y: -30, duration: 1000, delay: 3000 }}>
+	Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline italic">cracked friends</a> 
+</div>
 {/if}
 
 <style>
@@ -386,27 +395,12 @@
 			'Segoe UI',
 			Roboto,
 			sans-serif;
-	}
-
-	:global(body) {
-		margin: 0;
-		padding: 0;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 100vh; /* Ensure it takes full viewport height */
-		background-color: #1a1a1a; /* Dark base color */
-
-		/* Create the repeating pattern */
-		background-image:
-			radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
-			radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
-		background-size:
-			10px 10px,
-			20px 20px; /* Size of the pattern units */
-		background-position:
-			0 0,
-			5px 5px; /* Offset for the second pattern */
+		min-height: 100vh;
+		background: #1a1a1a url('/bg.jpeg') no-repeat center center fixed;
+		background-size: cover;
 	}
 
 	.custom-scrollbar::-webkit-scrollbar {
