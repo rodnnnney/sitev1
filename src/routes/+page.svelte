@@ -2,7 +2,8 @@
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
-
+	import { Github, Twitter } from 'lucide-svelte';
+	
 	let currentImageIndex = 0;
 	let interval: number;
 	let currentProjectIndex = 0;
@@ -113,22 +114,10 @@
 
 							<div class="flex gap-4">
 								<a href="https://github.com/rodnnnney" target="_blank">
-									<img
-										src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
-										alt="GitHub"
-										width="24"
-										height="24"
-										class="invert"
-									/>
+									<Github size={24} class="invert" />
 								</a>
 								<a href="https://x.com/992rodney" target="_blank">
-									<img
-										alt="X"
-										src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"
-										width="24"
-										height="24"
-										class="invert"
-									/>
+									<Twitter size={24} class="invert" />
 								</a>
 							</div>
 						</div>

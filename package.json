@@ -46,5 +46,8 @@
 	},
 	"engines": {
 		"node": "22.x"
+	},
+	"dependencies": {
+		"lucide-svelte": "^0.523.0"
 	}
 }
