@@ -114,10 +114,10 @@
 
 							<div class="flex gap-4">
 								<a href="https://github.com/rodnnnney" target="_blank">
-									<Github size={24} class="invert" />
+									<Github size={24} color="white" />
 								</a>
 								<a href="https://x.com/992rodney" target="_blank">
-									<Twitter size={24} class="invert" />
+									<Twitter size={24} color="white" />
 								</a>
 							</div>
 						</div>
