@@ -2,7 +2,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
-	import { Github, Twitter } from 'lucide-svelte';
+	import { Github, Twitter, Underline } from 'lucide-svelte';
 	
 	let currentImageIndex = 0;
 	let interval: number;
@@ -156,8 +156,9 @@
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							At Carleton, I racked up ~1k in parking tickets and founded the blockchain club. We grew
-							it from 0-200 in ~1 semester hosting 6 unforgettable events.
+							At Carleton, I founded <a class="underline" href="https://carletonblockchain.ca/" target="_blank">Carleton Blockchain</a>. We grew
+							it from 0-200 in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets
+							and founded the blockchain club. 
 							<br /><br />
 							Outside of school and work, I like to clear my head with runs, listen to music, hang out
 							with friends and travel the world.
@@ -290,7 +291,7 @@
 						{#each experiences as exp}
 							<div class="flex flex-col">
 								<div class="flex flex-row items-center">
-									<img src={exp.logo} alt="" class="mt-2 mr-2 h-10 w-10 object-cover" />
+									<img src={exp.logo} alt="" class="mt-2 mr-2 h-10 w-10 object-cover rounded-md" />
 									<div>
 										<h4 class="font-semibold">{exp.title}</h4>
 										<p class="text-sm text-gray-400">{exp.company} • {exp.period}</p>
@@ -388,7 +389,7 @@
 		justify-content: center;
 		align-items: center;
 		min-height: 100vh;
-		background: #1a1a1a url('/bg.jpeg') no-repeat center center fixed;
+		/* background: #1a1a1a url('/bg.jpeg') no-repeat center center fixed; */
 		background-size: cover;
 	}
 

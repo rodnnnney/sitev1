@@ -63,6 +63,13 @@ export const projects: Project[] = [
 
 
 export const experiences = [
+  {
+    title: "Intern of Technical Staff",
+    company: "TextQL",
+    period: "Incoming - Fall 2025 // NYC, NY", 
+    description: "Enterprise data science agents",
+    logo: "/comp/tql.jpg"
+  },
     {
       title: "Software Engineer Intern",
       company: "Paytrie",
