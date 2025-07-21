@@ -156,12 +156,10 @@
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							At Carleton, I founded <a class="underline" href="https://carletonblockchain.ca/" target="_blank">Carleton Blockchain</a>. We grew
-							it from 0-200 in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets
-							and founded the blockchain club. 
+							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of the technical staff where I will be building data science agents.
 							<br /><br />
-							Outside of school and work, I like to clear my head with runs, listen to music, hang out
-							with friends and travel the world.
+							At Carleton, I founded <a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We grew
+							it from 0-200 in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets.
 						</p>
 					</div>
 				</div>
@@ -289,7 +287,7 @@
 					<h3 class="mb-4 font-mono text-xl font-bold">Experience</h3>
 					<div class="custom-scrollbar max-h-[300px] space-y-4 overflow-y-auto">
 						{#each experiences as exp}
-							<div class="flex flex-col">
+							<a class="flex flex-col" href={exp.link} rel="noopener noreferrer">
 								<div class="flex flex-row items-center">
 									<img src={exp.logo} alt="" class="mt-2 mr-2 h-10 w-10 object-cover rounded-md" />
 									<div>
@@ -300,7 +298,7 @@
 								<div class="mt-2 border-b border-neutral-700 pb-4">
 									<p class="text-gray-300">{exp.description}</p>
 								</div>
-							</div>
+							</a>
 						{/each}
 					</div>
 				</div>
