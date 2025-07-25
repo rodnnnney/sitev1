@@ -387,7 +387,7 @@
 		justify-content: center;
 		align-items: center;
 		min-height: 100vh;
-		/* background: #1a1a1a url('/bg.jpeg') no-repeat center center fixed; */
+		background: #1a1a1a url('/bg.jpeg') no-repeat center center fixed;
 		background-size: cover;
 	}
 
