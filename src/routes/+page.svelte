@@ -2,13 +2,17 @@
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
-	import { Github, Twitter, Underline } from 'lucide-svelte';
+	import { Github, Twitter } from 'lucide-svelte';
 	
 	let currentImageIndex = 0;
 	let interval: number;
 	let currentProjectIndex = 0;
 	let interval1: number;
 	let isLoading = true;
+
+	// Animation timing constants
+	const BASE_DELAY = 1000;
+	const DELAY_INCREMENT = 125;
 
 	// Navigation functions for images carousel
 	function nextImage() {
@@ -89,7 +93,6 @@
 	<div class="loading-screen" transition:fade={{ duration: 1000 }}>
 		<div class="ascii-art">
 			<pre class="rodney">{rodney}</pre>
-			<pre class="shen">{shen}</pre>
 		</div>
 	</div>
 {:else}
@@ -102,11 +105,11 @@
 			transition:fly={{ y: -50, duration: 1200, delay: 800 }}
 		>
 			<!-- Left Column -->
-			<div class="mt-24 space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 1000 }}>
+			<div class="mt-24 space-y-6" transition:fly={{ x: -100, y: -50, duration: 1200, delay: BASE_DELAY }}>
 				<!-- Profile Card -->
 				<div
 					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
-					transition:fly={{ y: -30, duration: 1000, delay: 1100 }}
+					transition:fly={{ x: -100, y: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 3 }}
 				>
 					<div class="flex items-center">
 						<div class="flex w-full flex-row justify-between">
@@ -139,7 +142,7 @@
 				</div>
 
 				<!-- HAND -->
-				<div class="bg-neutral" transition:fly={{ y: -30, duration: 1000, delay: 1200 }}>
+				<div class="bg-neutral" transition:fly={{ x: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}>
 					<div class="w-full object-cover">
 						<img src="/hand.png" alt="" class="h-full w-full rounded-lg object-cover" />
 					</div>
@@ -147,7 +150,7 @@
 				<!-- About Card -->
 				<div
 					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
-					transition:fly={{ y: -30, duration: 1000, delay: 1300 }}
+					transition:fly={{ x: -100, y: 100, duration: 1000, delay: BASE_DELAY }}
 				>
 					<h3 class="mb-4 font-mono text-xl font-bold">About Me</h3>
 
@@ -159,18 +162,18 @@
 							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of the technical staff where I will be building data science agents.
 							<br /><br />
 							At Carleton, I founded <a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We grew
-							it from 0-200 in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets.
+							it from 0-200 club members in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets.
 						</p>
 					</div>
 				</div>
 			</div>
 
 			<!-- Middle Column -->
-			<div class="space-y-6" transition:fly={{ y: -50, duration: 1200, delay: 1200 }}>
+			<div class="space-y-6" transition:fly={{ y: -100, duration: 1200, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}>
 				<!-- Blogs Card -->
 				<div
 					class="rounded-lg bg-neutral-800 p-6 shadow-sm relative"
-					transition:fly={{ y: -30, duration: 1000, delay: 1300 }}
+					transition:fly={{ y: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
 					<div class="flex flex-row justify-between">
 						<h3 class="mb-4 font-mono text-xl font-bold">Blogs</h3>
@@ -195,7 +198,7 @@
 				<!-- Song Marquee -->
 				<div
 					class="overflow-hidden rounded-lg bg-neutral-800 p-2 shadow-sm"
-					transition:fly={{ y: -30, duration: 1000, delay: 1500 }}
+					transition:fly={{ y: 100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 8 }}
 				>
 					<div class="animate-marquee flex flex-row gap-2 whitespace-nowrap">
 						{#each bangers as banger}
@@ -223,7 +226,7 @@
 					</div>
 				</div>
 
-				<div class="relative h-128" transition:fly={{ y: -30, duration: 1000, delay: 1400 }}>
+				<div class="relative h-128" transition:fly={{ y: 100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 9 }}>
 					<img
 						src="/apples.webp"
 						alt="apple images"
@@ -278,11 +281,11 @@
 			</div>
 
 			<!-- Right Column -->
-			<div class="space-y-6" transition:fly={{ y: -100, duration: 1200, delay: 1400 }}>
+			<div class="space-y-6" transition:fly={{ x: 100, y: -50, duration: 1200, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}>
 				<!-- Experience Card -->
 				<div
 					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
-					transition:fly={{ y: -50, duration: 1000, delay: 1700 }}
+					transition:fly={{ x: 100, y: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
 					<h3 class="mb-4 font-mono text-xl font-bold">Experience</h3>
 					<div class="custom-scrollbar max-h-[300px] space-y-4 overflow-y-auto">
@@ -303,7 +306,7 @@
 					</div>
 				</div>
 
-				<div class="relative h-112" transition:fly={{ y: -30, duration: 1000, delay: 1600 }}>
+				<div class="relative h-112" transition:fly={{ x: 100, y: 100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 7 }}>
 					<a href="/projects" class="text-sm text-black absolute top-4 right-4 z-30 bg-gradient-to-r from-neutral-400 to-gray-200 rounded-md px-3 border border-gray-400 rainbow-border">View All</a>
 					{#each projects as project, i}
 						{#if i === currentProjectIndex}
@@ -356,6 +359,7 @@
 						{/each}
 					</div>
 				</div>
+
 				<div class="text-center text-white text-lg text-xs font-mono mt-12 md:hidden">
 					Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline">cracked friends</a> 
 				</div>
@@ -367,7 +371,7 @@
 	<!-- Hi text after all content -->
 	
 <!-- Hi text positioned absolutely for desktop -->
-<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-xs text-grey-400 font-mono z-50 hidden md:block" transition:fly={{ y: -30, duration: 1000, delay: 3000 }}>
+<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-xs text-grey-400 font-mono z-50 hidden md:block" transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 12 }}>
 	Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline italic">cracked friends</a> 
 </div>
 {/if}
@@ -387,7 +391,7 @@
 		justify-content: center;
 		align-items: center;
 		min-height: 100vh;
-		background: #1a1a1a url('/bg.jpeg') no-repeat center center fixed;
+		background: #1a1a1a url('/cooooool.jpeg') no-repeat center center fixed;
 		background-size: cover;
 	}
 
@@ -434,15 +438,23 @@
 		flex-direction: column;
 		align-items: flex-start;
 		color: white;
-		font-family: monospace;
+		font-family: 'Courier New', Courier, monospace;
 		font-size: 12px;
 		line-height: 1;
 		white-space: pre;
+		font-display: block;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
 	.ascii-art pre {
 		margin: 0;
 		padding: 0;
+		font-family: inherit;
+		text-rendering: inherit;
+		-webkit-font-smoothing: inherit;
+		-moz-osx-font-smoothing: inherit;
 	}
 
 	@keyframes marquee {
