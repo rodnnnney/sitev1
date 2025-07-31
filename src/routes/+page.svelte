@@ -12,7 +12,7 @@
 
 	// Animation timing constants
 	const BASE_DELAY = 1000;
-	const DELAY_INCREMENT = 125;
+	const DELAY_INCREMENT = 100;
 
 	// Navigation functions for images carousel
 	function nextImage() {
@@ -159,7 +159,7 @@
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of the technical staff where I will be building data science agents.
+							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of technical staff where I will be building data science agents.
 							<br /><br />
 							At Carleton, I founded <a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We grew
 							it from 0-200 club members in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets.
