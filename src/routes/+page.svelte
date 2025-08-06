@@ -174,7 +174,7 @@
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of
+							In the fall, I'll be moving to New York City and joining <a href="https://textql.com/">TextQL</a> as an intern of
 							technical staff where I will be building data science agents.
 							<br /><br />
 							At Carleton, I founded
