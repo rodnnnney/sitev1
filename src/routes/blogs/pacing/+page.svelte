@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import Header from '$lib/components/header.svelte';
 
 	let formulaElement: HTMLDivElement;
@@ -28,10 +30,21 @@
 
 <Header />
 
-<div class="min-h-screen p-12 text-white">
+<div
+	class="min-h-screen p-12 text-white"
+	in:fly={{
+		y: -30,
+		duration: 800,
+		delay: 100,
+		easing: quintOut
+	}}
+>
 	<div class="mx-auto max-w-4xl px-8">
 		<!-- Simple breadcrumb navigation -->
-		<nav class="mb-8 flex items-center space-x-2 text-sm text-white">
+		<nav
+			class="mb-8 flex items-center space-x-2 text-sm text-white"
+			in:fade={{ duration: 600, delay: 200 }}
+		>
 			<a href="/" class="hover:text-gray-300">Home</a>
 			<span>/</span>
 			<a href="/blogs" class="hover:text-gray-300">Blogs</a>
@@ -39,41 +52,53 @@
 			<span class="text-white">Pacing</span>
 		</nav>
 
-		<h1 class="mb-8 flex justify-start text-left text-3xl font-bold">Pacing</h1>
+		<h1
+			class="mb-8 flex justify-start text-left text-3xl font-bold"
+			in:fly={{ y: -20, duration: 600, delay: 300, easing: quintOut }}
+		>
+			Pacing
+		</h1>
 
 		<div class="flex flex-col gap-4">
 			<!-- <div class="p-8 flex justify-center border-2 border-yellow-600 text-yellow-600 rounded-lg bg-gradient-to-tr from-yellow-100 to-yellow-200">
         This article is still under construction!👷🏗️
       </div> -->
 
-			<div>
+			<div in:fade={{ duration: 600, delay: 400 }}>
 				In the following article, I will attempt to draw similarities between my change in
 				environment from a quiet suburb in the capital of Canada to one of the most vibrant and
 				fast-moving cities in the world, aka the concrete jungle where dreams are made of, aka the
 				Big Apple: New York City.
 			</div>
 
-			<div class="m-8 flex justify-center">
+			<div class="m-8 flex justify-center" in:fade={{ duration: 600, delay: 500 }}>
 				<img src="/blog/aura.avif" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
 			</div>
 
-			When I was a kid, I was obsessed with the NBA. I was a LeBron bandwagon fan growing up;
-			watching him dominate on the Heat with Wade and Bosh was unlike anything I'd ever seen in my 8
-			years of existence. There was this particular stat that I thought was incredibly interesting:
-			pace. This metric measures the number of possessions a team averages per 48-minute regulation
-			game. This stat gives in-depth insights into the playing styles, both offensive and defensive
-			systems of teams, and competitive advantages that stem far beyond the stat sheet. The formula
-			for calculating pace is:
+			<div in:fade={{ duration: 600, delay: 600 }}>
+				When I was a kid, I was obsessed with the NBA. I was a LeBron bandwagon fan growing up;
+				watching him dominate on the Heat with Wade and Bosh was unlike anything I'd ever seen in my
+				8 years of existence. There was this particular stat that I thought was incredibly
+				interesting: pace. This metric measures the number of possessions a team averages per
+				48-minute regulation game. This stat gives in-depth insights into the playing styles, both
+				offensive and defensive systems of teams, and competitive advantages that stem far beyond
+				the stat sheet. The formula for calculating pace is:
+			</div>
 
-			<div class="my-8 overflow-x-auto rounded-lg bg-gray-800 p-4">
+			<div
+				class="my-8 overflow-x-auto rounded-lg bg-gray-800 p-4"
+				in:fade={{ duration: 600, delay: 700 }}
+			>
 				<div bind:this={formulaElement}></div>
 			</div>
 
-			The way we interpret pace is straightforward. If a team has a Pace Factor of 100, their games
-			typically feature 100 total possessions combined between both teams. The current NBA average
-			is approximately 99.56 possessions per 48 minutes across all teams. Teams with higher pace
-			factors engage in more possessions per game, indicating faster-paced play, while lower pace
-			factors suggest more deliberate, methodical approaches to offense and defense.
+			<div in:fade={{ duration: 600, delay: 800 }}>
+				The way we interpret pace is straightforward. If a team has a Pace Factor of 100, their
+				games typically feature 100 total possessions combined between both teams. The current NBA
+				average is approximately 99.56 possessions per 48 minutes across all teams. Teams with
+				higher pace factors engage in more possessions per game, indicating faster-paced play, while
+				lower pace factors suggest more deliberate, methodical approaches to offense and defense.
+			</div>
 
 			<div>
 				By default, an easy takeaway would be simply the increased amount of shot opportunities. You
@@ -151,4 +176,13 @@
 </div>
 
 <style>
+	/* Add a subtle backdrop blur effect during transition */
+	:global(body) {
+		overflow-x: hidden;
+	}
+
+	/* Ensure smooth scaling from center */
+	div[class*='min-h-screen'] {
+		transform-origin: center center;
+	}
 </style>

@@ -16,18 +16,16 @@
 				totalCommits = data.totalContributions;
 				currentYear = data.year;
 			} else {
-				// Fallback to known value
+
 				totalCommits = 965;
 			}
 		} catch (error) {
 			console.error('Failed to fetch commit count:', error);
-			// Fallback to known value
 			totalCommits = 965;
 		}
 	}
 
 	onMount(async () => {
-		// Using GitHub's contribution graph for current year only
 		contributionsUrl = `https://ghchart.rshah.org/rodnnnney`;
 		await fetchCommitCount();
 		loading = false;
@@ -63,7 +61,7 @@
 				/>
 			</div>
 			<p class="mt-2 text-xs text-gray-400">
-				Syncs daily • <span class="commit-highlight">{totalCommits+1}</span> <em>commits last year</em>
+				Syncs daily • <span class="commit-highlight">{totalCommits+1}</span> <em>commits</em>
 			</p>
 		</div>
 	{/if}

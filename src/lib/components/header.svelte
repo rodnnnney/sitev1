@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Search, ArrowRight } from 'lucide-svelte';
+	import { Search, ArrowRight, FileText, Code, Briefcase, Home } from 'lucide-svelte';
 	import { blogs, projects, experiences } from '$lib/utils/consts';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	let searchOpen = false;
 	let searchInput: HTMLInputElement;
 	let searchQuery = '';
 	let selectedIndex = 0;
 	let resultsContainer: HTMLDivElement;
+	let selectedElement: HTMLElement | null = null;
 
 	// Create search index
 	const searchItems = [
@@ -42,6 +44,40 @@
 		{ type: 'page', title: 'Projects', description: 'All projects', url: '/projects', date: null }
 	];
 
+	// Preview items - only show these 3 when no search query
+	const previewItems = [
+		// Blog
+		...blogs
+			.map((blog) => ({
+				type: 'blog',
+				title: blog.title,
+				description: blog.excerpt,
+				url: `/blogs/${blog.link}`,
+				date: blog.date
+			}))
+			.slice(0, 1), // Take first blog
+		// RizzKhalifa project
+		...projects
+			.filter((project) => project.name === 'RizzKhalifa')
+			.map((project) => ({
+				type: 'project',
+				title: project.name,
+				description: project.description,
+				url: project.link,
+				date: null
+			})),
+		// TextQL experience
+		...experiences
+			.filter((exp) => exp.company === 'TextQL')
+			.map((exp) => ({
+				type: 'experience',
+				title: `${exp.title} at ${exp.company}`,
+				description: exp.description,
+				url: exp.link,
+				date: exp.period
+			}))
+	];
+
 	$: filteredResults = searchQuery.trim()
 		? searchItems
 				.filter(
@@ -50,13 +86,16 @@
 						item.description.toLowerCase().includes(searchQuery.toLowerCase())
 				)
 				.slice(0, 8)
-		: searchItems.slice(0, 6);
+		: previewItems;
 
 	function toggleSearch() {
 		searchOpen = !searchOpen;
 		if (searchOpen) {
-			setTimeout(() => searchInput?.focus(), 100);
-			selectedIndex = 0;
+			setTimeout(() => {
+				searchInput?.focus();
+				selectedIndex = 0;
+				scrollToSelected();
+			}, 100);
 			// Don't prevent body scroll
 		} else {
 			searchQuery = '';
@@ -66,7 +105,7 @@
 
 	function scrollToSelected() {
 		if (resultsContainer) {
-			const selectedElement = resultsContainer.querySelector(
+			selectedElement = resultsContainer.querySelector(
 				`[data-index="${selectedIndex}"]`
 			) as HTMLElement;
 			if (selectedElement) {
@@ -112,6 +151,10 @@
 			event.preventDefault();
 			toggleSearch();
 		}
+		if ((event.metaKey || event.ctrlKey) && event.key === 'h') {
+			event.preventDefault();
+			goto('/');
+		}
 		if (event.key === 'Escape' && searchOpen) {
 			searchOpen = false;
 			searchQuery = '';
@@ -134,6 +177,21 @@
 		}
 	}
 
+	function getTypeIcon(type: string) {
+		switch (type) {
+			case 'blog':
+				return FileText;
+			case 'project':
+				return Code;
+			case 'experience':
+				return Briefcase;
+			case 'page':
+				return Home;
+			default:
+				return Home;
+		}
+	}
+
 	onMount(() => {
 		document.addEventListener('keydown', handleKeydown);
 		return () => {
@@ -146,13 +204,16 @@
 	<div class="mx-auto max-w-7xl px-4 py-2 lg:px-0 lg:pt-6">
 		<nav class="flex items-center justify-between">
 			<!-- Left side - Name -->
-			<div class="flex items-center">
+			<div class="flex items-center space-x-3">
 				<a
 					href="/"
 					class="font-mono text-lg font-bold text-white transition-colors hover:text-gray-300 sm:text-xl"
 				>
 					Rodney Shen
 				</a>
+				{#if $page.url.pathname !== '/'}
+					<span class="hidden text-xs text-gray-500 sm:inline">⌘ + H</span>
+				{/if}
 			</div>
 
 			<!-- Right side - Navigation and Search -->
@@ -160,13 +221,13 @@
 				<div class="hidden items-center space-x-6 sm:flex">
 					<a
 						href="/blogs"
-						class="nav-link relative text-sm font-medium text-white transition-all duration-300 hover:text-gray-300"
+						class="nav-link relative text-lg text-white transition-all duration-300 hover:text-gray-300"
 					>
 						Blogs
 					</a>
 					<a
 						href="/projects"
-						class="nav-link relative text-sm font-medium text-white transition-all duration-300 hover:text-gray-300"
+						class="nav-link relative text-lg text-white transition-all duration-300 hover:text-gray-300"
 					>
 						Projects
 					</a>
@@ -178,8 +239,8 @@
 					class="flex items-center space-x-2 rounded-md border border-gray-600 bg-gray-800/50 px-3 py-1.5 text-sm text-gray-300 transition-colors hover:bg-gray-700/50"
 				>
 					<Search size={14} />
-					<span class="hidden sm:inline">Search</span>
-					<span class="hidden text-xs text-gray-500 sm:inline">⌘K</span>
+					<!-- <span class="hidden sm:inline">Search</span> -->
+					<span class="hidden text-xs text-gray-500 sm:inline">⌘ + K</span>
 				</button>
 			</div>
 		</nav>
@@ -229,33 +290,40 @@
 					</div>
 
 					<!-- Search Results -->
-					<div class="max-h-96 overflow-y-auto" bind:this={resultsContainer}>
+					<div class="relative max-h-96 overflow-y-auto" bind:this={resultsContainer}>
+						<!-- Animated Background -->
+						{#if selectedElement && selectedIndex >= 0}
+							<div
+								class="pointer-events-none absolute rounded-lg bg-gradient-to-r from-gray-600/20 to-gray-700/30 transition-all duration-300 ease-out"
+								style="
+									top: {selectedElement.offsetTop + 8}px;
+									left: 8px;
+									width: {selectedElement.offsetWidth - 16}px;
+									height: {selectedElement.offsetHeight - 16}px;
+								"
+							></div>
+						{/if}
+
 						{#if filteredResults.length > 0}
 							{#each filteredResults as result, index}
 								<button
-									class="relative w-full px-6 py-3 text-left transition-all duration-300 ease-out hover:bg-gray-700/40 focus:bg-gray-700/40 focus:outline-none {index ===
-									selectedIndex
-										? 'translate-x-1 transform shadow-lg'
-										: ''}"
+									class="relative w-full px-6 py-4 text-left transition-all duration-200 ease-out hover:bg-transparent focus:bg-transparent focus:outline-none"
 									data-index={index}
 									on:click={() => navigateToResult(result)}
-									on:mouseenter={() => (selectedIndex = index)}
+									on:mouseenter={() => {
+										selectedIndex = index;
+										scrollToSelected();
+									}}
 								>
-									{#if index === selectedIndex}
-										<div
-											class="absolute inset-2 rounded-lg bg-gradient-to-r from-gray-600/20 to-gray-700/30 transition-all duration-300 ease-out"
-										></div>
-									{/if}
-									<div class="relative z-10 transition-all duration-300 ease-out">
+									<div class="relative z-10">
 										<div class="flex items-center justify-between">
 											<div class="flex-1">
 												<div class="flex items-center space-x-3">
-													<span
-														class="rounded-lg border px-2 py-1 text-xs font-medium tracking-wide uppercase"
-														style={getTypeColor(result.type)}
-													>
-														{result.type}
-													</span>
+													<svelte:component
+														this={getTypeIcon(result.type)}
+														size={14}
+														class="text-gray-400"
+													/>
 													<h3 class="font-medium text-white">{result.title}</h3>
 												</div>
 												<p class="mt-1 text-sm text-gray-400">{result.description}</p>
@@ -273,34 +341,42 @@
 								<p class="text-gray-400">No results found for "{searchQuery}"</p>
 							</div>
 						{:else}
-							<div class="px-6 py-4">
+							<div class="relative px-6 py-4">
 								<p class="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
 									Quick Access
 								</p>
+
+								<!-- Animated Background for Quick Access -->
+								{#if selectedElement && selectedIndex >= 0}
+									<div
+										class="pointer-events-none absolute rounded-lg bg-gradient-to-r from-gray-600/20 to-gray-700/30 transition-all duration-300 ease-out"
+										style="
+											top: {selectedElement.offsetTop - 16}px;
+											left: 12px;
+											width: {selectedElement.offsetWidth - 24}px;
+											height: {selectedElement.offsetHeight}px;
+										"
+									></div>
+								{/if}
+
 								{#each filteredResults as result, index}
 									<button
-										class="relative w-full rounded-md px-3 py-2 text-left transition-all duration-300 ease-out hover:bg-gray-700/40 focus:bg-gray-700/40 focus:outline-none {index ===
-										selectedIndex
-											? 'translate-x-1 transform shadow-lg'
-											: ''}"
+										class="relative w-full rounded-md px-4 py-3 text-left transition-all duration-200 ease-out hover:bg-transparent focus:bg-transparent focus:outline-none"
 										data-index={index}
 										on:click={() => navigateToResult(result)}
-										on:mouseenter={() => (selectedIndex = index)}
+										on:mouseenter={() => {
+											selectedIndex = index;
+											scrollToSelected();
+										}}
 									>
-										{#if index === selectedIndex}
-											<div
-												class="absolute inset-2 rounded-lg bg-gradient-to-r from-gray-600/20 to-gray-700/30 transition-all duration-300 ease-out"
-											></div>
-										{/if}
-										<div class="relative z-10 transition-all duration-300 ease-out">
+										<div class="relative z-10">
 											<div class="flex items-center justify-between">
 												<div class="flex items-center space-x-3">
-													<span
-														class="rounded-lg border px-2 py-1 text-xs font-medium tracking-wide uppercase"
-														style={getTypeColor(result.type)}
-													>
-														{result.type}
-													</span>
+													<svelte:component
+														this={getTypeIcon(result.type)}
+														size={12}
+														class="text-gray-400"
+													/>
 													<span class="text-sm text-white">{result.title}</span>
 												</div>
 												<ArrowRight size={14} class="text-gray-500" />
@@ -324,6 +400,10 @@
 									<kbd class="rounded border border-gray-600 px-1.5 py-0.5">↵</kbd>
 									<span>Select</span>
 								</span>
+								<span class="flex items-center space-x-1">
+									<kbd class="rounded border border-gray-600 px-1.5 py-0.5">⌘H</kbd>
+									<span>Home</span>
+								</span>
 							</div>
 							<span>⌘K to search</span>
 						</div>
@@ -339,13 +419,14 @@
 		content: '';
 		position: absolute;
 		bottom: -4px;
-		left: 0;
+		left: 50%;
 		width: 0;
 		height: 2px;
 		background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
 		transition: all 0.3s ease-out;
 		border-radius: 1px;
 		box-shadow: 0 0 8px rgba(96, 165, 250, 0);
+		transform: translateX(-50%);
 	}
 
 	.nav-link:hover::after {

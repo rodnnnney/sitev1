@@ -115,7 +115,8 @@
 		</div>
 	</div>
 {:else}
-	<div transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 15 }}>
+	<div transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 15 }}
+	class="lg:mb-18">
 		<Header />
 	</div>
 	<div
@@ -200,14 +201,6 @@
 					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Contact Me</h3>
 
 					<div class="space-y-2 sm:space-y-3">
-						<!-- Email -->
-						<div
-							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
-						>
-							<i class="fas fa-envelope text-gray-400"></i>
-							<span class="text-xs text-gray-300 sm:text-sm">rodneyshenn[at]gmail[dot]com</span>
-						</div>
-
 						<!-- Twitter/X -->
 						<a
 							href="https://x.com/992rodney"
@@ -295,55 +288,60 @@
 
 				<div
 					class="relative min-h-128"
-					transition:fly={{ y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 9 }}
+					transition:fly={{
+						y: 30,
+						duration: 800,
+						delay: BASE_DELAY + DELAY_INCREMENT * 9
+					}}
 				>
-					<img
-						src="/apples.webp"
-						alt="apple images"
-						class="absolute top-2 right-2 z-10 h-8 w-8 sm:h-10 sm:w-10"
-					/>
-
-					{#each images as image, i}
-						{#if i === currentImageIndex}
-							<img
-								src={image.src}
-								alt={image.alt}
-								class="absolute h-full w-full rounded-lg object-cover"
-								transition:fade={{ duration: 500 }}
-							/>
+					{#each projects as project, i}
+						{#if i === currentProjectIndex}
+							<a href={project.link} target="_blank" class="transition-opacity hover:opacity-95">
+								<img
+									src={project.src}
+									alt={project.name}
+									class="absolute inset-0 h-full w-full rounded-lg object-cover"
+									transition:fade={{ duration: 750 }}
+								/>
+							</a>
 						{/if}
 					{/each}
 
-					<!-- Navigation buttons for images -->
+					<!-- Navigation buttons for projects -->
 					<button
 						class="absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
-						on:click={prevImage}
-						aria-label="Previous image"
+						on:click={prevProject}
+						aria-label="Previous project"
 					>
 						<i class="fas fa-chevron-left text-sm"></i>
 					</button>
 					<button
 						class="absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
-						on:click={nextImage}
-						aria-label="Next image"
+						on:click={nextProject}
+						aria-label="Next project"
 					>
 						<i class="fas fa-chevron-right text-sm"></i>
 					</button>
 
+					<!-- Progress Indicator -->
 					<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 space-x-2">
-						{#each images as _, i}
+						{#each projects as _, i}
 							<div
-								class="h-1 w-8 rounded-full transition-colors duration-300 {i === currentImageIndex
+								class="h-1 w-8 rounded-full transition-colors duration-300 {i ===
+								currentProjectIndex
 									? 'bg-white'
 									: 'bg-white/50'}"
 							></div>
 						{/each}
 					</div>
 
-					<div class="absolute top-2 left-2 flex justify-center space-x-2">
-						{#each images as image, i}
-							{#if i === currentImageIndex}
-								<div class="text-bold text-xs text-white">{image.description}</div>
+					<div class="absolute top-0 left-0 flex justify-center space-x-2 p-2 sm:p-4">
+						{#each projects as project, i}
+							{#if i === currentProjectIndex}
+								<div class="flex flex-col">
+									<div class="text-sm font-bold text-black sm:text-lg">{project.name}</div>
+									<div class="text-xs text-black sm:text-sm">{project.description}</div>
+								</div>
 							{/if}
 						{/each}
 					</div>
@@ -413,54 +411,53 @@
 						delay: BASE_DELAY + DELAY_INCREMENT * 7
 					}}
 				>
-					{#each projects as project, i}
-						{#if i === currentProjectIndex}
-							<a href={project.link} target="_blank" class="transition-opacity hover:opacity-95">
-								<img
-									src={project.src}
-									alt={project.name}
-									class="absolute inset-0 h-full w-full rounded-lg object-cover"
-									transition:fade={{ duration: 750 }}
-								/>
-							</a>
+					<img
+						src="/apples.webp"
+						alt="apple images"
+						class="absolute top-2 right-2 z-10 h-8 w-8 sm:h-10 sm:w-10"
+					/>
+
+					{#each images as image, i}
+						{#if i === currentImageIndex}
+							<img
+								src={image.src}
+								alt={image.alt}
+								class="absolute h-full w-full rounded-lg object-cover"
+								transition:fade={{ duration: 500 }}
+							/>
 						{/if}
 					{/each}
 
-					<!-- Navigation buttons for projects -->
+					<!-- Navigation buttons for images -->
 					<button
 						class="absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
-						on:click={prevProject}
-						aria-label="Previous project"
+						on:click={prevImage}
+						aria-label="Previous image"
 					>
 						<i class="fas fa-chevron-left text-sm"></i>
 					</button>
 					<button
 						class="absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
-						on:click={nextProject}
-						aria-label="Next project"
+						on:click={nextImage}
+						aria-label="Next image"
 					>
 						<i class="fas fa-chevron-right text-sm"></i>
 					</button>
 
-					<!-- Progress Indicator -->
 					<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 space-x-2">
-						{#each projects as _, i}
+						{#each images as _, i}
 							<div
-								class="h-1 w-8 rounded-full transition-colors duration-300 {i ===
-								currentProjectIndex
+								class="h-1 w-8 rounded-full transition-colors duration-300 {i === currentImageIndex
 									? 'bg-white'
 									: 'bg-white/50'}"
 							></div>
 						{/each}
 					</div>
 
-					<div class="absolute top-0 left-0 flex justify-center space-x-2 p-2 sm:p-4">
-						{#each projects as project, i}
-							{#if i === currentProjectIndex}
-								<div class="flex flex-col">
-									<div class="text-sm font-bold text-black sm:text-lg">{project.name}</div>
-									<div class="text-xs text-black sm:text-sm">{project.description}</div>
-								</div>
+					<div class="absolute top-2 left-2 flex justify-center space-x-2">
+						{#each images as image, i}
+							{#if i === currentImageIndex}
+								<div class="text-bold text-xs text-white">{image.description}</div>
 							{/if}
 						{/each}
 					</div>
