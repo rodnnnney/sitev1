@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
+	import { images, projects, experiences, blogs, rodneys, bangers } from '$lib/utils/consts';
 	import { Github, Twitter } from 'lucide-svelte';
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
@@ -111,7 +111,7 @@
 {#if isLoading}
 	<div class="loading-screen" transition:fade={{ duration: 1000 }}>
 		<div class="ascii-art">
-			<pre class="rodney">{rodney}</pre>
+			<pre class="rodney">{rodneys}</pre>
 		</div>
 	</div>
 {:else}
