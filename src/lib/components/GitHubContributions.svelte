@@ -63,7 +63,7 @@
 				/>
 			</div>
 			<p class="mt-2 text-xs text-gray-400">
-				Live sync with GitHub • Updated daily • <span class="commit-highlight">{totalCommits+1}</span> <em>commits last year</em>
+				Syncs daily • <span class="commit-highlight">{totalCommits+1}</span> <em>commits last year</em>
 			</p>
 		</div>
 	{/if}
