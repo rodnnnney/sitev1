@@ -68,7 +68,7 @@ export const experiences = [
     link: "https://textql.com/",
     company: "TextQL",
     period: "Incoming - Fall 2025 // NYC, NY", 
-    description: "Enterprise data science agents",
+    description: "Enterprise grade data science agents",
     logo: "/comp/tql.jpg"
   },
     {

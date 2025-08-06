@@ -3,12 +3,26 @@
 	import { onMount } from 'svelte';
 	import { images, projects, experiences, blogs, rodney, shen, bangers } from '$lib/utils/consts';
 	import { Github, Twitter } from 'lucide-svelte';
-	
+	import Header from '$lib/components/header.svelte';
+	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
+
 	let currentImageIndex = 0;
 	let interval: number;
 	let currentProjectIndex = 0;
 	let interval1: number;
 	let isLoading = true;
+
+	// Job title rotation
+	const jobTitles = [
+		'intern of Technical Staff',
+		'intern of Recruiting Staff',
+		'intern of Growth Staff',
+		'intern of Waste Disposal Staff',
+		'intern of Acting Staff',
+		'intern of Design Staff'
+	];
+	let currentJobTitleIndex = 0;
+	let jobTitleInterval: number;
 
 	// Animation timing constants
 	const BASE_DELAY = 1000;
@@ -63,9 +77,14 @@
 			currentProjectIndex = (currentProjectIndex + 1) % projects.length;
 		}, 10000);
 
+		jobTitleInterval = setInterval(() => {
+			currentJobTitleIndex = (currentJobTitleIndex + 1) % jobTitles.length;
+		}, 2500);
+
 		return () => {
 			clearInterval(interval);
 			clearInterval(interval1);
+			clearInterval(jobTitleInterval);
 		};
 	});
 </script>
@@ -96,99 +115,147 @@
 		</div>
 	</div>
 {:else}
+	<div transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 15 }}>
+		<Header />
+	</div>
 	<div
-		class="bg-f1eee9 flex min-h-screen items-center justify-center p-8 text-white"
+		class="bg-f1eee9 flex min-h-screen w-full p-2 text-white sm:p-3 lg:h-screen lg:overflow-hidden lg:p-4"
 		transition:fade={{ duration: 800 }}
 	>
 		<div
-			class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 md:grid-cols-3"
-			transition:fly={{ y: -50, duration: 1200, delay: 800 }}
+			class="mx-auto grid h-full w-full max-w-7xl grid-cols-1 items-center gap-2 sm:gap-3 lg:grid-cols-3 lg:gap-4"
+			transition:fly={{ y: -30, duration: 1000, delay: 600 }}
 		>
 			<!-- Left Column -->
-			<div class="mt-24 space-y-6" transition:fly={{ x: -100, y: -50, duration: 1200, delay: BASE_DELAY }}>
+			<div
+				class="flex h-full flex-col space-y-2 pt-6 sm:space-y-2"
+				transition:fly={{ x: -50, y: -20, duration: 1000, delay: BASE_DELAY }}
+			>
 				<!-- Profile Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
-					transition:fly={{ x: -100, y: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 3 }}
+					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					transition:fly={{
+						x: -30,
+						y: -30,
+						duration: 800,
+						delay: BASE_DELAY + DELAY_INCREMENT * 3
+					}}
 				>
 					<div class="flex items-center">
 						<div class="flex w-full flex-row justify-between">
-							<div class="font-mono text-xl font-bold">Rodney Shen</div>
-
-							<div class="flex gap-4">
-								<a href="https://github.com/rodnnnney" target="_blank">
-									<Github size={24} color="white" />
-								</a>
-								<a href="https://x.com/992rodney" target="_blank">
-									<Twitter size={24} color="white" />
-								</a>
-							</div>
+							<div class="font-mono text-sm font-bold sm:text-base">Education</div>
 						</div>
 					</div>
-					<div class="mt-4 flex flex-row items-start">
+					<div class="mt-2 flex flex-row items-start sm:mt-3">
 						<img
 							src="/logo.jpg"
 							alt="Carleton"
-							class="mt-2 mr-2 h-10 w-10 rounded-full object-cover"
+							class="mt-1 mr-2 h-6 w-6 rounded-full object-cover sm:h-8 sm:w-8"
 						/>
 						<div class="flex flex-col">
-							<p class="font-semibold">Computer Science @ Carleton University</p>
+							<p class="text-xs font-semibold sm:text-sm">Computer Science @ Carleton University</p>
 							<div class="mt-1 mb-1 w-full border-b border-gray-300"></div>
-							<p class="text-left text-xs text-black text-gray-500">
-								🤏 close to dropping out (sorry mom!)
+							<p class="text-left text-xs text-gray-500">
+								🤏 close to dropping out - Exp Grad 2027
 							</p>
 						</div>
 					</div>
 				</div>
 
-				<!-- HAND -->
-				<div class="bg-neutral" transition:fly={{ x: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}>
-					<div class="w-full object-cover">
-						<img src="/hand.png" alt="" class="h-full w-full rounded-lg object-cover" />
-					</div>
-				</div>
-				<!-- About Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
-					transition:fly={{ x: -100, y: 100, duration: 1000, delay: BASE_DELAY }}
+					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY }}
 				>
-					<h3 class="mb-4 font-mono text-xl font-bold">About Me</h3>
+					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">About Me</h3>
 
 					<div class="flex-row-2 flex">
-						<p class="text-left text-sm text-gray-300">
+						<p class="text-left text-xs text-gray-300 sm:text-sm">
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of technical staff where I will be building data science agents.
+							In the fall, I'll be joining <a href="https://textql.com/">TextQL</a> as an intern of
+							technical staff where I will be building data science agents.
 							<br /><br />
-							At Carleton, I founded <a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We grew
-							it from 0-200 club members in ~1 semester hosting 6 unforgettable events. I also racked up ~1k in parking tickets.
+							At Carleton, I founded
+							<a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We
+							grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events. I also
+							racked up ~1k in parking tickets.
 						</p>
+					</div>
+				</div>
+
+				<!-- GitHub Contributions Card -->
+				<div
+					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+				>
+					<GitHubContributions />
+				</div>
+
+				<!-- Contact Me Card -->
+				<div
+					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}
+				>
+					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Contact Me</h3>
+
+					<div class="space-y-2 sm:space-y-3">
+						<!-- Email -->
+						<div
+							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
+						>
+							<i class="fas fa-envelope text-gray-400"></i>
+							<span class="text-xs text-gray-300 sm:text-sm">rodneyshenn[at]gmail[dot]com</span>
+						</div>
+
+						<!-- Twitter/X -->
+						<a
+							href="https://x.com/992rodney"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
+						>
+							<i class="fab fa-twitter text-gray-400"></i>
+							<span class="text-xs text-gray-300 sm:text-sm">992rodney</span>
+						</a>
+
+						<!-- GitHub -->
+						<a
+							href="https://github.com/rodnnnney"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
+						>
+							<i class="fab fa-github text-gray-400"></i>
+							<span class="text-xs text-gray-300 sm:text-sm">rodnnnney</span>
+						</a>
 					</div>
 				</div>
 			</div>
 
 			<!-- Middle Column -->
-			<div class="space-y-6" transition:fly={{ y: -100, duration: 1200, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}>
+			<div
+				class="flex h-full flex-col space-y-2 sm:space-y-2"
+				transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+			>
 				<!-- Blogs Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-sm relative"
-					transition:fly={{ y: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
+					class="relative rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					transition:fly={{ y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
 					<div class="flex flex-row justify-between">
-						<h3 class="mb-4 font-mono text-xl font-bold">Blogs</h3>
-						<a href="/blogs" class="text-sm text-white absolute top-4 mt-4 right-4 z-30 bg-gradient-to-r from-neutral-800 to-gray-800 rounded-md px-3 border border-gray-500 rainbow-border">View All</a>
+						<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Blogs</h3>
 					</div>
-					
-					<div class="space-y-4">
+
+					<div class="space-y-2 sm:space-y-3">
 						{#each blogs as blog}
 							<a href="/blogs/{blog.link}" class="block">
 								<div
-									class="border-b border-neutral-700 pb-4 transition-colors hover:bg-neutral-700"
+									class="border-b border-neutral-700 pb-2 transition-colors hover:bg-neutral-700 sm:pb-3"
 								>
-									<h4 class="text-md font-semibold">{blog.title}</h4>
-									<p class="text-sm text-sm text-gray-400">{blog.date}</p>
-									<p class="mt-2 text-sm text-gray-300">{blog.excerpt}</p>
+									<h4 class="text-xs font-semibold sm:text-sm">{blog.title}</h4>
+									<p class="text-xs text-gray-400">{blog.date}</p>
+									<p class="mt-1 text-xs text-gray-300">{blog.excerpt}</p>
 								</div>
 							</a>
 						{/each}
@@ -197,13 +264,13 @@
 
 				<!-- Song Marquee -->
 				<div
-					class="overflow-hidden rounded-lg bg-neutral-800 p-2 shadow-sm"
-					transition:fly={{ y: 100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 8 }}
+					class="overflow-hidden rounded-lg bg-neutral-800 p-1 shadow-sm"
+					transition:fly={{ y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 8 }}
 				>
-					<div class="animate-marquee flex flex-row gap-2 whitespace-nowrap">
+					<div class="animate-marquee flex flex-row gap-1 whitespace-nowrap">
 						{#each bangers as banger}
 							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
-								<div class="relative h-18 w-18">
+								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
 									<img
 										src={banger.cover_img}
 										alt={banger.title || 'Album cover'}
@@ -214,7 +281,7 @@
 						{/each}
 						{#each bangers as banger}
 							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
-								<div class="relative h-18 w-18">
+								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
 									<img
 										src={banger.cover_img}
 										alt={banger.title || 'Album cover'}
@@ -226,11 +293,14 @@
 					</div>
 				</div>
 
-				<div class="relative h-128" transition:fly={{ y: 100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 9 }}>
+				<div
+					class="relative min-h-128"
+					transition:fly={{ y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 9 }}
+				>
 					<img
 						src="/apples.webp"
 						alt="apple images"
-						class="absolute top-4 right-4 z-1000 h-12 w-12"
+						class="absolute top-2 right-2 z-10 h-8 w-8 sm:h-10 sm:w-10"
 					/>
 
 					{#each images as image, i}
@@ -246,34 +316,34 @@
 
 					<!-- Navigation buttons for images -->
 					<button
-						class="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						class="absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
 						on:click={prevImage}
 						aria-label="Previous image"
 					>
-						<i class="fas fa-chevron-left"></i>
+						<i class="fas fa-chevron-left text-sm"></i>
 					</button>
 					<button
-						class="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						class="absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
 						on:click={nextImage}
 						aria-label="Next image"
 					>
-						<i class="fas fa-chevron-right"></i>
+						<i class="fas fa-chevron-right text-sm"></i>
 					</button>
 
-					<div class="absolute right-0 bottom-4 left-0 flex justify-center space-x-2">
+					<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 space-x-2">
 						{#each images as _, i}
 							<div
-								class="h-1 w-10 rounded-full transition-colors duration-300"
-								class:bg-white={i === currentImageIndex}
-								class:bg-gray-500={i !== currentImageIndex}
+								class="h-1 w-8 rounded-full transition-colors duration-300 {i === currentImageIndex
+									? 'bg-white'
+									: 'bg-white/50'}"
 							></div>
 						{/each}
 					</div>
 
-					<div class="absolute top-5 left-5 flex justify-center space-x-2">
+					<div class="absolute top-2 left-2 flex justify-center space-x-2">
 						{#each images as image, i}
 							{#if i === currentImageIndex}
-								<div class="text-bold text-sm text-white">{image.description}</div>
+								<div class="text-bold text-xs text-white">{image.description}</div>
 							{/if}
 						{/each}
 					</div>
@@ -281,40 +351,75 @@
 			</div>
 
 			<!-- Right Column -->
-			<div class="space-y-6" transition:fly={{ x: 100, y: -50, duration: 1200, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}>
+			<div
+				class="relative flex h-full flex-col space-y-2 pt-4 sm:space-y-2"
+				transition:fly={{ x: 50, y: -20, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+			>
 				<!-- Experience Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-6 shadow-sm"
-					transition:fly={{ x: 100, y: -100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
+					class="flex-shrink-0 rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					transition:fly={{ x: 30, y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
-					<h3 class="mb-4 font-mono text-xl font-bold">Experience</h3>
-					<div class="custom-scrollbar max-h-[300px] space-y-4 overflow-y-auto">
+					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Experience</h3>
+					<div
+						class="custom-scrollbar max-h-[180px] space-y-2 overflow-y-auto sm:max-h-[140px] sm:space-y-3"
+					>
 						{#each experiences as exp}
 							<a class="flex flex-col" href={exp.link} rel="noopener noreferrer">
 								<div class="flex flex-row items-center">
-									<img src={exp.logo} alt="" class="mt-2 mr-2 h-10 w-10 object-cover rounded-md" />
+									<img
+										src={exp.logo}
+										alt=""
+										class="mt-1 mr-2 h-6 w-6 rounded-md object-cover sm:h-8 sm:w-8"
+									/>
 									<div>
-										<h4 class="font-semibold">{exp.title}</h4>
-										<p class="text-sm text-gray-400">{exp.company} • {exp.period}</p>
+										{#if exp.company === 'TextQL'}
+											<h4 class="relative overflow-hidden text-xs font-semibold sm:text-sm">
+												{#key currentJobTitleIndex}
+													<span
+														class="absolute inset-0 flex items-center"
+														in:fade={{ duration: 300, delay: 150 }}
+														out:fade={{ duration: 300 }}
+													>
+														{jobTitles[currentJobTitleIndex].charAt(0).toUpperCase() +
+															jobTitles[currentJobTitleIndex].slice(1)}
+													</span>
+												{/key}
+												<!-- Invisible placeholder to maintain layout -->
+												<span class="invisible">
+													{jobTitles[0].charAt(0).toUpperCase() + jobTitles[0].slice(1)}
+												</span>
+											</h4>
+										{:else}
+											<h4 class="text-xs font-semibold sm:text-sm">{exp.title}</h4>
+										{/if}
+										<p class="text-xs text-gray-400">{exp.company} • {exp.period}</p>
 									</div>
 								</div>
-								<div class="mt-2 border-b border-neutral-700 pb-4">
-									<p class="text-gray-300">{exp.description}</p>
+								<div class="mt-1 border-b border-neutral-700 pb-2">
+									<p class="text-xs text-gray-300 sm:text-sm">{exp.description}</p>
 								</div>
 							</a>
 						{/each}
 					</div>
 				</div>
 
-				<div class="relative h-112" transition:fly={{ x: 100, y: 100, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 7 }}>
-					<a href="/projects" class="text-sm text-black absolute top-4 right-4 z-30 bg-gradient-to-r from-neutral-400 to-gray-200 rounded-md px-3 border border-gray-400 rainbow-border">View All</a>
+				<div
+					class="relative min-h-128"
+					transition:fly={{
+						x: 30,
+						y: 30,
+						duration: 800,
+						delay: BASE_DELAY + DELAY_INCREMENT * 7
+					}}
+				>
 					{#each projects as project, i}
 						{#if i === currentProjectIndex}
 							<a href={project.link} target="_blank" class="transition-opacity hover:opacity-95">
 								<img
 									src={project.src}
 									alt={project.name}
-									class="absolute rounded-lg object-cover"
+									class="absolute inset-0 h-full w-full rounded-lg object-cover"
 									transition:fade={{ duration: 750 }}
 								/>
 							</a>
@@ -323,76 +428,83 @@
 
 					<!-- Navigation buttons for projects -->
 					<button
-						class="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						class="absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
 						on:click={prevProject}
 						aria-label="Previous project"
 					>
-						<i class="fas fa-chevron-left"></i>
+						<i class="fas fa-chevron-left text-sm"></i>
 					</button>
 					<button
-						class="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full p-2 text-white transition-all hover:scale-105"
+						class="absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition-all hover:scale-105 hover:bg-black/40"
 						on:click={nextProject}
 						aria-label="Next project"
 					>
-						<i class="fas fa-chevron-right"></i>
+						<i class="fas fa-chevron-right text-sm"></i>
 					</button>
 
 					<!-- Progress Indicator -->
-					<div class="absolute right-0 bottom-4 left-0 flex justify-center space-x-2">
+					<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 space-x-2">
 						{#each projects as _, i}
 							<div
-								class="h-1 w-10 rounded-full transition-colors duration-300"
-								class:bg-white={i === currentProjectIndex}
-								class:bg-gray-500={i !== currentProjectIndex}
+								class="h-1 w-8 rounded-full transition-colors duration-300 {i ===
+								currentProjectIndex
+									? 'bg-white'
+									: 'bg-white/50'}"
 							></div>
 						{/each}
 					</div>
 
-					<div class="absolute top-0 left-0 flex justify-center space-x-2 p-4">
+					<div class="absolute top-0 left-0 flex justify-center space-x-2 p-2 sm:p-4">
 						{#each projects as project, i}
 							{#if i === currentProjectIndex}
 								<div class="flex flex-col">
-									<div class="text-lg font-bold text-black">{project.name}</div>
-									<div class="text-sm text-black">{project.description}</div>
+									<div class="text-sm font-bold text-black sm:text-lg">{project.name}</div>
+									<div class="text-xs text-black sm:text-sm">{project.description}</div>
 								</div>
 							{/if}
 						{/each}
 					</div>
 				</div>
 
-				<div class="text-center text-white text-lg text-xs font-mono mt-12 md:hidden">
-					Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline">cracked friends</a> 
+				<div
+					class="absolute right-0 bottom-2 left-0 text-center font-mono text-xs text-white sm:bottom-4 lg:hidden"
+				>
+					Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline"
+						>cracked friends</a
+					>
 				</div>
-			
 			</div>
 		</div>
 	</div>
-	
-	<!-- Hi text after all content -->
-	
-<!-- Hi text positioned absolutely for desktop -->
-<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-xs text-grey-400 font-mono z-50 hidden md:block" transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 12 }}>
-	Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline italic">cracked friends</a> 
-</div>
+
+	<div
+		class="text-grey-400 absolute bottom-2 left-1/2 z-50 hidden -translate-x-1/2 transform font-mono text-xs text-white sm:bottom-4 lg:block"
+		transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 12 }}
+	>
+		Check out my other <a href="https://cu-webring.org/" target="_blank" class="italic underline"
+			>cracked friends</a
+		>
+	</div>
 {/if}
 
 <style>
 	:global(body) {
-		margin: 0;
-		padding: 0;
-		font-family:
-			system-ui,
-			-apple-system,
-			BlinkMacSystemFont, 
-			'Segoe UI',
-			Roboto,
-			sans-serif;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 100vh;
-		background: #1a1a1a url('/cooooool.jpeg') no-repeat center center fixed;
+		background: #1a1a1a url('/wave_gradient.png') no-repeat center center fixed;
 		background-size: cover;
+		background-image:
+			url('/wave_gradient.png'),
+			radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
+			radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+		background-size:
+			cover,
+			10px 10px,
+			20px 20px;
+		background-position:
+			center center,
+			0 0,
+			5px 5px;
+		background-repeat: no-repeat, repeat, repeat;
+		background-attachment: fixed;
 	}
 
 	.custom-scrollbar::-webkit-scrollbar {
@@ -468,62 +580,5 @@
 
 	.animate-marquee {
 		animation: marquee 20s linear infinite;
-	}
-
-
-	.rainbow-border {
-		transition: all 0.3s ease;
-	}
-
-	.rainbow-border:hover {
-		transform: scale(1.02);
-	}
-
-	.svg-draw-bg {
-		position: fixed;
-		inset: 0;
-		width: 100vw;
-		height: 100vh;
-		pointer-events: none;
-		z-index: 1;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		opacity: 0.25;
-	}
-	.svg-bg-img {
-		width: 80vw;
-		height: auto;
-		max-width: 830px;
-		max-height: 587px;
-		display: block;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		pointer-events: none;
-		user-select: none;
-	}
-	.svg-draw-overlay {
-		width: 80vw;
-		height: auto;
-		max-width: 830px;
-		max-height: 587px;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		pointer-events: none;
-		user-select: none;
-	}
-	.svg-draw-rect {
-		stroke-dasharray: 2834;
-		stroke-dashoffset: 2834;
-		animation: draw-rect 2.5s cubic-bezier(0.77,0,0.175,1) 0.5s forwards;
-	}
-	@keyframes draw-rect {
-		to {
-			stroke-dashoffset: 0;
-		}
 	}
 </style>
