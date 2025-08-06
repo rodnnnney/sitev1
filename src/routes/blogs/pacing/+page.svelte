@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fade, fly } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
 	import Header from '$lib/components/header.svelte';
 
 	let formulaElement: HTMLDivElement;
@@ -30,15 +29,7 @@
 
 <Header />
 
-<div
-	class="min-h-screen p-12 text-white"
-	in:fly={{
-		y: -30,
-		duration: 800,
-		delay: 100,
-		easing: quintOut
-	}}
->
+<div class="min-h-screen p-12 text-white" in:fade={{ duration: 600, delay: 100 }}>
 	<div class="mx-auto max-w-4xl px-8">
 		<!-- Simple breadcrumb navigation -->
 		<nav
@@ -54,11 +45,10 @@
 
 		<h1
 			class="mb-8 flex justify-start text-left text-3xl font-bold"
-			in:fly={{ y: -20, duration: 600, delay: 300, easing: quintOut }}
+			in:fade={{ duration: 600, delay: 300 }}
 		>
 			Pacing
 		</h1>
-
 		<div class="flex flex-col gap-4">
 			<!-- <div class="p-8 flex justify-center border-2 border-yellow-600 text-yellow-600 rounded-lg bg-gradient-to-tr from-yellow-100 to-yellow-200">
         This article is still under construction!👷🏗️
