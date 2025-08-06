@@ -1,8 +1,19 @@
-import { GITHUB_TOKEN } from '$env/static/private';
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
 export async function GET() {
 	try {
+		const GITHUB_TOKEN = env.GITHUB_TOKEN;
+
+		// If no token, return fallback immediately
+		if (!GITHUB_TOKEN) {
+			return json({
+				totalContributions: 965,
+				year: 'last year',
+				weeks: []
+			});
+		}
+
 		// Get last 365 days instead of current calendar year
 		const today = new Date();
 		const oneYearAgo = new Date();
