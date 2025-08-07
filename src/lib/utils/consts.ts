@@ -76,7 +76,7 @@ export const experiences = [
       link: "https://paytrie.com/",
       company: "Paytrie",
       period: "May 2025 - Present // Toronto, ON",
-      description: "Mobile app team",
+      description: "Mobile app team - Stablecoins",
       logo: "/comp/paytrie.png"
     },
     {
