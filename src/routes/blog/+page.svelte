@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { blogs } from '$lib/utils/consts';
+	import { blog } from '$lib/utils/consts';
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
@@ -19,17 +19,17 @@
 		<nav class="mb-8 flex items-center space-x-2 text-sm text-white">
 			<a href="/">Home</a>
 			<span>/</span>
-			<a href="/blogs" class="text-white transition-colors">Blogs</a>
+			<a href="/blog" class="text-white transition-colors">Blog</a>
 		</nav>
 
-		<h1 class="mb-8 flex justify-start text-left text-3xl font-bold">Blogs</h1>
+		<h1 class="mb-8 flex justify-start text-left text-3xl font-bold">Blog</h1>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-			{#each blogs as blog, i}
+			{#each blog as blog, i}
 				<div class="block">
 					{#if visible}
 						<a
-							href="/blogs/{blog.link}"
+							href="/blog/{blog.link}"
 							class="block"
 							in:fly={{
 								y: 50,

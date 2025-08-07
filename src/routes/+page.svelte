@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import { images, projects, experiences, blogs, rodney, bangers } from '$lib/utils/consts';
+	import { images, projects, experiences, blog, rodney, bangers } from '$lib/utils/consts';
 	import { Github, Twitter } from 'lucide-svelte';
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
@@ -231,18 +231,18 @@
 				class="flex h-full flex-col space-y-2 sm:space-y-2"
 				transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
 			>
-				<!-- Blogs Card -->
+				<!-- blog Card -->
 				<div
 					class="relative rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
 					transition:fly={{ y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
 					<div class="flex flex-row justify-between">
-						<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Blogs</h3>
+						<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">blog</h3>
 					</div>
 
 					<div class="space-y-2 sm:space-y-3">
-						{#each blogs as blog}
-							<a href="/blogs/{blog.link}" class="block">
+						{#each blog as blog}
+							<a href="/blog/{blog.link}" class="block">
 								<div
 									class="border-b border-neutral-700 pb-2 transition-colors hover:bg-neutral-700 sm:pb-3"
 								>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Search, ArrowRight, FileText, Code, Briefcase, Home } from 'lucide-svelte';
-	import { blogs, projects, experiences } from '$lib/utils/consts';
+	import { blog, projects, experiences } from '$lib/utils/consts';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
@@ -14,12 +14,12 @@
 
 	// Create search index
 	const searchItems = [
-		// Blogs
-		...blogs.map((blog) => ({
+		// blog
+		...blog.map((blog) => ({
 			type: 'blog',
 			title: blog.title,
 			description: blog.excerpt,
-			url: `/blogs/${blog.link}`,
+			url: `/blog/${blog.link}`,
 			date: blog.date
 		})),
 		// Projects
@@ -40,19 +40,19 @@
 		})),
 		// Static pages
 		{ type: 'page', title: 'Home', description: 'Main landing page', url: '/', date: null },
-		{ type: 'page', title: 'Blogs', description: 'All blog posts', url: '/blogs', date: null },
+		{ type: 'page', title: 'blog', description: 'All blog posts', url: '/blog', date: null },
 		{ type: 'page', title: 'Projects', description: 'All projects', url: '/projects', date: null }
 	];
 
 	// Preview items - only show these 3 when no search query
 	const previewItems = [
 		// Blog
-		...blogs
+		...blog
 			.map((blog) => ({
 				type: 'blog',
 				title: blog.title,
 				description: blog.excerpt,
-				url: `/blogs/${blog.link}`,
+				url: `/blog/${blog.link}`,
 				date: blog.date
 			}))
 			.slice(0, 1), // Take first blog
@@ -220,10 +220,10 @@
 			<div class="flex items-center space-x-6">
 				<div class="hidden items-center space-x-6 sm:flex">
 					<a
-						href="/blogs"
+						href="/blog"
 						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
 					>
-						Blogs
+						Blog
 					</a>
 					<a
 						href="/projects"
@@ -281,7 +281,7 @@
 							bind:value={searchQuery}
 							on:keydown={handleSearchKeydown}
 							type="text"
-							placeholder="Search blogs, projects, experiences..."
+							placeholder="Search blog, projects, experiences..."
 							class="w-full bg-transparent text-lg text-white placeholder-gray-500 outline-none"
 						/>
 						<div class="ml-3 rounded border border-gray-600 px-2 py-1 text-xs text-gray-500">

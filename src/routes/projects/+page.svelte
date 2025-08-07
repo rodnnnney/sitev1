@@ -7,8 +7,10 @@
 
 	let currentImageIndex = 0;
 	let interval: number;
+	let visible = false;
 
 	onMount(() => {
+		visible = true;
 		interval = setInterval(() => {
 			currentImageIndex = (currentImageIndex + 1) % images.length;
 		}, 5000);
@@ -36,29 +38,35 @@
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
 			{#each projects as project, i}
 				<div class="block">
-					<a
-						href={project.link}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="block"
-						in:fly={{
-							y: 50,
-							duration: 800,
-							delay: i * 100,
-							easing: quintOut
-						}}
-					>
-						<div
-							class="group relative overflow-hidden rounded-lg bg-neutral-800 shadow-lg transition-colors hover:bg-neutral-700"
+					{#if visible}
+						<a
+							href={project.link}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="block"
+							in:fly={{
+								y: 50,
+								duration: 800,
+								delay: i * 100,
+								easing: quintOut
+							}}
 						>
-							<img src={project.src} alt={project.name} class="h-64 w-full object-cover" />
 							<div
-								class="absolute inset-0 flex items-center justify-center bg-white/20 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100"
+								class="group relative overflow-hidden rounded-lg bg-neutral-800 shadow-lg transition-colors hover:bg-neutral-700"
 							>
-								<p class="px-4 text-center text-left text-black">{project.description}</p>
+								<img src={project.src} alt={project.name} class="h-64 w-full object-cover" />
+								<div
+									class="absolute inset-0 flex items-center justify-center bg-white/20 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100"
+								>
+									<p class="px-4 text-center text-left text-black">{project.description}</p>
+								</div>
 							</div>
+						</a>
+					{:else}
+						<div class="overflow-hidden rounded-lg bg-neutral-800/50 shadow-lg">
+							<div class="h-64 w-full bg-neutral-700/50"></div>
 						</div>
-					</a>
+					{/if}
 				</div>
 			{/each}
 		</div>

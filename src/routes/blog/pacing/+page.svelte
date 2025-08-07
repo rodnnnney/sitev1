@@ -38,7 +38,7 @@
 		>
 			<a href="/" class="hover:text-gray-300">Home</a>
 			<span>/</span>
-			<a href="/blogs" class="hover:text-gray-300">Blogs</a>
+			<a href="/blog" class="hover:text-gray-300">Blog</a>
 			<span>/</span>
 			<span class="text-white">Pacing</span>
 		</nav>

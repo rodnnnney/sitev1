@@ -1,7 +1,12 @@
 <script lang="ts">
 	import '../app.css';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit'
 
 	let { children } = $props();
+
+	if (typeof window !== 'undefined') {
+		injectAnalytics();
+	}
 </script>
 
 {@render children()}

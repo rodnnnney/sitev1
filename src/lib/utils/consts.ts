@@ -121,7 +121,7 @@ export const experiences = [
     }
 ];
 
-export const blogs = [
+export const blog = [
     {
       title: "Pace Factor",
       link: "pacing",
