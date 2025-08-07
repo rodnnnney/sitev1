@@ -11,6 +11,6 @@ body {
 		'Segoe UI',
 		Roboto,
 		sans-serif;
-	background: #1a1a1a url('/wave_gradient.png') no-repeat center center fixed;
+	background: #1a1a1a url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png') no-repeat center center fixed;
 	background-size: cover;
 }

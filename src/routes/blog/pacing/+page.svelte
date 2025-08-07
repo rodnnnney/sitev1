@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import Header from '$lib/components/header.svelte';
+	import { bucketURL } from '$lib/utils/consts';
 
 	let formulaElement: HTMLDivElement;
 
@@ -50,9 +51,6 @@
 			Pacing
 		</h1>
 		<div class="flex flex-col gap-4">
-			<!-- <div class="p-8 flex justify-center border-2 border-yellow-600 text-yellow-600 rounded-lg bg-gradient-to-tr from-yellow-100 to-yellow-200">
-        This article is still under construction!👷🏗️
-      </div> -->
 
 			<div in:fade={{ duration: 600, delay: 400 }}>
 				In the following article, I will attempt to draw similarities between my change in
@@ -62,7 +60,7 @@
 			</div>
 
 			<div class="m-8 flex justify-center" in:fade={{ duration: 600, delay: 500 }}>
-				<img src="/blog/aura.avif" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
+				<img src="{bucketURL}/blog/aura.avif" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
 			</div>
 
 			<div in:fade={{ duration: 600, delay: 600 }}>
@@ -119,7 +117,7 @@
 			<div></div>
 
 			<div class="m-8 flex justify-center">
-				<img src="/blog/stats.png" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
+				<img src="{bucketURL}/blog/stats.png" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
 			</div>
 
 			If you take the stats at face value, the correlation between pace and win percentage in the

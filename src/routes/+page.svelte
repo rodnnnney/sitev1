@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import { images, projects, experiences, blog, rodney, bangers } from '$lib/utils/consts';
+	import { images, projects, experiences, blog, rodney, bangers, bucketURL } from '$lib/utils/consts';
 	import { Github, Twitter } from 'lucide-svelte';
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
@@ -96,7 +96,7 @@
 	/>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<title>Rodney Shen</title>
-	<link rel="icon" href="/pfp12.png" type="image/x-icon" />
+	<link rel="icon" href="{bucketURL}/pfp12.png" type="image/x-icon" />
 	<meta name="description" content="Rodney Shen's personal website" />
 	<meta
 		name="keywords"
@@ -149,7 +149,7 @@
 					</div>
 					<div class="mt-2 flex flex-row items-start sm:mt-3">
 						<img
-							src="/logo.jpg"
+							src={`${bucketURL}/logo.jpg`}
 							alt="Carleton"
 							class="mt-1 mr-2 h-6 w-6 rounded-full object-cover sm:h-8 sm:w-8"
 						/>
@@ -237,7 +237,7 @@
 					transition:fly={{ y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
 					<div class="flex flex-row justify-between">
-						<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">blog</h3>
+						<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Blog</h3>
 					</div>
 
 					<div class="space-y-2 sm:space-y-3">
@@ -412,7 +412,7 @@
 					}}
 				>
 					<img
-						src="/apples.webp"
+						src={`${bucketURL}/apples.webp`}
 						alt="apple images"
 						class="absolute top-2 right-2 z-10 h-8 w-8 sm:h-10 sm:w-10"
 					/>
@@ -486,10 +486,10 @@
 
 <style>
 	:global(body) {
-		background: #1a1a1a url('/wave_gradient.png') no-repeat center center fixed;
+		background: #1a1a1a url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png') no-repeat center center fixed;
 		background-size: cover;
 		background-image:
-			url('/wave_gradient.png'),
+			url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png'),
 			radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
 			radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
 		background-size:
