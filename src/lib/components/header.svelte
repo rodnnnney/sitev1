@@ -221,13 +221,13 @@
 				<div class="hidden items-center space-x-6 sm:flex">
 					<a
 						href="/blogs"
-						class="nav-link relative text-lg text-white transition-all duration-300 hover:text-gray-300"
+						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
 					>
 						Blogs
 					</a>
 					<a
 						href="/projects"
-						class="nav-link relative text-lg text-white transition-all duration-300 hover:text-gray-300"
+						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
 					>
 						Projects
 					</a>
