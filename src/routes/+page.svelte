@@ -178,8 +178,8 @@
 							<br /><br />
 							At Carleton, I founded
 							<a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We
-							grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events. I also
-							racked up ~1k in parking tickets.
+							grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events. 
+							<!-- I also racked up ~1k in parking tickets. -->
 						</p>
 					</div>
 				</div>
