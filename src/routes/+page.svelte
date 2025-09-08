@@ -2,7 +2,6 @@
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { images, projects, experiences, blog, rodney, bangers, bucketURL } from '$lib/utils/consts';
-	import { Github, Twitter } from 'lucide-svelte';
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
 
@@ -14,12 +13,12 @@
 
 	// Job title rotation
 	const jobTitles = [
-		'intern of Technical Staff',
-		'intern of Recruiting Staff',
-		'intern of Growth Staff',
-		'intern of Waste Disposal Staff',
-		'intern of Acting Staff',
-		'intern of Design Staff'
+		'Member of Technical Staff',
+		'Member of Recruiting Staff',
+		'Member of Growth Staff',
+		'Member of Waste Disposal Staff',
+		'Member of Acting Staff',
+		'Member of Design Staff'
 	];
 	let currentJobTitleIndex = 0;
 	let jobTitleInterval: number;
@@ -155,10 +154,10 @@
 						/>
 						<div class="flex flex-col">
 							<p class="text-xs font-semibold sm:text-sm">Computer Science @ Carleton University</p>
-							<div class="mt-1 mb-1 w-full border-b border-gray-300"></div>
-							<p class="text-left text-xs text-gray-500">
+							<!-- <div class="mt-1 mb-1 w-full border-b border-gray-300"></div> -->
+							<!-- <p class="text-left text-xs text-gray-500">
 								🤏 close to dropping out - Exp Grad 2027
-							</p>
+							</p> -->
 						</div>
 					</div>
 				</div>
@@ -174,8 +173,8 @@
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							In the fall, I'll be moving to New York City and joining <a href="https://textql.com/">TextQL</a> as an intern of
-							technical staff where I will be building data science agents.
+							In the fall, I'll be moving to New York City and joining <a href="https://textql.com/">TextQL</a> as an Member of
+							technical staff working on the applied ai team.
 							<br /><br />
 							At Carleton, I founded
 							<a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We

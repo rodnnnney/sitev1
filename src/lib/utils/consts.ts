@@ -68,61 +68,61 @@ export const projects: Project[] = [
 
 export const experiences = [
   {
-    title: "Intern of Technical Staff",
+    title: "Member of Technical Staff",
     link: "https://textql.com/",
     company: "TextQL",
     period: "Incoming - Fall 2025 // Manhattan, NY", 
     description: "Enterprise data science agents",
     logo: bucketURL + "/comp/tql.jpg"
   },
-    {
-      title: "Software Engineer Intern",
-      link: "https://paytrie.com/",
-      company: "Paytrie",
-      period: "May 2025 - Present // Toronto, ON",
-      description: "Mobile app team - Stablecoins",
-      logo: bucketURL + "/comp/paytrie.png"
-    },
-    {
-      title: "Software Engineer Intern",
-      link: "https://www.jackalprotocol.com/",
-      company: "Jackal Labs",
-      period: "Jan 2025 - May 2025 // Remote",
-      description: "Decentralized cloud storage",
-      logo: bucketURL + "/comp/jackie.png"
-    },
-    {
-      title: "Founder",
-      company: "Carleton Blockchain",
-      link: "https://www.carletonblockchain.ca/",
-      period: "Nov 2024 - Present // Ottawa, ON",
-      description: "Grew from 0-200 members in ~1 semester, raised >$15,000, partnered with Coinbase",
-      logo: bucketURL + "/comp/cu.png"
-    },
-    {
-      title: "Scholar",
-      link: "https://www.cansbridgescholars.com/",
-      company: "Cansbridge",
-      period: "Oct 2024 - Present // Toronto, Vancouver, SF",
-      description: "Met the most ambitious, brave, and kind (abk) people.",
-      logo: bucketURL + "/comp/cs.png"
-    },
-    {
-      title: "VP of Mobile",
-      link:"https://uofthacks.com/",
-      company: "UofTHacks",
-      period: "May 2024 - Present // Toronto, ON",
-      description: "Mobile app team, internal + external tooling",
-      logo: bucketURL + "/comp/thacks.png"
-    },
-    {
-      title: "Software Engineer Intern",
-      link: "https://www.itmz.app/",
-      company: "ITMZ",
-      period: "May 2024 - Dec 2024 // Ottawa, ON",
-      description: "Consumer mobile app",
-      logo: bucketURL + "/comp/itmz.png"
-    }
+    // {
+    //   title: "Software Engineer Intern",
+    //   link: "https://paytrie.com/",
+    //   company: "Paytrie",
+    //   period: "May 2025 - Present // Toronto, ON",
+    //   description: "Mobile app team - Stablecoins",
+    //   logo: bucketURL + "/comp/paytrie.png"
+    // },
+    // {
+    //   title: "Software Engineer Intern",
+    //   link: "https://www.jackalprotocol.com/",
+    //   company: "Jackal Labs",
+    //   period: "Jan 2025 - May 2025 // Remote",
+    //   description: "Decentralized cloud storage",
+    //   logo: bucketURL + "/comp/jackie.png"
+    // },
+    // {
+    //   title: "Founder",
+    //   company: "Carleton Blockchain",
+    //   link: "https://www.carletonblockchain.ca/",
+    //   period: "Nov 2024 - Present // Ottawa, ON",
+    //   description: "Grew from 0-200 members in ~1 semester, raised >$15,000, partnered with Coinbase",
+    //   logo: bucketURL + "/comp/cu.png"
+    // },
+    // {
+    //   title: "Scholar",
+    //   link: "https://www.cansbridgescholars.com/",
+    //   company: "Cansbridge",
+    //   period: "Oct 2024 - Present // Toronto, Vancouver, SF",
+    //   description: "Met the most ambitious, brave, and kind (abk) people.",
+    //   logo: bucketURL + "/comp/cs.png"
+    // },
+    // {
+    //   title: "VP of Mobile",
+    //   link:"https://uofthacks.com/",
+    //   company: "UofTHacks",
+    //   period: "May 2024 - Present // Toronto, ON",
+    //   description: "Mobile app team, internal + external tooling",
+    //   logo: bucketURL + "/comp/thacks.png"
+    // },
+    // {
+    //   title: "Software Engineer Intern",
+    //   link: "https://www.itmz.app/",
+    //   company: "ITMZ",
+    //   period: "May 2024 - Dec 2024 // Ottawa, ON",
+    //   description: "Consumer mobile app",
+    //   logo: bucketURL + "/comp/itmz.png"
+    // }
 ];
 
 export const blog = [
