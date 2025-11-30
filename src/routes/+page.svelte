@@ -1,15 +1,25 @@
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import { images, projects, experiences, blog, rodney, bangers, bucketURL } from '$lib/utils/consts';
+	import {
+		images,
+		projects,
+		experiences,
+		blog,
+		rodney,
+		bangers,
+		bucketURL
+	} from '$lib/utils/consts';
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
+	import { ExternalLink } from 'lucide-svelte';
 
 	let currentImageIndex = 0;
 	let interval: number;
 	let currentProjectIndex = 0;
 	let interval1: number;
 	let isLoading = true;
+	let loadingProgress = 0;
 
 	// Job title rotation
 	const jobTitles = [
@@ -23,11 +33,10 @@
 	let currentJobTitleIndex = 0;
 	let jobTitleInterval: number;
 
-	// Animation timing constants
-	const BASE_DELAY = 1000;
-	const DELAY_INCREMENT = 100;
+	let BASE_DELAY = 1000;
+	let DELAY_INCREMENT = 100;
+	let isMobile = false;
 
-	// Navigation functions for images carousel
 	function nextImage() {
 		currentImageIndex = (currentImageIndex + 1) % images.length;
 		resetImageInterval();
@@ -45,7 +54,6 @@
 		}, 5000);
 	}
 
-	// Navigation functions for projects carousel
 	function nextProject() {
 		currentProjectIndex = (currentProjectIndex + 1) % projects.length;
 		resetProjectInterval();
@@ -64,9 +72,25 @@
 	}
 
 	onMount(() => {
-		setTimeout(() => {
-			isLoading = false;
-		}, 1000);
+		// Check if mobile/small screen
+		isMobile = window.innerWidth < 1024; // lg breakpoint
+
+		// Adjust delays for mobile - more sequential
+		if (isMobile) {
+			BASE_DELAY = 300;
+			DELAY_INCREMENT = 200;
+		}
+
+		// Animate progress bar
+		const progressInterval = setInterval(() => {
+			loadingProgress += 2;
+			if (loadingProgress >= 100) {
+				clearInterval(progressInterval);
+				setTimeout(() => {
+					isLoading = false;
+				}, 200);
+			}
+		}, 20);
 
 		interval = setInterval(() => {
 			currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -84,6 +108,7 @@
 			clearInterval(interval);
 			clearInterval(interval1);
 			clearInterval(jobTitleInterval);
+			clearInterval(progressInterval);
 		};
 	});
 </script>
@@ -112,10 +137,21 @@
 		<div class="ascii-art">
 			<pre class="rodney">{rodney}</pre>
 		</div>
+
+		<!-- Segmented Progress Bar -->
+		<div class="progress-container">
+			<div class="segments-container">
+				{#each Array(10) as _, i}
+					<div class="segment" class:filled={loadingProgress >= (i + 1) * 10}></div>
+				{/each}
+			</div>
+		</div>
 	</div>
 {:else}
-	<div transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 15 }}
-	class="lg:mb-18">
+	<div
+		transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 15 }}
+		class="lg:mb-18"
+	>
 		<Header />
 	</div>
 	<div
@@ -133,7 +169,7 @@
 			>
 				<!-- Profile Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{
 						x: -30,
 						y: -30,
@@ -143,7 +179,12 @@
 				>
 					<div class="flex items-center">
 						<div class="flex w-full flex-row justify-between">
-							<div class="text-sm sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Education</div>
+							<div
+								class="text-sm sm:text-base"
+								style="font-family: 'PP Editorial New', serif; font-weight: 400;"
+							>
+								Education
+							</div>
 						</div>
 					</div>
 					<div class="mt-2 flex flex-row items-start sm:mt-3">
@@ -153,7 +194,9 @@
 							class="mt-1 mr-2 h-6 w-6 rounded-full object-cover sm:h-8 sm:w-8"
 						/>
 						<div class="flex flex-col">
-							<p class="text-xs font-semibold sm:text-sm">Computer Science @ Carleton University</p>
+							<p class="text-xs font-semibold text-gray-100 sm:text-sm">
+								Computer Science @ Carleton University
+							</p>
 							<!-- <div class="mt-1 mb-1 w-full border-b border-gray-300"></div> -->
 							<!-- <p class="text-left text-xs text-gray-500">
 								🤏 close to dropping out - Exp Grad 2027
@@ -163,22 +206,30 @@
 				</div>
 
 				<div
-					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY }}
 				>
-					<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">About Me</h3>
+					<h3
+						class="mb-3 text-base"
+						style="font-family: 'PP Editorial New', serif; font-weight: 400;"
+					>
+						About Me
+					</h3>
 
 					<div class="flex-row-2 flex">
-						<p class="text-left text-xs text-gray-300 sm:text-sm">
+						<p class="text-left text-sm text-gray-100">
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
-							In the fall, I'll be moving to New York City and joining <a href="https://textql.com/">TextQL</a> as an Member of
-							technical staff working on the applied ai team.
+							In the fall, I'll be moving to New York City and joining
+							<a href="https://textql.com/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 inline-flex items-baseline gap-0.5">TextQL<ExternalLink size={10} class="inline" /></a>
+							as an Member of technical staff working on the applied ai team.
 							<br /><br />
 							At Carleton, I founded
-							<a class="underline" href="https://carletonblockchain.ca/">Carleton Blockchain</a>. We
-							grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events. 
+							<a
+								class="text-blue-400 underline hover:text-blue-300 inline-flex items-baseline gap-0.5"
+								href="https://carletonblockchain.ca/" target="_blank" rel="noopener noreferrer">Carleton Blockchain<ExternalLink size={10} class="inline" /></a
+							>. We grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events.
 							<!-- I also racked up ~1k in parking tickets. -->
 						</p>
 					</div>
@@ -186,7 +237,7 @@
 
 				<!-- GitHub Contributions Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
 				>
 					<GitHubContributions />
@@ -194,12 +245,17 @@
 
 				<!-- Contact Me Card -->
 				<div
-					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}
 				>
-					<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Contact Me</h3>
+					<h3
+						class="mb-3 text-base"
+						style="font-family: 'PP Editorial New', serif; font-weight: 400;"
+					>
+						Contact Me
+					</h3>
 
-					<div class="space-y-2 sm:space-y-3">
+					<div class="space-y-2">
 						<!-- Twitter/X -->
 						<a
 							href="https://x.com/992rodney"
@@ -207,8 +263,8 @@
 							rel="noopener noreferrer"
 							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
 						>
-							<i class="fab fa-twitter text-gray-400"></i>
-							<span class="text-xs text-gray-300 sm:text-sm">992rodney</span>
+							<i class="fab fa-twitter text-gray-300"></i>
+							<span class="text-sm text-gray-100">992rodney</span>
 						</a>
 
 						<!-- GitHub -->
@@ -218,8 +274,8 @@
 							rel="noopener noreferrer"
 							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
 						>
-							<i class="fab fa-github text-gray-400"></i>
-							<span class="text-xs text-gray-300 sm:text-sm">rodnnnney</span>
+							<i class="fab fa-github text-gray-300"></i>
+							<span class="text-sm text-gray-100">rodnnnney</span>
 						</a>
 					</div>
 				</div>
@@ -232,22 +288,27 @@
 			>
 				<!-- blog Card -->
 				<div
-					class="relative rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					class="relative rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
 					<div class="flex flex-row justify-between">
-						<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Blog</h3>
+						<h3
+							class="mb-3 text-base"
+							style="font-family: 'PP Editorial New', serif; font-weight: 400;"
+						>
+							Blog
+						</h3>
 					</div>
 
-					<div class="space-y-2 sm:space-y-3">
+					<div class="space-y-3">
 						{#each blog as blog}
 							<a href="/blog/{blog.link}" class="block">
 								<div
-									class="border-b border-neutral-700 pb-2 transition-colors hover:bg-neutral-700 sm:pb-3"
+									class="rounded-md border-b border-neutral-700 px-2 py-1 pb-3 transition-colors hover:bg-neutral-700/50"
 								>
-									<h4 class="text-xs font-semibold sm:text-sm">{blog.title}</h4>
+									<h4 class="text-sm font-semibold text-gray-100">{blog.title}</h4>
 									<p class="text-xs text-gray-400">{blog.date}</p>
-									<p class="mt-1 text-xs text-gray-300">{blog.excerpt}</p>
+									<p class="mt-1 text-sm text-gray-200">{blog.excerpt}</p>
 								</div>
 							</a>
 						{/each}
@@ -354,24 +415,28 @@
 			>
 				<!-- Experience Card -->
 				<div
-					class="flex-shrink-0 rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
+					class="flex-shrink-0 rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ x: 30, y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
-					<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Experience</h3>
-					<div
-						class="custom-scrollbar max-h-[180px] space-y-2 overflow-y-auto sm:max-h-[140px] sm:space-y-3"
+					<h3
+						class="mb-3 text-base"
+						style="font-family: 'PP Editorial New', serif; font-weight: 400;"
 					>
+						Experience
+					</h3>
+					<div class="custom-scrollbar max-h-[200px] space-y-3 overflow-y-auto">
 						{#each experiences as exp}
-							<a class="flex flex-col" href={exp.link} rel="noopener noreferrer">
+							<a
+								class="flex flex-col transition-all hover:opacity-80"
+								href={exp.link}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
 								<div class="flex flex-row items-center">
-									<img
-										src={exp.logo}
-										alt=""
-										class="mt-1 mr-2 h-6 w-6 rounded-md object-cover sm:h-8 sm:w-8"
-									/>
+									<img src={exp.logo} alt="" class="mt-1 mr-2 h-8 w-8 rounded-md object-cover" />
 									<div>
 										{#if exp.company === 'TextQL'}
-											<h4 class="relative overflow-hidden text-xs font-semibold sm:text-sm">
+											<h4 class="relative overflow-hidden text-sm font-semibold text-gray-100">
 												{#key currentJobTitleIndex}
 													<span
 														class="absolute inset-0 flex items-center"
@@ -388,13 +453,13 @@
 												</span>
 											</h4>
 										{:else}
-											<h4 class="text-xs font-semibold sm:text-sm">{exp.title}</h4>
+											<h4 class="text-sm font-semibold text-gray-100">{exp.title}</h4>
 										{/if}
 										<p class="text-xs text-gray-400">{exp.company} • {exp.period}</p>
 									</div>
 								</div>
 								<div class="mt-1 border-b border-neutral-700 pb-2">
-									<p class="text-xs text-gray-300 sm:text-sm">{exp.description}</p>
+									<p class="text-sm text-gray-200">{exp.description}</p>
 								</div>
 							</a>
 						{/each}
@@ -463,9 +528,9 @@
 				</div>
 
 				<div
-					class="absolute right-0 bottom-2 left-0 text-center text-xs text-white sm:bottom-4 lg:hidden"
+					class="relative mt-4 mb-2 text-center text-xs text-white lg:hidden"
 				>
-					Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline"
+					Check out my other <a href="https://cu-webring.org/" target="_blank" rel="noopener noreferrer" class="underline"
 						>cracked friends</a
 					>
 				</div>
@@ -477,7 +542,7 @@
 		class="text-grey-400 absolute bottom-2 left-1/2 z-50 hidden -translate-x-1/2 transform text-xs text-white sm:bottom-4 lg:block"
 		transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 12 }}
 	>
-		Check out my other <a href="https://cu-webring.org/" target="_blank" class="italic underline"
+		Check out my other <a href="https://cu-webring.org/" target="_blank" rel="noopener noreferrer" class="italic underline"
 			>cracked friends</a
 		>
 	</div>
@@ -485,7 +550,9 @@
 
 <style>
 	:global(body) {
-		background: #1a1a1a url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png') no-repeat center center fixed;
+		background: #1a1a1a
+			url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png') no-repeat
+			center center fixed;
 		background-size: cover;
 		background-image:
 			url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png'),
@@ -576,5 +643,31 @@
 
 	.animate-marquee {
 		animation: marquee 20s linear infinite;
+	}
+
+	.progress-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
+		max-width: 400px;
+	}
+
+	.segments-container {
+		display: flex;
+		gap: 0.5rem;
+		width: 100%;
+	}
+
+	.segment {
+		flex: 1;
+		height: 12px;
+		background: rgba(255, 255, 255, 0.15);
+		transition: all 0.3s ease-out;
+	}
+
+	.segment.filled {
+		background: white;
 	}
 </style>
