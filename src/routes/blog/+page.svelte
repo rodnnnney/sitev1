@@ -22,7 +22,7 @@
 			<a href="/blog" class="text-white transition-colors">Blog</a>
 		</nav>
 
-		<h1 class="mb-8 flex justify-start text-left text-3xl font-bold">Blog</h1>
+		<h1 class="mb-8 flex justify-start text-left text-3xl">Blog</h1>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
 			{#each blog as blog, i}

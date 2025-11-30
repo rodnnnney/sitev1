@@ -11,6 +11,11 @@
 	let selectedIndex = 0;
 	let resultsContainer: HTMLDivElement;
 	let selectedElement: HTMLElement | null = null;
+	let isMac = false;
+
+	onMount(() => {
+		isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+	});
 
 	// Create search index
 	const searchItems = [
@@ -151,7 +156,7 @@
 			event.preventDefault();
 			toggleSearch();
 		}
-		if ((event.metaKey || event.ctrlKey) && event.key === 'h') {
+		if ((event.metaKey || event.ctrlKey) && event.key === '1') {
 			event.preventDefault();
 			goto('/');
 		}
@@ -207,12 +212,13 @@
 			<div class="flex items-center space-x-3">
 				<a
 					href="/"
-					class="font-mono text-lg font-bold text-white transition-colors hover:text-gray-300 sm:text-xl"
+					class="text-lg text-white transition-colors hover:text-gray-300 sm:text-xl"
+					style="font-family: 'PP Editorial New', serif;"
 				>
 					Rodney Shen
 				</a>
 				{#if $page.url.pathname !== '/'}
-					<span class="hidden text-xs text-gray-500 sm:inline">⌘ + H</span>
+					<span class="hidden text-xs text-gray-500 sm:inline">{isMac ? '⌘' : 'Ctrl'} + 1</span>
 				{/if}
 			</div>
 
@@ -222,12 +228,14 @@
 					<a
 						href="/blog"
 						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
+						style="font-family: 'PP Editorial New', serif;"
 					>
 						Blog
 					</a>
 					<a
 						href="/projects"
 						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
+						style="font-family: 'PP Editorial New', serif;"
 					>
 						Projects
 					</a>
@@ -240,7 +248,7 @@
 				>
 					<Search size={14} />
 					<!-- <span class="hidden sm:inline">Search</span> -->
-					<span class="hidden text-xs text-gray-500 sm:inline">⌘ + K</span>
+					<span class="hidden text-xs text-gray-500 sm:inline">{isMac ? '⌘' : 'Ctrl'} + K</span>
 				</button>
 			</div>
 		</nav>
@@ -401,11 +409,11 @@
 									<span>Select</span>
 								</span>
 								<span class="flex items-center space-x-1">
-									<kbd class="rounded border border-gray-600 px-1.5 py-0.5">⌘H</kbd>
+									<kbd class="rounded border border-gray-600 px-1.5 py-0.5">{isMac ? '⌘' : 'Ctrl'}+1</kbd>
 									<span>Home</span>
 								</span>
 							</div>
-							<span>⌘K to search</span>
+							<span>{isMac ? '⌘' : 'Ctrl'}+K to search</span>
 						</div>
 					</div>
 				</div>

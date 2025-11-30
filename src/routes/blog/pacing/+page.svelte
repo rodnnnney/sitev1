@@ -44,15 +44,11 @@
 			<span class="text-white">Pacing</span>
 		</nav>
 
-		<h1
-			class="mb-8 flex justify-start text-left text-3xl font-bold"
-			in:fade={{ duration: 600, delay: 300 }}
-		>
+		<h1 class="mb-8 flex justify-start text-left text-3xl" in:fade={{ duration: 600, delay: 300 }}>
 			Pacing
 		</h1>
 		<div class="flex flex-col gap-4">
-
-			<div in:fade={{ duration: 600, delay: 400 }}>
+			<div class="opacity-80" in:fade={{ duration: 600, delay: 400 }}>
 				In the following article, I will attempt to draw similarities between my change in
 				environment from a quiet suburb in the capital of Canada to one of the most vibrant and
 				fast-moving cities in the world, aka the concrete jungle where dreams are made of, aka the
@@ -60,10 +56,14 @@
 			</div>
 
 			<div class="m-8 flex justify-center" in:fade={{ duration: 600, delay: 500 }}>
-				<img src="{bucketURL}/blog/aura.avif" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
+				<img
+					src="{bucketURL}/blog/aura.avif"
+					alt="stats"
+					class="h-3/4 w-3/4 rounded-lg object-cover"
+				/>
 			</div>
 
-			<div in:fade={{ duration: 600, delay: 600 }}>
+			<div class="opacity-80" in:fade={{ duration: 600, delay: 600 }}>
 				When I was a kid, I was obsessed with the NBA. I was a LeBron bandwagon fan growing up;
 				watching him dominate on the Heat with Wade and Bosh was unlike anything I'd ever seen in my
 				8 years of existence. There was this particular stat that I thought was incredibly
@@ -80,7 +80,7 @@
 				<div bind:this={formulaElement}></div>
 			</div>
 
-			<div in:fade={{ duration: 600, delay: 800 }}>
+			<div class="opacity-80" in:fade={{ duration: 600, delay: 800 }}>
 				The way we interpret pace is straightforward. If a team has a Pace Factor of 100, their
 				games typically feature 100 total possessions combined between both teams. The current NBA
 				average is approximately 99.56 possessions per 48 minutes across all teams. Teams with
@@ -88,7 +88,7 @@
 				lower pace factors suggest more deliberate, methodical approaches to offense and defense.
 			</div>
 
-			<div>
+			<div class="opacity-80">
 				By default, an easy takeaway would be simply the increased amount of shot opportunities. You
 				can imagine Ottawa like an NBA team with a lower Pace Factor—a slower-paced team with a
 				larger emphasis on half-court sets and high-efficiency plays (the San Antonio Spurs come to
@@ -96,7 +96,7 @@
 				comfortable.
 			</div>
 
-			<div>
+			<div class="opacity-80">
 				When you contrast this to NYC, it's like a different planet. The pace in NYC is night and
 				day compared to Ottawa. You are stepping onto a team with one of the top 5 Pace Factors
 				across the whole league. On average, high-pace teams generate more possessions per game,
@@ -117,17 +117,23 @@
 			<div></div>
 
 			<div class="m-8 flex justify-center">
-				<img src="{bucketURL}/blog/stats.png" alt="stats" class="h-3/4 w-3/4 rounded-lg object-cover" />
+				<img
+					src="{bucketURL}/blog/stats.png"
+					alt="stats"
+					class="h-3/4 w-3/4 rounded-lg object-cover"
+				/>
 			</div>
 
-			If you take the stats at face value, the correlation between pace and win percentage in the
-			2024-2025 NBA season is weak. If you recall from high school, a correlation coefficient of
-			~0.33 (0 is no correlation, 1 is direct correlation) still implies teams that play fast—so
-			fast pace alone isn't a reliable indicator of success.
+			<div class="opacity-80">
+				If you take the stats at face value, the correlation between pace and win percentage in the
+				2024-2025 NBA season is weak. If you recall from high school, a correlation coefficient of
+				~0.33 (0 is no correlation, 1 is direct correlation) still implies teams that play fast—so
+				fast pace alone isn't a reliable indicator of success.
+			</div>
 
 			<div>That's it?</div>
 
-			<div>
+			<div class="opacity-80">
 				Well, in the name of confirmation bias, I will offer an alternative. I believe that a hybrid
 				model that combines the pros and cons of playing fast and slow pace could be a practical
 				compromise. For example, the Denver Nuggets ranked 1st in fastbreak points (18.8 ppg) while
@@ -138,7 +144,7 @@
 				approach games.
 			</div>
 
-			<div>
+			<div class="opacity-80">
 				You must be thinking that I'm typing in circles, but there is a clear takeaway here. Having
 				high pace is a <s>good</s> great thing; through sheer effort and grit, you are able to create
 				more opportunities for yourself and your teammates. This is a lesson that can be applied much
@@ -151,9 +157,9 @@
 				teams, they turn things up a notch.
 			</div>
 
-			<div class="text-2xl font-bold">Conclusion</div>
+			<div class="text-2xl text-white">Conclusion</div>
 
-			<div>
+			<div class="opacity-80">
 				My personal takeaway would be that I would much rather play on a high pace team than a slow
 				one. Both have their strengths and weaknesses, but I believe that it is much easier to learn
 				to slow down than it is to learn to speed up. This is why cars are designed with 250km/h+

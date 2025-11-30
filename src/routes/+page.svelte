@@ -143,7 +143,7 @@
 				>
 					<div class="flex items-center">
 						<div class="flex w-full flex-row justify-between">
-							<div class="font-mono text-sm font-bold sm:text-base">Education</div>
+							<div class="text-sm sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Education</div>
 						</div>
 					</div>
 					<div class="mt-2 flex flex-row items-start sm:mt-3">
@@ -166,7 +166,7 @@
 					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
 					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY }}
 				>
-					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">About Me</h3>
+					<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">About Me</h3>
 
 					<div class="flex-row-2 flex">
 						<p class="text-left text-xs text-gray-300 sm:text-sm">
@@ -197,7 +197,7 @@
 					class="rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
 					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}
 				>
-					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Contact Me</h3>
+					<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Contact Me</h3>
 
 					<div class="space-y-2 sm:space-y-3">
 						<!-- Twitter/X -->
@@ -236,7 +236,7 @@
 					transition:fly={{ y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
 					<div class="flex flex-row justify-between">
-						<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Blog</h3>
+						<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Blog</h3>
 					</div>
 
 					<div class="space-y-2 sm:space-y-3">
@@ -338,7 +338,7 @@
 						{#each projects as project, i}
 							{#if i === currentProjectIndex}
 								<div class="flex flex-col">
-									<div class="text-sm font-bold text-black sm:text-lg">{project.name}</div>
+									<div class="text-sm text-black sm:text-lg">{project.name}</div>
 									<div class="text-xs text-black sm:text-sm">{project.description}</div>
 								</div>
 							{/if}
@@ -357,7 +357,7 @@
 					class="flex-shrink-0 rounded-lg bg-neutral-800 p-2 shadow-sm sm:p-3"
 					transition:fly={{ x: 30, y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
-					<h3 class="mb-2 font-mono text-sm font-bold sm:mb-3 sm:text-base">Experience</h3>
+					<h3 class="mb-2 text-sm sm:mb-3 sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">Experience</h3>
 					<div
 						class="custom-scrollbar max-h-[180px] space-y-2 overflow-y-auto sm:max-h-[140px] sm:space-y-3"
 					>
@@ -463,7 +463,7 @@
 				</div>
 
 				<div
-					class="absolute right-0 bottom-2 left-0 text-center font-mono text-xs text-white sm:bottom-4 lg:hidden"
+					class="absolute right-0 bottom-2 left-0 text-center text-xs text-white sm:bottom-4 lg:hidden"
 				>
 					Check out my other <a href="https://cu-webring.org/" target="_blank" class="underline"
 						>cracked friends</a
@@ -474,7 +474,7 @@
 	</div>
 
 	<div
-		class="text-grey-400 absolute bottom-2 left-1/2 z-50 hidden -translate-x-1/2 transform font-mono text-xs text-white sm:bottom-4 lg:block"
+		class="text-grey-400 absolute bottom-2 left-1/2 z-50 hidden -translate-x-1/2 transform text-xs text-white sm:bottom-4 lg:block"
 		transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 12 }}
 	>
 		Check out my other <a href="https://cu-webring.org/" target="_blank" class="italic underline"

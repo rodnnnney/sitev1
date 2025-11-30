@@ -32,7 +32,7 @@
 		</nav>
 
 		<div class="mb-8 flex flex-row items-end justify-start">
-			<h1 class="text-3xl font-bold">Projects</h1>
+			<h1 class="text-3xl">Projects</h1>
 		</div>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
