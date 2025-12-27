@@ -6,22 +6,19 @@
 		projects,
 		experiences,
 		blog,
-		rodney,
 		bangers,
 		bucketURL
 	} from '$lib/utils/consts';
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
-	import { ExternalLink } from 'lucide-svelte';
+	import LinkPreview from '$lib/components/LinkPreview.svelte';
 
 	let currentImageIndex = 0;
 	let interval: number;
 	let currentProjectIndex = 0;
 	let interval1: number;
-	let isLoading = true;
-	let loadingProgress = 0;
+	let ready = false;
 
-	// Job title rotation
 	const jobTitles = [
 		'Member of Technical Staff',
 		'Member of Recruiting Staff',
@@ -33,7 +30,7 @@
 	let currentJobTitleIndex = 0;
 	let jobTitleInterval: number;
 
-	let BASE_DELAY = 1000;
+	let BASE_DELAY = 0;
 	let DELAY_INCREMENT = 100;
 	let isMobile = false;
 
@@ -72,6 +69,8 @@
 	}
 
 	onMount(() => {
+		ready = true;
+
 		// Check if mobile/small screen
 		isMobile = window.innerWidth < 1024; // lg breakpoint
 
@@ -80,17 +79,6 @@
 			BASE_DELAY = 300;
 			DELAY_INCREMENT = 200;
 		}
-
-		// Animate progress bar
-		const progressInterval = setInterval(() => {
-			loadingProgress += 2;
-			if (loadingProgress >= 100) {
-				clearInterval(progressInterval);
-				setTimeout(() => {
-					isLoading = false;
-				}, 200);
-			}
-		}, 20);
 
 		interval = setInterval(() => {
 			currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -108,7 +96,6 @@
 			clearInterval(interval);
 			clearInterval(interval1);
 			clearInterval(jobTitleInterval);
-			clearInterval(progressInterval);
 		};
 	});
 </script>
@@ -132,40 +119,26 @@
 	<meta name="googlebot" content="index, follow" />
 </svelte:head>
 
-{#if isLoading}
-	<div class="loading-screen" transition:fade={{ duration: 1000 }}>
-		<div class="ascii-art">
-			<pre class="rodney">{rodney}</pre>
-		</div>
-
-		<!-- Segmented Progress Bar -->
-		<div class="progress-container">
-			<div class="segments-container">
-				{#each Array(10) as _, i}
-					<div class="segment" class:filled={loadingProgress >= (i + 1) * 10}></div>
-				{/each}
-			</div>
-		</div>
-	</div>
-{:else}
-	<div
-		transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 15 }}
-		class="lg:mb-18"
-	>
-		<Header />
-	</div>
-	<div
-		class="bg-f1eee9 flex min-h-screen w-full p-2 text-white sm:p-3 lg:h-screen lg:overflow-hidden lg:p-4"
+{#if ready}
+<div
+		class="flex min-h-screen flex-col md:h-screen md:overflow-hidden"
 		transition:fade={{ duration: 800 }}
 	>
 		<div
-			class="mx-auto grid h-full w-full max-w-7xl grid-cols-1 items-center gap-2 sm:gap-3 lg:grid-cols-3 lg:gap-4"
-			transition:fly={{ y: -30, duration: 1000, delay: 600 }}
+			transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY }}
+			class="flex-shrink-0"
 		>
+			<Header />
+		</div>
+		<div
+			class="bg-f1eee9 flex min-h-0 flex-1 w-full items-center justify-center p-2 sm:p-3 lg:p-4"
+		>
+			<div
+				class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-2 sm:gap-3 lg:grid-cols-3 lg:gap-4 lg:max-h-[calc(100vh-120px)]"
+			>
 			<!-- Left Column -->
 			<div
-				class="flex h-full flex-col space-y-2 pt-6 sm:space-y-2"
-				transition:fly={{ x: -50, y: -20, duration: 1000, delay: BASE_DELAY }}
+				class="flex flex-col space-y-2 pt-8 sm:space-y-2"
 			>
 				<!-- Profile Card -->
 				<div
@@ -179,58 +152,46 @@
 				>
 					<div class="flex items-center">
 						<div class="flex w-full flex-row justify-between">
-							<div
-								class="text-sm sm:text-base"
-								style="font-family: 'PP Editorial New', serif; font-weight: 400;"
-							>
+							<h4>
 								Education
-							</div>
+							</h4>
 						</div>
 					</div>
-					<div class="mt-2 flex flex-row items-start sm:mt-3">
+					<div class="mt-2 flex flex-row items-center sm:mt-3">
 						<img
 							src={`${bucketURL}/logo.jpg`}
 							alt="Carleton"
-							class="mt-1 mr-2 h-6 w-6 rounded-full object-cover sm:h-8 sm:w-8"
+							class="mr-2 h-6 w-6 rounded-full object-cover sm:h-8 sm:w-8"
 						/>
-						<div class="flex flex-col">
-							<p class="text-xs font-semibold text-gray-100 sm:text-sm">
-								Computer Science @ Carleton University
-							</p>
-							<!-- <div class="mt-1 mb-1 w-full border-b border-gray-300"></div> -->
-							<!-- <p class="text-left text-xs text-gray-500">
-								🤏 close to dropping out - Exp Grad 2027
-							</p> -->
-						</div>
+						<p class="text-xs font-medium sm:text-sm">
+							Computer Science @ Carleton University
+						</p>
 					</div>
+					<div class="mt-2 mb-2 w-full border-b border-gray-300"></div>
+					<p class="text-left text-xs">
+						Permanent gap year
+					</p>
 				</div>
 
 				<div
 					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
-					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY }}
+					transition:fly={{ x: -30, y: 0, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
 				>
-					<h3
-						class="mb-3 text-base"
-						style="font-family: 'PP Editorial New', serif; font-weight: 400;"
-					>
+					<h4 class="mb-3">
 						About Me
-					</h3>
+					</h4>
 
 					<div class="flex-row-2 flex">
-						<p class="text-left text-sm text-gray-100">
+						<p class="text-left text-sm">
 							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
 							I'm bouncing between Toronto/NYC/Ottawa.
 							<br /><br />
 							In the fall, I'll be moving to New York City and joining
-							<a href="https://textql.com/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 inline-flex items-baseline gap-0.5">TextQL<ExternalLink size={10} class="inline" /></a>
+							<LinkPreview href="https://textql.com/" position="right">TextQL</LinkPreview>
 							as an Member of technical staff working on the applied ai team.
 							<br /><br />
 							At Carleton, I founded
-							<a
-								class="text-blue-400 underline hover:text-blue-300 inline-flex items-baseline gap-0.5"
-								href="https://carletonblockchain.ca/" target="_blank" rel="noopener noreferrer">Carleton Blockchain<ExternalLink size={10} class="inline" /></a
-							>. We grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events.
-							<!-- I also racked up ~1k in parking tickets. -->
+							<LinkPreview href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview>. We grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events.
 						</p>
 					</div>
 				</div>
@@ -238,120 +199,94 @@
 				<!-- GitHub Contributions Card -->
 				<div
 					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
-					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+					transition:fly={{ x: -50, y: 50, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}
 				>
 					<GitHubContributions />
 				</div>
 
-				<!-- Contact Me Card -->
+				<!-- Contact Icons -->
 				<div
-					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
-					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 1 }}
+					class="flex items-center justify-end space-x-4"
+					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
-					<h3
-						class="mb-3 text-base"
-						style="font-family: 'PP Editorial New', serif; font-weight: 400;"
+					<a
+						href="https://x.com/992rodney"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-gray-400 transition-colors hover:text-white"
+						aria-label="X (Twitter)"
 					>
-						Contact Me
-					</h3>
-
-					<div class="space-y-2">
-						<!-- Twitter/X -->
-						<a
-							href="https://x.com/992rodney"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
-						>
-							<i class="fab fa-twitter text-gray-300"></i>
-							<span class="text-sm text-gray-100">992rodney</span>
-						</a>
-
-						<!-- GitHub -->
-						<a
-							href="https://github.com/rodnnnney"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-neutral-700"
-						>
-							<i class="fab fa-github text-gray-300"></i>
-							<span class="text-sm text-gray-100">rodnnnney</span>
-						</a>
-					</div>
+						<i class="fab fa-x-twitter text-xl"></i>
+					</a>
+					<a
+						href="https://github.com/rodnnnney"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-gray-400 transition-colors hover:text-white"
+						aria-label="GitHub"
+					>
+						<i class="fab fa-github text-xl"></i>
+					</a>
 				</div>
 			</div>
 
 			<!-- Middle Column -->
 			<div
-				class="flex h-full flex-col space-y-2 sm:space-y-2"
-				transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+				class="flex flex-col space-y-2 sm:space-y-2"
 			>
-				<!-- blog Card -->
+				<!-- Experience Card -->
 				<div
-					class="relative rounded-lg bg-neutral-800 p-4 shadow-sm"
+					class="flex-shrink-0 rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 4 }}
 				>
-					<div class="flex flex-row justify-between">
-						<h3
-							class="mb-3 text-base"
-							style="font-family: 'PP Editorial New', serif; font-weight: 400;"
-						>
-							Blog
-						</h3>
-					</div>
-
-					<div class="space-y-3">
-						{#each blog as blog}
-							<a href="/blog/{blog.link}" class="block">
-								<div
-									class="rounded-md border-b border-neutral-700 px-2 py-1 pb-3 transition-colors hover:bg-neutral-700/50"
-								>
-									<h4 class="text-sm font-semibold text-gray-100">{blog.title}</h4>
-									<p class="text-xs text-gray-400">{blog.date}</p>
-									<p class="mt-1 text-sm text-gray-200">{blog.excerpt}</p>
+					<h4 class="mb-3">
+						Experience
+					</h4>
+					<div class="custom-scrollbar max-h-[200px] space-y-3 overflow-y-auto">
+						{#each experiences as exp}
+							<LinkPreview href={exp.link} variant="block">
+								<div class="block rounded-md px-2 py-1 transition-colors hover:bg-neutral-700/50">
+									<div class="flex flex-row items-center">
+										<img src={exp.logo} alt="" class="mt-1 mr-2 h-8 w-8 rounded-md object-cover" />
+										<div>
+											{#if exp.company === 'TextQL'}
+												<p class="relative overflow-hidden text-sm font-medium">
+													{#key currentJobTitleIndex}
+														<span
+															class="absolute inset-0 flex items-center"
+															in:fade={{ duration: 300, delay: 150 }}
+															out:fade={{ duration: 300 }}
+														>
+															{jobTitles[currentJobTitleIndex].charAt(0).toUpperCase() +
+																jobTitles[currentJobTitleIndex].slice(1)}
+														</span>
+													{/key}
+													<!-- Invisible placeholder to maintain layout -->
+													<span class="invisible">
+														{jobTitles[0].charAt(0).toUpperCase() + jobTitles[0].slice(1)}
+													</span>
+												</p>
+											{:else}
+												<p class="text-sm font-medium">{exp.title}</p>
+											{/if}
+											<p class="text-xs text-gray-400">{exp.company} • {exp.period}</p>
+										</div>
+									</div>
+									<div class="mt-1 ml-10">
+										<p class="text-sm">{exp.description}</p>
+									</div>
 								</div>
-							</a>
-						{/each}
-					</div>
-				</div>
-
-				<!-- Song Marquee -->
-				<div
-					class="overflow-hidden rounded-lg bg-neutral-800 p-1 shadow-sm"
-					transition:fly={{ y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 8 }}
-				>
-					<div class="animate-marquee flex flex-row gap-1 whitespace-nowrap">
-						{#each bangers as banger}
-							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
-								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
-									<img
-										src={banger.cover_img}
-										alt={banger.title || 'Album cover'}
-										class="rounded-lg object-cover"
-									/>
-								</div>
-							</a>
-						{/each}
-						{#each bangers as banger}
-							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
-								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
-									<img
-										src={banger.cover_img}
-										alt={banger.title || 'Album cover'}
-										class="rounded-lg object-cover"
-									/>
-								</div>
-							</a>
+							</LinkPreview>
 						{/each}
 					</div>
 				</div>
 
 				<div
-					class="relative min-h-128"
+					class="relative aspect-square"
 					transition:fly={{
 						y: 30,
 						duration: 800,
-						delay: BASE_DELAY + DELAY_INCREMENT * 9
+						delay: BASE_DELAY + DELAY_INCREMENT * 8
 					}}
 				>
 					{#each projects as project, i}
@@ -399,8 +334,8 @@
 						{#each projects as project, i}
 							{#if i === currentProjectIndex}
 								<div class="flex flex-col">
-									<div class="text-sm text-black sm:text-lg">{project.name}</div>
-									<div class="text-xs text-black sm:text-sm">{project.description}</div>
+									<div class="text-sm sm:text-lg text-black" style="font-family: 'Libre Caslon', serif;">{project.name}</div>
+									<div class="text-xs sm:text-sm text-black/70">{project.description}</div>
 								</div>
 							{/if}
 						{/each}
@@ -410,56 +345,61 @@
 
 			<!-- Right Column -->
 			<div
-				class="relative flex h-full flex-col space-y-2 pt-4 sm:space-y-2"
-				transition:fly={{ x: 50, y: -20, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+				class="relative flex flex-col space-y-2 pt-4 sm:space-y-2"
 			>
-				<!-- Experience Card -->
+				<!-- Blog Card -->
 				<div
-					class="flex-shrink-0 rounded-lg bg-neutral-800 p-4 shadow-sm"
+					class="relative rounded-lg bg-neutral-800 p-4 shadow-sm"
 					transition:fly={{ x: 30, y: -30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
-					<h3
-						class="mb-3 text-base"
-						style="font-family: 'PP Editorial New', serif; font-weight: 400;"
-					>
-						Experience
-					</h3>
-					<div class="custom-scrollbar max-h-[200px] space-y-3 overflow-y-auto">
-						{#each experiences as exp}
-							<a
-								class="flex flex-col transition-all hover:opacity-80"
-								href={exp.link}
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								<div class="flex flex-row items-center">
-									<img src={exp.logo} alt="" class="mt-1 mr-2 h-8 w-8 rounded-md object-cover" />
-									<div>
-										{#if exp.company === 'TextQL'}
-											<h4 class="relative overflow-hidden text-sm font-semibold text-gray-100">
-												{#key currentJobTitleIndex}
-													<span
-														class="absolute inset-0 flex items-center"
-														in:fade={{ duration: 300, delay: 150 }}
-														out:fade={{ duration: 300 }}
-													>
-														{jobTitles[currentJobTitleIndex].charAt(0).toUpperCase() +
-															jobTitles[currentJobTitleIndex].slice(1)}
-													</span>
-												{/key}
-												<!-- Invisible placeholder to maintain layout -->
-												<span class="invisible">
-													{jobTitles[0].charAt(0).toUpperCase() + jobTitles[0].slice(1)}
-												</span>
-											</h4>
-										{:else}
-											<h4 class="text-sm font-semibold text-gray-100">{exp.title}</h4>
-										{/if}
-										<p class="text-xs text-gray-400">{exp.company} • {exp.period}</p>
+					<div class="flex flex-row justify-between">
+						<h4 class="mb-3">
+							Blog
+						</h4>
+					</div>
+
+					<div class="space-y-3">
+						{#each blog as blog}
+							<a href="/blog/{blog.link}" class="block">
+								<div
+									class="rounded-md px-2 py-1 pb-1 transition-colors hover:bg-neutral-700/50"
+								>
+									<div class="flex items-center justify-between">
+										<p class="text-sm text-white" style="font-family: 'Libre Caslon', serif;">{blog.title}</p>
+										<p class="text-xs text-gray-400">{blog.date}</p>
 									</div>
+									<p class="mt-1 text-sm">{blog.excerpt}</p>
 								</div>
-								<div class="mt-1 border-b border-neutral-700 pb-2">
-									<p class="text-sm text-gray-200">{exp.description}</p>
+							</a>
+						{/each}
+					</div>
+				</div>
+
+				<!-- Song Marquee -->
+				<div
+					class="overflow-hidden rounded-lg bg-neutral-800 p-1 shadow-sm"
+					transition:fly={{ x: 30, y: 0, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 6 }}
+				>
+					<div class="animate-marquee flex flex-row gap-1 whitespace-nowrap">
+						{#each bangers as banger}
+							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
+								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
+									<img
+										src={banger.cover_img}
+										alt={banger.title || 'Album cover'}
+										class="rounded-lg object-cover"
+									/>
+								</div>
+							</a>
+						{/each}
+						{#each bangers as banger}
+							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
+								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
+									<img
+										src={banger.cover_img}
+										alt={banger.title || 'Album cover'}
+										class="rounded-lg object-cover"
+									/>
 								</div>
 							</a>
 						{/each}
@@ -467,7 +407,7 @@
 				</div>
 
 				<div
-					class="relative min-h-128"
+					class="relative aspect-square"
 					transition:fly={{
 						x: 30,
 						y: 30,
@@ -530,45 +470,21 @@
 				<div
 					class="relative mt-4 mb-2 text-center text-xs text-white lg:hidden"
 				>
-					Check out my other <a href="https://cu-webring.org/" target="_blank" rel="noopener noreferrer" class="underline"
-						>cracked friends</a
-					>
+					Check out my other <LinkPreview href="https://cu-webring.org/">cracked friends</LinkPreview>
 				</div>
 			</div>
 		</div>
-	</div>
-
-	<div
-		class="text-grey-400 absolute bottom-2 left-1/2 z-50 hidden -translate-x-1/2 transform text-xs text-white sm:bottom-4 lg:block"
-		transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 12 }}
-	>
-		Check out my other <a href="https://cu-webring.org/" target="_blank" rel="noopener noreferrer" class="italic underline"
-			>cracked friends</a
+		</div>
+		<div
+			class="flex-shrink-0 py-2 text-center text-xs text-white hidden lg:block"
+			transition:fly={{ y: -30, duration: 1000, delay: BASE_DELAY + DELAY_INCREMENT * 13 }}
 		>
+			Check out my other <LinkPreview href="https://cu-webring.org/">cracked friends</LinkPreview>
+		</div>
 	</div>
 {/if}
 
 <style>
-	:global(body) {
-		background: #1a1a1a
-			url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png') no-repeat
-			center center fixed;
-		background-size: cover;
-		background-image:
-			url('https://pub-6cd5bf10c6f641a28ec9656b861a4fe2.r2.dev/static/wave_gradient.png'),
-			radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
-			radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
-		background-size:
-			cover,
-			10px 10px,
-			20px 20px;
-		background-position:
-			center center,
-			0 0,
-			5px 5px;
-		background-repeat: no-repeat, repeat, repeat;
-		background-attachment: fixed;
-	}
 
 	.custom-scrollbar::-webkit-scrollbar {
 		width: 6px;
@@ -593,45 +509,6 @@
 		background: #ababab;
 	}
 
-	.loading-screen {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100vh;
-		background-color: #1a1a1a;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		z-index: 1000;
-		gap: 2rem;
-	}
-
-	.ascii-art {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		color: white;
-		font-family: 'Courier New', Courier, monospace;
-		font-size: 12px;
-		line-height: 1;
-		white-space: pre;
-		font-display: block;
-		text-rendering: optimizeLegibility;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
-
-	.ascii-art pre {
-		margin: 0;
-		padding: 0;
-		font-family: inherit;
-		text-rendering: inherit;
-		-webkit-font-smoothing: inherit;
-		-moz-osx-font-smoothing: inherit;
-	}
-
 	@keyframes marquee {
 		0% {
 			transform: translateX(0);
@@ -643,31 +520,5 @@
 
 	.animate-marquee {
 		animation: marquee 20s linear infinite;
-	}
-
-	.progress-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-		width: 100%;
-		max-width: 400px;
-	}
-
-	.segments-container {
-		display: flex;
-		gap: 0.5rem;
-		width: 100%;
-	}
-
-	.segment {
-		flex: 1;
-		height: 12px;
-		background: rgba(255, 255, 255, 0.15);
-		transition: all 0.3s ease-out;
-	}
-
-	.segment.filled {
-		background: white;
 	}
 </style>

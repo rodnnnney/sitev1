@@ -23,12 +23,12 @@
 
 <Header />
 
-<div class="min-h-screen text-white">
+<div class="min-h-screen bg-[#0a0a0a]">
 	<div class="mx-auto max-w-6xl p-4 sm:p-8 lg:p-12">
-		<nav class="mb-8 flex items-center space-x-2 text-sm text-white">
+		<nav class="mb-8 flex items-center space-x-2 text-sm">
 			<a href="/">Home</a>
 			<span>/</span>
-			<a href="/projects" class="text-white transition-colors">Projects</a>
+			<a href="/projects" class="transition-colors">Projects</a>
 		</nav>
 
 		<div class="mb-8 flex flex-row items-end justify-start">

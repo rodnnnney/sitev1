@@ -205,21 +205,17 @@
 	});
 </script>
 
-<header class="hidden w-full bg-transparent lg:block">
-	<div class="mx-auto max-w-7xl px-4 py-2 lg:px-0 lg:pt-6">
+<header class="hidden w-full bg-transparent md:block">
+	<div class="mx-auto max-w-7xl px-4 py-2 lg:px-4 lg:pt-6">
 		<nav class="flex items-center justify-between">
 			<!-- Left side - Name -->
 			<div class="flex items-center space-x-3">
 				<a
 					href="/"
-					class="text-lg text-white transition-colors hover:text-gray-300 sm:text-xl"
-					style="font-family: 'PP Editorial New', serif;"
+					class="text-lg text-white transition-colors hover:text-gray-300 sm:text-xl font-title"
 				>
 					Rodney Shen
 				</a>
-				{#if $page.url.pathname !== '/'}
-					<span class="hidden text-xs text-gray-500 sm:inline">{isMac ? '⌘' : 'Ctrl'} + 1</span>
-				{/if}
 			</div>
 
 			<!-- Right side - Navigation and Search -->
@@ -227,15 +223,13 @@
 				<div class="hidden items-center space-x-6 sm:flex">
 					<a
 						href="/blog"
-						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
-						style="font-family: 'PP Editorial New', serif;"
+						class="text-white transition-colors duration-300 hover:text-gray-300 font-title"
 					>
 						Blog
 					</a>
 					<a
 						href="/projects"
-						class="nav-link relative text-white transition-all duration-300 hover:text-gray-300"
-						style="font-family: 'PP Editorial New', serif;"
+						class="text-white transition-colors duration-300 hover:text-gray-300 font-title"
 					>
 						Projects
 					</a>
@@ -422,23 +416,3 @@
 	{/if}
 </header>
 
-<style>
-	.nav-link::after {
-		content: '';
-		position: absolute;
-		bottom: -4px;
-		left: 50%;
-		width: 0;
-		height: 2px;
-		background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
-		transition: all 0.3s ease-out;
-		border-radius: 1px;
-		box-shadow: 0 0 8px rgba(96, 165, 250, 0);
-		transform: translateX(-50%);
-	}
-
-	.nav-link:hover::after {
-		width: 100%;
-		box-shadow: 0 0 12px rgba(96, 165, 250, 0.6);
-	}
-</style>

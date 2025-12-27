@@ -40,7 +40,7 @@
 	{:else}
 		<div class="contributions-container">
 			<div class="mb-3 flex items-center justify-between">
-				<h3 class="text-sm sm:text-base" style="font-family: 'PP Editorial New', serif; font-weight: 400;">GitHub Activity</h3>
+				<h4>Github</h4>
 				{#if totalCommits > 0}
 					<div class="text-right">
 

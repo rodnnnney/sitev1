@@ -14,8 +14,7 @@
 
 <Header />
 
-<div class="min-h-screen text-white">
-	<div class="mx-auto max-w-6xl p-12 px-40">
+<div class="mx-auto max-w-6xl p-4 px-4 md:p-12 md:px-12 lg:px-20">
 		<nav class="mb-8 flex items-center space-x-2 text-sm text-white">
 			<a href="/">Home</a>
 			<span>/</span>
@@ -39,9 +38,9 @@
 							}}
 						>
 							<div
-								class="overflow-hidden rounded-lg bg-neutral-800 shadow-lg transition-colors hover:bg-neutral-700"
+								class="overflow-hidden rounded-lg bg-black shadow-lg transition-colors hover:bg-neutral-900"
 							>
-								<img src={blog.cover_img} alt={blog.title} class="h-48 w-full object-cover" />
+								<img src={blog.cover_img} alt={blog.title} class="aspect-square w-full object-cover" />
 								<div class="p-6">
 									<h2 class="mb-2 text-xl font-semibold">{blog.title}</h2>
 									<p class="mb-4 text-sm text-gray-400">{blog.date}</p>
@@ -51,7 +50,7 @@
 						</a>
 					{:else}
 						<div class="overflow-hidden rounded-lg bg-neutral-800/50 shadow-lg">
-							<div class="h-48 w-full bg-neutral-700/50"></div>
+							<div class="aspect-square w-full bg-neutral-700/50"></div>
 							<div class="p-6">
 								<div class="mb-2 h-6 w-3/4 rounded bg-neutral-700/50"></div>
 								<div class="mb-4 h-4 w-1/4 rounded bg-neutral-700/50"></div>
@@ -62,7 +61,6 @@
 				</div>
 			{/each}
 		</div>
-	</div>
 </div>
 
 <style>
