@@ -71,7 +71,7 @@ export const experiences = [
     title: "Member of Technical Staff",
     link: "https://textql.com/",
     company: "TextQL",
-    period: "September 2026 - Present | NYC, NY", 
+    period: "September 2025 - Present | NYC, NY", 
     description: "Enterprise data science agents",
     logo: bucketURL + "/comp/tql.jpg"
   },
