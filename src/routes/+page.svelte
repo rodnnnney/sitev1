@@ -132,7 +132,7 @@
 			<Header />
 		</div>
 		<div
-			class="bg-f1eee9 flex min-h-0 flex-1 w-full items-center justify-center p-2 sm:p-3 lg:p-4"
+			class="flex min-h-0 flex-1 w-full items-center justify-center p-2 sm:p-3 lg:p-4"
 		>
 			<div
 				class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-2 sm:gap-3 lg:grid-cols-3 lg:gap-4 lg:max-h-[calc(100vh-120px)]"
@@ -201,7 +201,7 @@
 							<br /><br />
 							Some areas that interest me are giving agents their own <LinkPreview href="https://textql.com/blog/sandcastles">file systems</LinkPreview> to execute on in a secure and sandboxed environment.
 							<br /><br />
-							In a past life, I was deep in crypto, I founded <LinkPreview href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview>, grew it to 200 members, and spoke at<LinkPreview href="https://consensus-hongkong2025.coindesk.com/agenda/event/-the-student-movement-universities-as-catalysts-for-web3-innovation-30"> Consensus Hong Kong</LinkPreview>.
+							In a past life, I was deep in crypto, I founded <LinkPreview href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview>, grew it to 200 members, and spoke at <LinkPreview href="https://consensus-hongkong2025.coindesk.com/agenda/event/-the-student-movement-universities-as-catalysts-for-web3-innovation-30">Consensus Hong Kong</LinkPreview>.
 						</p>
 					</div>
 				</div>
@@ -379,16 +379,16 @@
 					</div>
 
 					<div class="space-y-3">
-						{#each blog as blog}
-							<a href="/blog/{blog.link}" class="block">
+						{#each blog as post}
+							<a href="/blog/{post.link}" class="block">
 								<div
 									class="rounded-md px-2 py-1 pb-1 transition-colors hover:bg-neutral-700/50"
 								>
 									<div class="flex items-center justify-between">
-										<p class="text-sm text-white" style="font-family: 'Libre Caslon', serif;">{blog.title}</p>
-										<p class="text-xs text-gray-400">{blog.date}</p>
+										<p class="text-sm text-white" style="font-family: 'Libre Caslon', serif;">{post.title}</p>
+										<p class="text-xs text-gray-400">{post.date}</p>
 									</div>
-									<p class="mt-1 text-sm">{blog.excerpt}</p>
+									<p class="mt-1 text-sm">{post.excerpt}</p>
 								</div>
 							</a>
 						{/each}
