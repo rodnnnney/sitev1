@@ -7,6 +7,11 @@ export const images = [
       description: "New York City, USA // May 2025",
     },
     {
+      src: bucketURL + "/camera/sf.png",
+      alt: "San Francisco",
+      description: "San Francisco, USA // Nov 2025",
+    },
+    {
       src: bucketURL + "/camera/shanghai.png",
       alt: "Shanghai",
       description: "Shanghai, China // Dec 2023",
@@ -33,9 +38,7 @@ type Project = {
     src: string;
     description: string; 
     link: string;
-
 }
-
 
 
 export const projects: Project[] = [
@@ -51,12 +54,12 @@ export const projects: Project[] = [
         description: "Meta Raybans that listen to your conversations and help you rizz in real-time.",
         link: "https://devpost.com/software/irrizzistable-glasses",
     },
-    {
-        name: "Cook or Cooked",
-        src: bucketURL + "/projects/cook.png",
-        description: "Budgeting food app for college students",
-        link: "https://github.com/rodnnnney/cook_or_cooked"
-    },
+    // {
+    //     name: "Cook or Cooked",
+    //     src: bucketURL + "/projects/cook.png",
+    //     description: "Budgeting food app for college students",
+    //     link: "https://github.com/rodnnnney/cook_or_cooked"
+    // },
     {
         name: "ACAC Mobile",
         src: bucketURL + "/projects/acac.png",

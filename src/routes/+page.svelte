@@ -12,6 +12,7 @@
 	import Header from '$lib/components/header.svelte';
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
 	import LinkPreview from '$lib/components/LinkPreview.svelte';
+	import TextRotator from '$lib/components/TextRotator.svelte';
 
 	let currentImageIndex = 0;
 	let interval: number;
@@ -140,6 +141,19 @@
 			<div
 				class="flex flex-col space-y-2 pt-8 sm:space-y-2"
 			>
+				<!-- Hover hint - desktop only -->
+				<p
+					class="hidden text-xs text-gray-500 lg:block"
+					transition:fly={{ y: -20, duration: 600, delay: BASE_DELAY + DELAY_INCREMENT * 2 }}
+				>
+					<TextRotator
+						staticText="Most things are hoverable - try hovering"
+						rotatingWords={["a link*", "a card*", "a blog*", "an image*", "a song*", "an experience*"]}
+						interval={2500}
+						transitionDuration={600}
+					/>
+				</p>
+
 				<!-- Profile Card -->
 				<div
 					class="rounded-lg bg-neutral-800 p-4 shadow-sm"
@@ -183,15 +197,11 @@
 
 					<div class="flex-row-2 flex">
 						<p class="text-left text-sm">
-							I'm Rodney, I'm passionate about building cool tech that advances society. Currently,
-							I'm bouncing between Toronto/NYC/Ottawa.
+							I'm Rodney! I'm based in NYC working at <LinkPreview href="https://textql.com/" position="right">TextQL</LinkPreview> as a Member of Technical Staff.
 							<br /><br />
-							In the fall, I'll be moving to New York City and joining
-							<LinkPreview href="https://textql.com/" position="right">TextQL</LinkPreview>
-							as an Member of technical staff working on the applied ai team.
+							Some areas that interest me are giving agents their own <LinkPreview href="https://textql.com/blog/sandcastles">file systems</LinkPreview> to execute on in a secure and sandboxed environment.
 							<br /><br />
-							At Carleton, I founded
-							<LinkPreview href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview>. We grew it from 0-200 club members in ~1 semester hosting 6 unforgettable events.
+							In a past life, I was deep in crypto, I founded <LinkPreview href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview>, grew it to 200 members, and spoke at<LinkPreview href="https://consensus-hongkong2025.coindesk.com/agenda/event/-the-student-movement-universities-as-catalysts-for-web3-innovation-30"> Consensus Hong Kong</LinkPreview>.
 						</p>
 					</div>
 				</div>
@@ -209,24 +219,34 @@
 					class="flex items-center justify-end space-x-4"
 					transition:fly={{ x: -30, y: 30, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 5 }}
 				>
-					<a
+					<LinkPreview
 						href="https://x.com/992rodney"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="text-gray-400 transition-colors hover:text-white"
-						aria-label="X (Twitter)"
+						position="left"
+						iconOnly
+						customPreview={{
+							title: "Follow me",
+							description: "My most unhinged takes or insightful technical blogs - follow to find out",
+							image: "https://unavatar.io/twitter/992rodney"
+						}}
 					>
-						<i class="fab fa-x-twitter text-xl"></i>
-					</a>
-					<a
+						<span class="text-gray-400 transition-colors hover:text-white">
+							<i class="fab fa-x-twitter text-xl"></i>
+						</span>
+					</LinkPreview>
+					<LinkPreview
 						href="https://github.com/rodnnnney"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="text-gray-400 transition-colors hover:text-white"
-						aria-label="GitHub"
+						position="left"
+						iconOnly
+						customPreview={{
+							title: "Check out my code",
+							description: "Open source projects, experiments, and random stuff I build",
+							image: "https://github.com/rodnnnney.png"
+						}}
 					>
-						<i class="fab fa-github text-xl"></i>
-					</a>
+						<span class="text-gray-400 transition-colors hover:text-white">
+							<i class="fab fa-github text-xl"></i>
+						</span>
+					</LinkPreview>
 				</div>
 			</div>
 

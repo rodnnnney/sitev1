@@ -5,10 +5,12 @@
 	export let href: string;
 	export let position: 'left' | 'right' | 'center' = 'center';
 	export let variant: 'inline' | 'block' = 'inline';
+	export let customPreview: { title: string; description: string; image?: string } | null = null;
+	export let iconOnly: boolean = false;
 
 	let isHovered = false;
 	let timeoutId: ReturnType<typeof setTimeout>;
-	let preview: { title: string; description: string; image: string } | null = null;
+	let preview: { title: string; description: string; image?: string } | null = null;
 	let loading = false;
 	let fetched = false;
 	let containerEl: HTMLElement;
@@ -18,16 +20,37 @@
 	async function fetchPreview() {
 		if (fetched) return;
 		fetched = true;
+
+		// If customPreview has all data including image, use it directly
+		if (customPreview?.image) {
+			preview = customPreview;
+			return;
+		}
+
 		loading = true;
 
 		try {
 			const res = await fetch(`/api/preview?url=${encodeURIComponent(href)}`);
 			const data = await res.json();
 			if (!data.error) {
-				preview = data;
+				// If customPreview is set, use custom title/description but keep fetched image
+				if (customPreview) {
+					preview = {
+						title: customPreview.title,
+						description: customPreview.description,
+						image: data.image
+					};
+				} else {
+					preview = data;
+				}
+			} else if (customPreview) {
+				preview = customPreview;
 			}
 		} catch (e) {
 			console.error('Failed to fetch preview:', e);
+			if (customPreview) {
+				preview = customPreview;
+			}
 		} finally {
 			loading = false;
 		}
@@ -132,12 +155,14 @@
 		{href}
 		target="_blank"
 		rel="noopener noreferrer"
-		class="text-blue-400 underline hover:text-blue-300 inline-flex items-baseline gap-0.5"
+		class={iconOnly ? "inline-flex items-center" : "text-blue-400 underline hover:text-blue-300"}
 		on:mouseenter={handleMouseEnter}
 		on:mouseleave={handleMouseLeave}
 	>
 		<slot />
-		<ExternalLink size={10} class="inline" />
+		{#if !iconOnly}
+			<ExternalLink size={10} class="inline" />
+		{/if}
 	</a>
 	{#if isHovered}
 		<div
