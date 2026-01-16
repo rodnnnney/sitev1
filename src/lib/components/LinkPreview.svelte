@@ -59,8 +59,8 @@
 		if (!containerEl) return;
 
 		const rect = containerEl.getBoundingClientRect();
-		const tooltipWidth = 288;
-		const tooltipHeight = 220;
+		const tooltipWidth = variant === 'block' ? 256 : 288;
+		const tooltipHeight = variant === 'block' ? 80 : 220;
 		const padding = 8;
 
 		// Check if there's enough space above
@@ -96,7 +96,7 @@
 		updateTooltipPosition();
 		timeoutId = setTimeout(() => {
 			isHovered = true;
-		}, 300);
+		}, variant === 'block' ? 50 : 300);
 	}
 
 	function handleMouseLeave() {
@@ -114,15 +114,7 @@
 </script>
 
 {#if variant === 'block'}
-<div
-	class="relative"
-	bind:this={containerEl}
-	on:mouseenter={handleMouseEnter}
-	on:mouseleave={handleMouseLeave}
-	role="button"
-	tabindex="0"
-	on:keydown={(e) => e.key === 'Enter' && window.open(href, '_blank')}
->
+<div class="relative flex-shrink-0 group">
 	<a
 		{href}
 		target="_blank"
@@ -131,41 +123,15 @@
 	>
 		<slot />
 	</a>
-	{#if isHovered}
+	{#if customPreview}
 		<div
-			transition:fade={{ duration: 150 }}
-			class="fixed z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-72"
-			style="left: {tooltipX}px; top: {tooltipY}px;{showBelow ? '' : ' transform: translateY(-100%);'}"
-			on:mouseenter={handleMouseEnter}
-			on:mouseleave={handleMouseLeave}
+			class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-64"
 			role="tooltip"
 		>
-			{#if loading}
-				<div class="p-4 text-center">
-					<div class="animate-pulse text-gray-400 text-sm">Loading preview...</div>
-				</div>
-			{:else if preview}
-				{#if preview.image}
-					<img
-						src={preview.image}
-						alt={preview.title || ''}
-						class="w-full h-32 object-cover"
-						on:error={(e: Event) => (e.target as HTMLImageElement).style.display = 'none'}
-					/>
-				{/if}
-				<div class="p-3">
-					{#if preview.title}
-						<p class="text-sm font-title text-white">{preview.title}</p>
-					{/if}
-					{#if preview.description}
-						<p class="text-xs mt-1 line-clamp-3 text-[#d0d0d0]">{preview.description}</p>
-					{/if}
-				</div>
-			{:else}
-				<div class="p-3">
-					<p class="text-sm text-gray-400">Preview unavailable</p>
-				</div>
-			{/if}
+			<div class="p-2">
+				<p class="text-xs font-title text-white">{customPreview.title}</p>
+				<p class="text-xs mt-0.5 text-[#d0d0d0]">{customPreview.description}</p>
+			</div>
 		</div>
 	{/if}
 </div>

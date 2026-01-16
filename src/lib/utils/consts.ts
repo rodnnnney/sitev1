@@ -117,32 +117,43 @@ export const blog = [
 export const bangers = [
   {
     title: "跳楼机 (Jumping Machine)",
+    artist: "LBI利比",
+    description: "Very Chinese",
     link: "https://open.spotify.com/track/1XZE0InCx3SdCnLpVsPpZl?si=992084569f6d4efb",
     cover_img: bucketURL + "/bangers/jump.jpg"
   },
   {
     title: "Starlight",
+    artist: "Dave",
+    description: "Very good song. Very good artist. Nigerian goat.",
     link: "https://open.spotify.com/track/531KGXtBroSrOX9LVmiIgc?si=94fa4b72d53443e5",
     cover_img: bucketURL + "/bangers/star.png"
   },
-  
   {
     title: "Lady Of Namek",
+    artist: "Tory Lanez",
+    description: "Just liten to this.",
     link: "https://open.spotify.com/track/3UqWPDav8MenwVNwUIZFA8?si=077391a31384434f",
     cover_img: bucketURL + "/bangers/tory.png"
   },
   {
     title: "Peak",
+    artist: "Drake",
+    description: "Self-explanatory title.",
     link: "https://open.spotify.com/track/11L064movtyopGdLiX4sVg?si=e88ed473c7a7461c",
     cover_img: bucketURL + "/bangers/dri.png"
   },
   {
     title: "Atmosphere",
+    artist: "Fisher",
+    description: "You got me spinning your atmosphereeeeeeeeee.",
     link: "https://open.spotify.com/track/63HwAAXuSV2tzIUPoHOwZa?si=4997ee66507f455b",
     cover_img: bucketURL + "/bangers/atmo.png"
   },
   {
     title: "Feel No Ways",
+    artist: "Drake",
+    description: "I tried with you, there's more to life than sleeping in and getting high with you.",
     link: "https://open.spotify.com/track/3cjF2OFRmip8spwZYQRKxP?si=454a07bab5a740c1",
     cover_img: bucketURL + "/bangers/dri2.png"
   }

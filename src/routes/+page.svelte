@@ -13,6 +13,7 @@
 	import GitHubContributions from '$lib/components/GitHubContributions.svelte';
 	import LinkPreview from '$lib/components/LinkPreview.svelte';
 	import TextRotator from '$lib/components/TextRotator.svelte';
+	import SongTooltip from '$lib/components/SongTooltip.svelte';
 
 	let currentImageIndex = 0;
 	let interval: number;
@@ -34,6 +35,15 @@
 	let BASE_DELAY = 0;
 	let DELAY_INCREMENT = 100;
 	let isMobile = false;
+
+	let marqueeEl: HTMLElement;
+	let marqueePosition = 0;
+	let marqueePaused = false;
+	let marqueeAnimationId: number;
+
+	// Song tooltip state
+	let hoveredSong: { title: string; description: string } | null = null;
+	let songTriggerEl: HTMLElement | null = null;
 
 	function nextImage() {
 		currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -69,13 +79,23 @@
 		}, 10000);
 	}
 
+	function animateMarquee() {
+		if (!marqueePaused && marqueeEl) {
+			marqueePosition -= 0.2;
+			const halfWidth = marqueeEl.scrollWidth / 2;
+			if (Math.abs(marqueePosition) >= halfWidth) {
+				marqueePosition = 0;
+			}
+			marqueeEl.style.transform = `translateX(${marqueePosition}px)`;
+		}
+		marqueeAnimationId = requestAnimationFrame(animateMarquee);
+	}
+
 	onMount(() => {
 		ready = true;
 
-		// Check if mobile/small screen
-		isMobile = window.innerWidth < 1024; // lg breakpoint
+		isMobile = window.innerWidth < 1024;
 
-		// Adjust delays for mobile - more sequential
 		if (isMobile) {
 			BASE_DELAY = 300;
 			DELAY_INCREMENT = 200;
@@ -93,10 +113,14 @@
 			currentJobTitleIndex = (currentJobTitleIndex + 1) % jobTitles.length;
 		}, 2500);
 
+		// Start marquee animation
+		marqueeAnimationId = requestAnimationFrame(animateMarquee);
+
 		return () => {
 			clearInterval(interval);
 			clearInterval(interval1);
 			clearInterval(jobTitleInterval);
+			cancelAnimationFrame(marqueeAnimationId);
 		};
 	});
 </script>
@@ -399,26 +423,55 @@
 				<div
 					class="overflow-hidden rounded-lg bg-neutral-800 p-1 shadow-sm"
 					transition:fly={{ x: 30, y: 0, duration: 800, delay: BASE_DELAY + DELAY_INCREMENT * 6 }}
+					on:mouseenter={() => marqueePaused = true}
+					on:mouseleave={(e) => {
+						// Don't unpause if mouse went to a tooltip
+						const related = e.relatedTarget as HTMLElement;
+						if (related?.closest('[role="tooltip"]')) return;
+						marqueePaused = false;
+					}}
+					role="region"
+					aria-label="Song carousel"
 				>
-					<div class="animate-marquee flex flex-row gap-1 whitespace-nowrap">
+					<div bind:this={marqueeEl} class="flex flex-row gap-1 whitespace-nowrap">
 						{#each bangers as banger}
-							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
+							<a
+								href={banger.link}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="flex-shrink-0"
+								on:mouseenter={(e) => {
+									hoveredSong = { title: banger.title, description: banger.artist + (banger.description ? " · " + banger.description : "") };
+									songTriggerEl = e.currentTarget;
+								}}
+								on:mouseleave={() => { hoveredSong = null; songTriggerEl = null; }}
+							>
 								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
 									<img
 										src={banger.cover_img}
 										alt={banger.title || 'Album cover'}
-										class="rounded-lg object-cover"
+										class="rounded-lg object-cover grayscale-[65%] hover:grayscale-0 transition-[filter] duration-300"
 									/>
 								</div>
 							</a>
 						{/each}
 						{#each bangers as banger}
-							<a class="flex-shrink-0 transition-opacity hover:opacity-75" href={banger.link}>
+							<a
+								href={banger.link}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="flex-shrink-0"
+								on:mouseenter={(e) => {
+									hoveredSong = { title: banger.title, description: banger.artist + (banger.description ? " · " + banger.description : "") };
+									songTriggerEl = e.currentTarget;
+								}}
+								on:mouseleave={() => { hoveredSong = null; songTriggerEl = null; }}
+							>
 								<div class="relative h-12 w-12 sm:h-16 sm:w-16">
 									<img
 										src={banger.cover_img}
 										alt={banger.title || 'Album cover'}
-										class="rounded-lg object-cover"
+										class="rounded-lg object-cover grayscale-[65%] hover:grayscale-0 transition-[filter] duration-300"
 									/>
 								</div>
 							</a>
@@ -502,6 +555,14 @@
 			Check out my other <LinkPreview href="https://cu-webring.org/">cracked friends</LinkPreview>
 		</div>
 	</div>
+
+	<!-- Song tooltip rendered at page level to escape clipping -->
+	<SongTooltip
+		title={hoveredSong?.title || ''}
+		description={hoveredSong?.description || ''}
+		triggerEl={songTriggerEl}
+		visible={!!hoveredSong}
+	/>
 {/if}
 
 <style>
@@ -527,18 +588,5 @@
 
 	.custom-scrollbar:focus::-webkit-scrollbar-thumb {
 		background: #ababab;
-	}
-
-	@keyframes marquee {
-		0% {
-			transform: translateX(0);
-		}
-		100% {
-			transform: translateX(-50%);
-		}
-	}
-
-	.animate-marquee {
-		animation: marquee 20s linear infinite;
 	}
 </style>
