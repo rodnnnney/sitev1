@@ -132,7 +132,7 @@ export const bangers = [
   {
     title: "Lady Of Namek",
     artist: "Tory Lanez",
-    description: "Just liten to this.",
+    description: "Just listen to this. #FreeTory",
     link: "https://open.spotify.com/track/3UqWPDav8MenwVNwUIZFA8?si=077391a31384434f",
     cover_img: bucketURL + "/bangers/tory.png"
   },
