@@ -18,8 +18,8 @@ export async function GET() {
 		const response = await fetch('https://api.github.com/graphql', {
 			method: 'POST',
 			headers: {
-				'Authorization': `Bearer ${GITHUB_TOKEN}`,
-				'Content-Type': 'application/json',
+				Authorization: `Bearer ${GITHUB_TOKEN}`,
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ query })
 		});
@@ -29,17 +29,21 @@ export async function GET() {
 		}
 
 		const data = await response.json();
-		const totalContributions = data.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions ?? 0;
+		const totalContributions =
+			data.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions ?? 0;
 
 		return json({
 			totalContributions,
-			year: new Date().getFullYear(),
+			year: new Date().getFullYear()
 		});
 	} catch (error) {
 		console.error('GitHub API error:', error);
-		return json({
-			totalContributions: 0,
-			year: new Date().getFullYear(),
-		}, { status: 500 });
+		return json(
+			{
+				totalContributions: 0,
+				year: new Date().getFullYear()
+			},
+			{ status: 500 }
+		);
 	}
 }

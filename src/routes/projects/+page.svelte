@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { projects, images } from '$lib/utils/consts';
-	import {  fly } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/header.svelte';

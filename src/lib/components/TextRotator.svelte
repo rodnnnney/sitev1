@@ -10,7 +10,7 @@
 	let animatingOut = false;
 	let intervalId: ReturnType<typeof setInterval>;
 
-	$: longestWord = rotatingWords.reduce((a, b) => a.length > b.length ? a : b, '');
+	$: longestWord = rotatingWords.reduce((a, b) => (a.length > b.length ? a : b), '');
 
 	function nextWord() {
 		animatingOut = true;
@@ -33,10 +33,7 @@
 <span class="rotator-container">
 	{#if staticText}<span>{staticText}&nbsp;</span>{/if}<span class="rotator-word-container">
 		<span class="rotator-sizer">{longestWord}</span>
-		<span
-			class="rotator-word"
-			class:animating-out={animatingOut}
-		>
+		<span class="rotator-word" class:animating-out={animatingOut}>
 			{rotatingWords[displayIndex]}
 		</span>
 	</span>

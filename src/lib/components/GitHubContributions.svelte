@@ -16,7 +16,6 @@
 				totalCommits = data.totalContributions;
 				currentYear = data.year;
 			} else {
-
 				totalCommits = 965;
 			}
 		} catch (error) {
@@ -42,10 +41,7 @@
 			<div class="mb-3 flex items-center justify-between">
 				<h4>Github</h4>
 				{#if totalCommits > 0}
-					<div class="text-right">
-
-
-					</div>
+					<div class="text-right"></div>
 				{/if}
 			</div>
 			<div class="contributions-chart">
@@ -61,7 +57,7 @@
 				/>
 			</div>
 			<p class="mt-2 text-xs text-gray-400">
-				Syncs daily • <span class="commit-highlight">{totalCommits+1}</span> <em>commits</em>
+				Syncs daily • <span class="commit-highlight">{totalCommits + 1}</span> <em>commits</em>
 			</p>
 		</div>
 	{/if}

@@ -59,8 +59,8 @@
 		if (!containerEl) return;
 
 		const rect = containerEl.getBoundingClientRect();
-		const tooltipWidth = variant === 'block' ? 256 : 288;
-		const tooltipHeight = variant === 'block' ? 80 : 220;
+		const tooltipWidth = variant === 'block' ? 288 : 288;
+		const tooltipHeight = 250; // Image (128) + text + padding
 		const padding = 8;
 
 		// Check if there's enough space above
@@ -94,9 +94,12 @@
 		clearTimeout(timeoutId);
 		fetchPreview();
 		updateTooltipPosition();
-		timeoutId = setTimeout(() => {
-			isHovered = true;
-		}, variant === 'block' ? 50 : 300);
+		timeoutId = setTimeout(
+			() => {
+				isHovered = true;
+			},
+			variant === 'block' ? 50 : 300
+		);
 	}
 
 	function handleMouseLeave() {
@@ -114,77 +117,110 @@
 </script>
 
 {#if variant === 'block'}
-<div class="relative flex-shrink-0 group">
-	<a
-		{href}
-		target="_blank"
-		rel="noopener noreferrer"
-		class="block"
-	>
-		<slot />
-	</a>
-	{#if customPreview}
-		<div
-			class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-64"
-			role="tooltip"
-		>
-			<div class="p-2">
-				<p class="text-xs font-title text-white">{customPreview.title}</p>
-				<p class="text-xs mt-0.5 text-[#d0d0d0]">{customPreview.description}</p>
-			</div>
-		</div>
-	{/if}
-</div>
-{:else}
-<span class="relative inline-block" bind:this={containerEl}>
-	<a
-		{href}
-		target="_blank"
-		rel="noopener noreferrer"
-		class={iconOnly ? "inline-flex items-center" : "text-blue-400 underline hover:text-blue-300"}
+	<div
+		class="relative flex-shrink-0"
+		bind:this={containerEl}
 		on:mouseenter={handleMouseEnter}
 		on:mouseleave={handleMouseLeave}
+		role="button"
+		tabindex="0"
+		on:keydown={(e) => e.key === 'Enter' && window.open(href, '_blank')}
 	>
-		<slot />
-		{#if !iconOnly}
-			<ExternalLink size={10} class="inline" />
+		<a {href} target="_blank" rel="noopener noreferrer" class="block">
+			<slot />
+		</a>
+		{#if isHovered}
+			<div
+				transition:fade={{ duration: 150 }}
+				class="fixed z-[9999] w-72 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl"
+				style="left: {tooltipX}px; top: {tooltipY}px;{showBelow
+					? ''
+					: ' transform: translateY(-100%);'}"
+				on:mouseenter={handleMouseEnter}
+				on:mouseleave={handleMouseLeave}
+				role="tooltip"
+			>
+				{#if loading}
+					<div class="p-4 text-center">
+						<div class="animate-pulse text-sm text-gray-400">Loading preview...</div>
+					</div>
+				{:else if preview}
+					{#if preview.image}
+						<img
+							src={preview.image}
+							alt={preview.title || ''}
+							class="h-32 w-full object-cover"
+							on:error={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
+						/>
+					{/if}
+					<div class="p-3">
+						{#if preview.title}
+							<p class="font-title text-sm text-white">{preview.title}</p>
+						{/if}
+						{#if preview.description}
+							<p class="mt-1 line-clamp-3 text-xs text-[#d0d0d0]">{preview.description}</p>
+						{/if}
+					</div>
+				{:else}
+					<div class="p-3">
+						<p class="text-sm text-gray-400">Preview unavailable</p>
+					</div>
+				{/if}
+			</div>
 		{/if}
-	</a>
-	{#if isHovered}
-		<div
-			transition:fade={{ duration: 150 }}
-			class="absolute {showBelow ? 'top-full mt-2' : 'bottom-full mb-2'} {positionClass} z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-72"
+	</div>
+{:else}
+	<span class="relative inline-block" bind:this={containerEl}>
+		<a
+			{href}
+			target="_blank"
+			rel="noopener noreferrer"
+			class={iconOnly ? 'inline-flex items-center' : 'text-blue-400 underline hover:text-blue-300'}
 			on:mouseenter={handleMouseEnter}
 			on:mouseleave={handleMouseLeave}
-			role="tooltip"
 		>
-			{#if loading}
-				<div class="p-4 text-center">
-					<div class="animate-pulse text-gray-400 text-sm">Loading preview...</div>
-				</div>
-			{:else if preview}
-				{#if preview.image}
-					<img
-						src={preview.image}
-						alt={preview.title || ''}
-						class="w-full h-32 object-cover"
-						on:error={(e: Event) => (e.target as HTMLImageElement).style.display = 'none'}
-					/>
-				{/if}
-				<div class="p-3">
-					{#if preview.title}
-						<p class="text-sm font-title text-white">{preview.title}</p>
-					{/if}
-					{#if preview.description}
-						<p class="text-xs mt-1 line-clamp-3 text-[#d0d0d0]">{preview.description}</p>
-					{/if}
-				</div>
-			{:else}
-				<div class="p-3">
-					<p class="text-sm text-gray-400">Preview unavailable</p>
-				</div>
+			<slot />
+			{#if !iconOnly}
+				<ExternalLink size={10} class="inline" />
 			{/if}
-		</div>
-	{/if}
-</span>
+		</a>
+		{#if isHovered}
+			<div
+				transition:fade={{ duration: 150 }}
+				class="absolute {showBelow
+					? 'top-full mt-2'
+					: 'bottom-full mb-2'} {positionClass} z-[9999] w-72 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl"
+				on:mouseenter={handleMouseEnter}
+				on:mouseleave={handleMouseLeave}
+				role="tooltip"
+			>
+				{#if loading}
+					<div class="p-4 text-center">
+						<div class="animate-pulse text-sm text-gray-400">Loading preview...</div>
+					</div>
+				{:else if preview}
+					{#if preview.image}
+						<img
+							src={preview.image}
+							alt={preview.title || ''}
+							class="h-32 w-full object-cover"
+							on:error={(e: Event) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					{/if}
+					<div class="p-3">
+						{#if preview.title}
+							<p class="font-title text-sm text-white">{preview.title}</p>
+						{/if}
+						{#if preview.description}
+							<p class="mt-1 line-clamp-3 text-xs text-[#d0d0d0]">{preview.description}</p>
+						{/if}
+					</div>
+				{:else}
+					<div class="p-3">
+						<p class="text-sm text-gray-400">Preview unavailable</p>
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</span>
 {/if}

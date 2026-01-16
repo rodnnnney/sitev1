@@ -41,15 +41,21 @@ export const GET: RequestHandler = async ({ url }) => {
 		// Parse meta tags
 		const getMetaContent = (property: string): string | null => {
 			// Try og: tags
-			const ogMatch = html.match(new RegExp(`<meta[^>]*property=["']og:${property}["'][^>]*content=["']([^"']*)["']`, 'i'));
+			const ogMatch = html.match(
+				new RegExp(`<meta[^>]*property=["']og:${property}["'][^>]*content=["']([^"']*)["']`, 'i')
+			);
 			if (ogMatch) return ogMatch[1];
 
 			// Try reverse order (content before property)
-			const ogMatchReverse = html.match(new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*property=["']og:${property}["']`, 'i'));
+			const ogMatchReverse = html.match(
+				new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*property=["']og:${property}["']`, 'i')
+			);
 			if (ogMatchReverse) return ogMatchReverse[1];
 
 			// Try twitter: tags
-			const twitterMatch = html.match(new RegExp(`<meta[^>]*name=["']twitter:${property}["'][^>]*content=["']([^"']*)["']`, 'i'));
+			const twitterMatch = html.match(
+				new RegExp(`<meta[^>]*name=["']twitter:${property}["'][^>]*content=["']([^"']*)["']`, 'i')
+			);
 			if (twitterMatch) return twitterMatch[1];
 
 			return null;

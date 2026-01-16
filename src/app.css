@@ -22,7 +22,8 @@
 	font-style: normal;
 }
 
-html, body {
+html,
+body {
 	margin: 0;
 	padding: 0;
 	font-family: 'PP Neue Montreal', sans-serif;
@@ -32,16 +33,34 @@ html, body {
 	min-height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6, .font-title {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-title {
 	font-family: 'Libre Caslon', serif;
 	font-weight: 400;
 	color: #ffffff;
 	letter-spacing: 0.5px;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.25rem; }
-h4 { font-size: 1.125rem; }
-h5 { font-size: 1rem; }
-h6 { font-size: 0.875rem; }
+h1 {
+	font-size: 2.5rem;
+}
+h2 {
+	font-size: 2rem;
+}
+h3 {
+	font-size: 1.25rem;
+}
+h4 {
+	font-size: 1.125rem;
+}
+h5 {
+	font-size: 1rem;
+}
+h6 {
+	font-size: 0.875rem;
+}

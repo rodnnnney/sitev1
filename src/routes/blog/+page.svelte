@@ -15,52 +15,56 @@
 <Header />
 
 <div class="mx-auto max-w-6xl p-4 px-4 md:p-12 md:px-12 lg:px-20">
-		<nav class="mb-8 flex items-center space-x-2 text-sm text-white">
-			<a href="/">Home</a>
-			<span>/</span>
-			<a href="/blog" class="text-white transition-colors">Blog</a>
-		</nav>
+	<nav class="mb-8 flex items-center space-x-2 text-sm text-white">
+		<a href="/">Home</a>
+		<span>/</span>
+		<a href="/blog" class="text-white transition-colors">Blog</a>
+	</nav>
 
-		<h1 class="mb-8 flex justify-start text-left text-3xl">Blog</h1>
+	<h1 class="mb-8 flex justify-start text-left text-3xl">Blog</h1>
 
-		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-			{#each blog as blog, i}
-				<div class="block">
-					{#if visible}
-						<a
-							href="/blog/{blog.link}"
-							class="block"
-							in:fly={{
-								y: 50,
-								duration: 800,
-								delay: i * 100,
-								easing: quintOut
-							}}
+	<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+		{#each blog as blog, i}
+			<div class="block">
+				{#if visible}
+					<a
+						href="/blog/{blog.link}"
+						class="block"
+						in:fly={{
+							y: 50,
+							duration: 800,
+							delay: i * 100,
+							easing: quintOut
+						}}
+					>
+						<div
+							class="overflow-hidden rounded-lg bg-black shadow-lg transition-colors hover:bg-neutral-900"
 						>
-							<div
-								class="overflow-hidden rounded-lg bg-black shadow-lg transition-colors hover:bg-neutral-900"
-							>
-								<img src={blog.cover_img} alt={blog.title} class="aspect-square w-full object-cover" />
-								<div class="p-6">
-									<h2 class="mb-2 text-xl font-semibold">{blog.title}</h2>
-									<p class="mb-4 text-sm text-gray-400">{blog.date}</p>
-									<p class="text-gray-300">{blog.excerpt}</p>
-								</div>
-							</div>
-						</a>
-					{:else}
-						<div class="overflow-hidden rounded-lg bg-neutral-800/50 shadow-lg">
-							<div class="aspect-square w-full bg-neutral-700/50"></div>
+							<img
+								src={blog.cover_img}
+								alt={blog.title}
+								class="aspect-square w-full object-cover"
+							/>
 							<div class="p-6">
-								<div class="mb-2 h-6 w-3/4 rounded bg-neutral-700/50"></div>
-								<div class="mb-4 h-4 w-1/4 rounded bg-neutral-700/50"></div>
-								<div class="h-4 w-full rounded bg-neutral-700/50"></div>
+								<h2 class="mb-2 text-xl font-semibold">{blog.title}</h2>
+								<p class="mb-4 text-sm text-gray-400">{blog.date}</p>
+								<p class="text-gray-300">{blog.excerpt}</p>
 							</div>
 						</div>
-					{/if}
-				</div>
-			{/each}
-		</div>
+					</a>
+				{:else}
+					<div class="overflow-hidden rounded-lg bg-neutral-800/50 shadow-lg">
+						<div class="aspect-square w-full bg-neutral-700/50"></div>
+						<div class="p-6">
+							<div class="mb-2 h-6 w-3/4 rounded bg-neutral-700/50"></div>
+							<div class="mb-4 h-4 w-1/4 rounded bg-neutral-700/50"></div>
+							<div class="h-4 w-full rounded bg-neutral-700/50"></div>
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/each}
+	</div>
 </div>
 
 <style>

@@ -212,7 +212,7 @@
 			<div class="flex items-center space-x-3">
 				<a
 					href="/"
-					class="text-lg text-white transition-colors hover:text-gray-300 sm:text-xl font-title"
+					class="font-title text-lg text-white transition-colors hover:text-gray-300 sm:text-xl"
 				>
 					Rodney Shen
 				</a>
@@ -223,13 +223,13 @@
 				<div class="hidden items-center space-x-6 sm:flex">
 					<a
 						href="/blog"
-						class="text-white transition-colors duration-300 hover:text-gray-300 font-title"
+						class="font-title text-white transition-colors duration-300 hover:text-gray-300"
 					>
 						Blog
 					</a>
 					<a
 						href="/projects"
-						class="text-white transition-colors duration-300 hover:text-gray-300 font-title"
+						class="font-title text-white transition-colors duration-300 hover:text-gray-300"
 					>
 						Projects
 					</a>
@@ -403,7 +403,9 @@
 									<span>Select</span>
 								</span>
 								<span class="flex items-center space-x-1">
-									<kbd class="rounded border border-gray-600 px-1.5 py-0.5">{isMac ? '⌘' : 'Ctrl'}+1</kbd>
+									<kbd class="rounded border border-gray-600 px-1.5 py-0.5"
+										>{isMac ? '⌘' : 'Ctrl'}+1</kbd
+									>
 									<span>Home</span>
 								</span>
 							</div>
@@ -415,4 +417,3 @@
 		</div>
 	{/if}
 </header>
-
