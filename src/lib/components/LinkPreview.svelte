@@ -16,12 +16,12 @@
 	let containerEl: HTMLElement;
 	let tooltipX = 0;
 	let tooltipY = 0;
+	let showBelow = false;
 
 	async function fetchPreview() {
 		if (fetched) return;
 		fetched = true;
 
-		// If customPreview has all data including image, use it directly
 		if (customPreview?.image) {
 			preview = customPreview;
 			return;
@@ -33,7 +33,6 @@
 			const res = await fetch(`/api/preview?url=${encodeURIComponent(href)}`);
 			const data = await res.json();
 			if (!data.error) {
-				// If customPreview is set, use custom title/description but keep fetched image
 				if (customPreview) {
 					preview = {
 						title: customPreview.title,
@@ -57,15 +56,36 @@
 	}
 
 	function updateTooltipPosition() {
-		if (containerEl && variant === 'block') {
-			const rect = containerEl.getBoundingClientRect();
-			tooltipY = rect.top - 8;
+		if (!containerEl) return;
+
+		const rect = containerEl.getBoundingClientRect();
+		const tooltipWidth = 288;
+		const tooltipHeight = 220;
+		const padding = 8;
+
+		// Check if there's enough space above
+		showBelow = rect.top < tooltipHeight + padding;
+
+		if (variant === 'block') {
+			if (showBelow) {
+				tooltipY = rect.bottom + padding;
+			} else {
+				tooltipY = rect.top - padding;
+			}
+
 			if (position === 'left') {
-				tooltipX = rect.right - 288;
+				tooltipX = rect.right - tooltipWidth;
 			} else if (position === 'right') {
 				tooltipX = rect.left;
 			} else {
-				tooltipX = rect.left + rect.width / 2 - 144;
+				tooltipX = rect.left + rect.width / 2 - tooltipWidth / 2;
+			}
+
+			const viewportWidth = window.innerWidth;
+			if (tooltipX < padding) {
+				tooltipX = padding;
+			} else if (tooltipX + tooltipWidth > viewportWidth - padding) {
+				tooltipX = viewportWidth - tooltipWidth - padding;
 			}
 		}
 	}
@@ -115,7 +135,7 @@
 		<div
 			transition:fade={{ duration: 150 }}
 			class="fixed z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-72"
-			style="left: {tooltipX}px; top: {tooltipY}px; transform: translateY(-100%);"
+			style="left: {tooltipX}px; top: {tooltipY}px;{showBelow ? '' : ' transform: translateY(-100%);'}"
 			on:mouseenter={handleMouseEnter}
 			on:mouseleave={handleMouseLeave}
 			role="tooltip"
@@ -150,7 +170,7 @@
 	{/if}
 </div>
 {:else}
-<span class="relative inline-block">
+<span class="relative inline-block" bind:this={containerEl}>
 	<a
 		{href}
 		target="_blank"
@@ -167,7 +187,7 @@
 	{#if isHovered}
 		<div
 			transition:fade={{ duration: 150 }}
-			class="absolute bottom-full {positionClass} mb-2 z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-72"
+			class="absolute {showBelow ? 'top-full mt-2' : 'bottom-full mb-2'} {positionClass} z-[9999] rounded-lg border border-neutral-700 bg-neutral-800 shadow-xl overflow-hidden w-72"
 			on:mouseenter={handleMouseEnter}
 			on:mouseleave={handleMouseLeave}
 			role="tooltip"
