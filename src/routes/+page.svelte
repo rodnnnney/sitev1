@@ -221,8 +221,9 @@
 									href="https://textql.com/blog/sandcastles">file systems</LinkPreview
 								> to execute on in a secure and sandboxed environment.
 								<br /><br />
-								In a past life, I was deep in crypto, I intered at companies that did both stablecoins and a decentralized cloud storage. I founded <LinkPreview
-					 			href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview
+								In a past life, I was deep in crypto, I intered at companies that did both stablecoins
+								and a decentralized cloud storage. I founded <LinkPreview
+									href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview
 								>, grew it to 200 members, and even spoke at <LinkPreview
 									href="https://consensus-hongkong2025.coindesk.com/agenda/event/-the-student-movement-universities-as-catalysts-for-web3-innovation-30"
 									>Consensus HK</LinkPreview
