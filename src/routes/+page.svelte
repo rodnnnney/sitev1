@@ -146,9 +146,9 @@
 		<div transition:fly={{ y: -50, duration: 800, delay: BASE_DELAY }} class="flex-shrink-0">
 			<Header />
 		</div>
-		<div class="flex min-h-0 w-full flex-1 items-center justify-center p-2 sm:p-3 lg:p-4">
+		<div class="flex min-h-0 w-full flex-1 items-center justify-center py-2 sm:py-3 lg:py-4">
 			<div
-				class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-2 sm:gap-3 lg:max-h-[calc(100vh-120px)] lg:grid-cols-3 lg:gap-4"
+				class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-2 px-4 sm:gap-3 lg:max-h-[calc(100vh-120px)] lg:grid-cols-3 lg:gap-4"
 			>
 				<!-- Left Column -->
 				<div class="flex flex-col space-y-2 pt-8 sm:space-y-2">
@@ -196,7 +196,7 @@
 							<p class="text-xs font-medium sm:text-sm">Computer Science @ Carleton University</p>
 						</div>
 						<div class="mt-2 mb-2 w-full border-b border-gray-300"></div>
-						<p class="text-left text-xs">Permanent gap year</p>
+						<p class="text-left text-xs">Exp Grad: ~2027</p>
 					</div>
 
 					<div
@@ -212,7 +212,7 @@
 
 						<div class="flex-row-2 flex">
 							<p class="text-left text-sm">
-								I'm Rodney! I'm based in NYC working at <LinkPreview
+								Hey, I'm Rodney! Currently, I'm based in NYC working at a startup called <LinkPreview
 									href="https://textql.com/"
 									position="right">TextQL</LinkPreview
 								> as a Member of Technical Staff.
@@ -221,11 +221,11 @@
 									href="https://textql.com/blog/sandcastles">file systems</LinkPreview
 								> to execute on in a secure and sandboxed environment.
 								<br /><br />
-								In a past life, I was deep in crypto, I founded <LinkPreview
-									href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview
-								>, grew it to 200 members, and spoke at <LinkPreview
+								In a past life, I was deep in crypto, I intered at companies that did both stablecoins and a decentralized cloud storage. I founded <LinkPreview
+					 			href="https://carletonblockchain.ca/">Carleton Blockchain</LinkPreview
+								>, grew it to 200 members, and even spoke at <LinkPreview
 									href="https://consensus-hongkong2025.coindesk.com/agenda/event/-the-student-movement-universities-as-catalysts-for-web3-innovation-30"
-									>Consensus Hong Kong</LinkPreview
+									>Consensus HK</LinkPreview
 								>.
 							</p>
 						</div>
