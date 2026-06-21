@@ -8,6 +8,7 @@
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: 'Ioskeley Mono';
   src: url('/fonts/IoskeleyMono-Medium.woff2') format('woff2');
@@ -15,6 +16,7 @@
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: 'Ioskeley Mono';
   src: url('/fonts/IoskeleyMono-Bold.woff2') format('woff2');
@@ -45,15 +47,21 @@
   --default-font-family: var(--font-mono);
 
   /* Light paper / editorial palette — accent is #20F */
-  --color-paper: #f5f4f0; /* page background */
-  --color-ink: #0a0a0a; /* primary text */
-  --color-muted: #6b6b6b; /* secondary text */
-  --color-line: #e3e1da; /* hairline guide rules */
-  --color-accent: #2200ff; /* #20F */
+  --color-paper: #F7F6F5;
+  /* page background */
+  --color-ink: #0a0a0a;
+  /* primary text */
+  --color-muted: #6b6b6b;
+  /* secondary text */
+  --color-line: #e3e1da;
+  /* hairline guide rules */
+  --color-accent: #2200ff;
+  /* #20F */
 }
 
 html {
   font-family: var(--font-mono);
+  height: 100%;
 }
 
 body {

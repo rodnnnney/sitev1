@@ -2,6 +2,7 @@
   import type { Snippet } from 'svelte'
   import { onMount } from 'svelte'
   import { Text, type TextSize } from '../Text'
+  import { deviceType } from '../../deviceStore'
 
   let {
     title,
@@ -57,13 +58,13 @@
   })
 </script>
 
-<main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-12 px-6 py-20">
+<main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-12 {$deviceType === 'mobile' ? 'px-4 py-12' : 'px-6 py-20'}">
   <!-- Title block — same position on every page -->
   <header class="flex flex-col">
     {#if label}
       <Text type="label" size="xs" color="muted" class="leading-none">{label}</Text>
     {/if}
-    <div class="flex items-end justify-between">
+    <div class="flex justify-between gap-1 {$deviceType === 'mobile' ? 'flex-col items-start' : 'flex-row items-end'}">
       <Text type="heading" size={titleSize} color="black" animate animateOnHover class="leading-tight">
         {title}
       </Text>

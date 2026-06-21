@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
+  import { onMount } from "svelte";
   import { Text } from "../Text";
   import Debug from "./Debug.svelte";
   import { debugStore } from "../../debugStore";
+  import { deviceType, initBreakpointListener } from "../../deviceStore";
 
   let { children, path } = $props<{ children?: Snippet; path: string }>();
 
@@ -36,6 +38,10 @@
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   });
+
+  onMount(() => {
+    return initBreakpointListener();
+  });
 </script>
 
 {#if $debugStore}
@@ -43,52 +49,81 @@
 {/if}
 
 <div class="relative min-h-screen">
-  <!-- Fixed sidebar: starts at 1/8, doesn't push content -->
-  <aside
-    class="fixed top-0 left-[12.5%] z-10 h-screen w-[12.5%] border-r border-line px-4 py-20"
-  >
-    <nav
-      bind:this={navEl}
-      class="relative flex flex-col gap-2 text-right"
+  {#if $deviceType === 'desktop'}
+    <!-- Desktop sidebar: fixed at 1/8 -->
+    <aside
+      class="fixed top-0 left-[12.5%] z-10 h-screen w-[12.5%] border-r border-line px-4 py-20"
     >
-      <!-- Animated active indicator -->
-      <div
-        class="absolute -right-3 top-0 w-0.5 bg-accent transition-all duration-300 ease-out"
-        style={indicatorStyle}
-      ></div>
-
-      <Text
-        type="paragraph"
-        size="sm"
-        color={path === "/" ? "accent" : "black"}
-        links={path !== "/"}
-        class="w-full"
+      <nav
+        bind:this={navEl}
+        class="relative flex flex-col gap-2 text-right"
       >
-        <a
-          bind:this={homeLink}
-          href="/"
-          class={path === "/" ? "no-underline" : ""}>home</a>
-      </Text>
+        <!-- Animated active indicator -->
+        <div
+          class="absolute -right-3 top-0 w-0.5 bg-accent transition-all duration-300 ease-out"
+          style={indicatorStyle}
+        ></div>
 
-      {#if $debugStore}
         <Text
           type="paragraph"
           size="sm"
-          color={path === "/xyz" ? "accent" : "black"}
-          links={path !== "/xyz"}
+          color={path === "/" ? "accent" : "black"}
+          links={path !== "/"}
           class="w-full"
         >
           <a
-            bind:this={componentsLink}
-            href="/xyz"
-            class={path === "/xyz" ? "no-underline" : ""}>components</a>
+            bind:this={homeLink}
+            href="/"
+            class={path === "/" ? "no-underline" : ""}>home</a>
         </Text>
-      {/if}
+
+        {#if $debugStore}
+          <Text
+            type="paragraph"
+            size="sm"
+            color={path === "/xyz" ? "accent" : "black"}
+            links={path !== "/xyz"}
+            class="w-full"
+          >
+            <a
+              bind:this={componentsLink}
+              href="/xyz"
+              class={path === "/xyz" ? "no-underline" : ""}>components</a>
+          </Text>
+        {/if}
+      </nav>
+    </aside>
+  {:else}
+    <!-- Mobile/Tablet top nav -->
+    <nav
+      class="fixed top-0 left-0 right-0 z-10 flex items-center justify-between border-b border-line bg-paper/95 px-4 py-4 backdrop-blur"
+    >
+      <div class="flex items-center gap-4">
+        <Text
+          type="paragraph"
+          size="sm"
+          color={path === "/" ? "accent" : "black"}
+          links={path !== "/"}
+        >
+          <a href="/" class={path === "/" ? "no-underline" : ""}>home</a>
+        </Text>
+
+        {#if $debugStore}
+          <Text
+            type="paragraph"
+            size="sm"
+            color={path === "/xyz" ? "accent" : "black"}
+            links={path !== "/xyz"}
+          >
+            <a href="/xyz" class={path === "/xyz" ? "no-underline" : ""}>components</a>
+          </Text>
+        {/if}
+      </div>
     </nav>
-  </aside>
+  {/if}
 
   <!-- Main content: centered as if there's no sidebar -->
-  <div class="relative">
+  <div class="relative {$deviceType === 'desktop' ? 'pt-0' : 'pt-16'}">
     {@render children?.()}
   </div>
 </div>

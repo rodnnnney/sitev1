@@ -9,6 +9,7 @@
     type TextColor,
     type TextType,
   } from "./primitives";
+  import { deviceType } from "./deviceStore";
 
   // Derive every option straight from the style maps so this stays in sync.
   const sizes = Object.keys(textSizeStyles) as TextSize[];
@@ -30,7 +31,7 @@
         <Text type="label" size="xs" color="muted">Text · type</Text>
         <div class="flex flex-col gap-3 border-t border-line pt-4">
           {#each types as type (type)}
-            <div class="grid grid-cols-[7rem_1fr] items-baseline gap-4">
+            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[7rem_1fr]'}">
               <Text type="label" size="xs" color="muted">{type}</Text>
               <Text {type} size="lg" color="black">The quick brown fox 123</Text
               >
@@ -44,7 +45,7 @@
         <Text type="label" size="xs" color="muted">Text · size</Text>
         <div class="flex flex-col gap-3 border-t border-line pt-4">
           {#each sizes as size (size)}
-            <div class="grid grid-cols-[7rem_1fr] items-baseline gap-4">
+            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[7rem_1fr]'}">
               <Text type="label" size="xs" color="muted">{size}</Text>
               <Text type="paragraph" {size} color="black">Sample text 123</Text>
             </div>
@@ -58,7 +59,7 @@
         <div class="flex flex-col gap-3 border-t border-line pt-4">
           {#each colors as color (color)}
             <div
-              class="grid grid-cols-[7rem_1fr] items-baseline gap-4 rounded px-2 py-1"
+              class="grid items-baseline gap-4 rounded px-2 py-1 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[7rem_1fr]'}"
               class:bg-ink={color === "white"}
             >
               <Text type="label" size="xs" color="muted">{color}</Text>
@@ -72,7 +73,7 @@
       <section class="flex flex-col gap-4">
         <Text type="label" size="xs" color="muted">Text · links</Text>
         <div class="flex flex-col gap-3 border-t border-line pt-4">
-          <div class="grid grid-cols-[10rem_1fr] items-baseline gap-4">
+          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
             <Text type="label" size="xs" color="muted">links</Text>
             <Text type="paragraph" size="lg" color="black" links>
               Hover over <a href="/">this link</a> to see the underline.
@@ -96,7 +97,7 @@
         </div>
         <div class="flex flex-col gap-3 border-t border-line pt-4">
           {#key replayKey}
-            <div class="grid grid-cols-[10rem_1fr] items-baseline gap-4">
+            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
               <Text type="label" size="xs" color="muted"
                 >animate (on mount)</Text
               >
@@ -104,20 +105,20 @@
                 >ON MOUNT</Text
               >
             </div>
-            <div class="grid grid-cols-[10rem_1fr] items-baseline gap-4">
+            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
               <Text type="label" size="xs" color="muted">animateOnView</Text>
               <Text type="heading" size="xl" color="black" animateOnView
                 >ON VIEW</Text
               >
             </div>
           {/key}
-          <div class="grid grid-cols-[10rem_1fr] items-baseline gap-4">
+          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
             <Text type="label" size="xs" color="muted">animateOnHover</Text>
             <Text type="heading" size="xl" color="black" animateOnHover
               >HOVER ME</Text
             >
           </div>
-          <div class="grid grid-cols-[10rem_1fr] items-baseline gap-4">
+          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
             <Text type="label" size="xs" color="muted"
               >paragraph (full charset)</Text
             >
