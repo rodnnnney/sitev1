@@ -196,12 +196,12 @@
     text-decoration: none;
     background-image: linear-gradient(var(--color-accent), var(--color-accent));
     background-position: 0% 100%;
-    background-size: 0% 2px;
+    background-size: 0% 0.075em;
     background-repeat: no-repeat;
     transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .text-link-animate :global(a:hover) {
-    background-size: 100% 2px;
+    background-size: 100% 0.075em;
   }
 </style>

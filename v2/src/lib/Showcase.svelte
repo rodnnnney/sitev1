@@ -17,53 +17,14 @@
 
   // Bump to remount the animation demos (replay the scramble).
   let replayKey = $state(0);
-
-  let showGrid = $state(new URLSearchParams(window.location.search).get("debug") === "2");
-
-  // Re-check when query string changes via back/forward navigation.
-  $effect(() => {
-    const onPop = () => {
-      showGrid = new URLSearchParams(window.location.search).get("debug") === "2";
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  });
 </script>
 
-{#if showGrid}
-  <div class="pointer-events-none fixed inset-0 z-50 flex">
-    {#each [1, 2, 3, 4, 5, 6, 7] as i}
-      <div
-        class="absolute top-0 h-full w-px bg-accent/30"
-        style="left: {i * 12.5}%"
-      ></div>
-    {/each}
-  </div>
-{/if}
-
-<div class="grid min-h-screen grid-cols-[1fr_7fr]">
-  <!-- Sidebar: 1/8 width -->
-  <aside class="sticky top-0 h-screen border-r border-line px-4 py-6">
-    <nav class="flex flex-col gap-4">
-      <Text type="label" size="xs" color="muted">navigation</Text>
-      <div class="flex flex-col gap-2">
-        <Text type="paragraph" size="sm" color="black" links>
-          <a href="/">home</a>
-        </Text>
-        <Text type="paragraph" size="sm" color="black" links>
-          <a href="/xyz">components</a>
-        </Text>
-      </div>
-    </nav>
-  </aside>
-
-  <main class="min-w-0">
-    <Page
-      title="Components"
-      label="/xyz"
-      lead="Every option of the internal base components."
-      contentClass="flex flex-col gap-16"
-    >
+<Page
+  title="Components"
+  label="/xyz"
+  lead="Every option of the internal base components."
+  contentClass="flex flex-col gap-16"
+>
       <!-- ── Text: types ─────────────────────────────────────── -->
       <section class="flex flex-col gap-4">
         <Text type="label" size="xs" color="muted">Text · type</Text>
@@ -167,5 +128,3 @@
         </div>
       </section>
     </Page>
-  </main>
-</div>
