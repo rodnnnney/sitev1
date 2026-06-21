@@ -9,12 +9,16 @@
   let { children, path } = $props<{ children?: Snippet; path: string }>();
 
   let homeLink: HTMLAnchorElement | null = $state(null);
+  let blogLink: HTMLAnchorElement | null = $state(null);
   let componentsLink: HTMLAnchorElement | null = $state(null);
   let navEl: HTMLElement | null = $state(null);
   let indicatorStyle = $state("top: 0px; height: 0px;");
 
+  const isBlogPath = (p: string) => p === "/blog" || p.startsWith("/blog/");
+
   const updateIndicator = () => {
-    const activeLink = path === "/" ? homeLink : componentsLink;
+    const activeLink =
+      path === "/" ? homeLink : isBlogPath(path) ? blogLink : componentsLink;
     if (activeLink && navEl) {
       const linkRect = activeLink.getBoundingClientRect();
       const navRect = navEl.getBoundingClientRect();
@@ -26,6 +30,7 @@
     // Re-measure whenever the path or link refs change.
     path;
     homeLink;
+    blogLink;
     componentsLink;
     navEl;
     updateIndicator();
@@ -75,6 +80,20 @@
           >
         </Text>
 
+        <Text
+          type="paragraph"
+          size="sm"
+          color={isBlogPath(path) ? "accent" : "black"}
+          links={!isBlogPath(path)}
+          class="w-full"
+        >
+          <a
+            bind:this={blogLink}
+            href="/blog"
+            class={isBlogPath(path) ? "no-underline" : ""}>blog</a
+          >
+        </Text>
+
         {#if $debugStore}
           <Text
             type="paragraph"
@@ -105,6 +124,17 @@
           links={path !== "/"}
         >
           <a href="/" class={path === "/" ? "no-underline" : ""}>home</a>
+        </Text>
+
+        <Text
+          type="paragraph"
+          size="sm"
+          color={isBlogPath(path) ? "accent" : "black"}
+          links={!isBlogPath(path)}
+        >
+          <a href="/blog" class={isBlogPath(path) ? "no-underline" : ""}
+            >blog</a
+          >
         </Text>
 
         {#if $debugStore}

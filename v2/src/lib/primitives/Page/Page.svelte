@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { Text, type TextSize } from "../Text";
   import { deviceType } from "../../deviceStore";
+  import { getRouteLabel } from "../../utils";
 
   let {
     title,
@@ -14,6 +15,7 @@
     children,
   }: {
     title: string;
+    /** Override the dynamic route label shown above the title. */
     label?: string;
     lead?: string;
     /** Title is capped at a restrained size by default for consistency. */
@@ -24,6 +26,16 @@
     showTime?: boolean;
     children?: Snippet;
   } = $props();
+
+  let currentPath = $state(window.location.pathname);
+
+  $effect(() => {
+    const onPop = () => (currentPath = window.location.pathname);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  });
+
+  const derivedLabel = $derived(label ?? getRouteLabel(currentPath));
 
   let dateString = $state("");
   let timeString = $state("");
@@ -65,9 +77,9 @@
 >
   <!-- Title block — same position on every page -->
   <header class="flex flex-col">
-    {#if label}
+    {#if derivedLabel}
       <Text type="label" size="xs" color="muted" class="leading-none"
-        >{label}</Text
+        >{derivedLabel}</Text
       >
     {/if}
     <div

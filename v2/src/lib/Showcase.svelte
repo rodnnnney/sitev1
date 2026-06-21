@@ -2,7 +2,7 @@
   import {
     Text,
     Page,
-    LinkPreview,
+    toast,
     textSizeStyles,
     textColorStyles,
     textTypeStyles,
@@ -11,7 +11,6 @@
     type TextType,
   } from "./primitives";
   import { deviceType } from "./deviceStore";
-  import { getPreviewData } from "./previewData";
 
   // Derive every option straight from the style maps so this stays in sync.
   const sizes = Object.keys(textSizeStyles) as TextSize[];
@@ -24,142 +23,182 @@
 
 <Page
   title="Components"
-  label="/xyz"
   lead="Every option of the internal base components."
   contentClass="flex flex-col gap-16"
 >
-      <!-- ── Text: types ─────────────────────────────────────── -->
-      <section class="flex flex-col gap-4">
-        <Text type="label" size="xs" color="muted">Text · type</Text>
-        <div class="flex flex-col gap-3 border-t border-line pt-4">
-          {#each types as type (type)}
-            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[7rem_1fr]'}">
-              <Text type="label" size="xs" color="muted">{type}</Text>
-              <Text {type} size="lg" color="black">The quick brown fox 123</Text
-              >
-            </div>
-          {/each}
+  <!-- ── Text: types ─────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Text · type</Text>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      {#each types as type (type)}
+        <div
+          class="grid items-baseline gap-4 {$deviceType === 'mobile'
+            ? 'grid-cols-1'
+            : 'grid-cols-[7rem_1fr]'}"
+        >
+          <Text type="label" size="xs" color="muted">{type}</Text>
+          <Text {type} size="lg" color="black">The quick brown fox 123</Text>
         </div>
-      </section>
+      {/each}
+    </div>
+  </section>
 
-      <!-- ── Text: sizes ─────────────────────────────────────── -->
-      <section class="flex flex-col gap-4">
-        <Text type="label" size="xs" color="muted">Text · size</Text>
-        <div class="flex flex-col gap-3 border-t border-line pt-4">
-          {#each sizes as size (size)}
-            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[7rem_1fr]'}">
-              <Text type="label" size="xs" color="muted">{size}</Text>
-              <Text type="paragraph" {size} color="black">Sample text 123</Text>
-            </div>
-          {/each}
+  <!-- ── Text: sizes ─────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Text · size</Text>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      {#each sizes as size (size)}
+        <div
+          class="grid items-baseline gap-4 {$deviceType === 'mobile'
+            ? 'grid-cols-1'
+            : 'grid-cols-[7rem_1fr]'}"
+        >
+          <Text type="label" size="xs" color="muted">{size}</Text>
+          <Text type="paragraph" {size} color="black">Sample text 123</Text>
         </div>
-      </section>
+      {/each}
+    </div>
+  </section>
 
-      <!-- ── Text: colors ────────────────────────────────────── -->
-      <section class="flex flex-col gap-4">
-        <Text type="label" size="xs" color="muted">Text · color</Text>
-        <div class="flex flex-col gap-3 border-t border-line pt-4">
-          {#each colors as color (color)}
-            <div
-              class="grid items-baseline gap-4 rounded px-2 py-1 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[7rem_1fr]'}"
-              class:bg-ink={color === "white"}
-            >
-              <Text type="label" size="xs" color="muted">{color}</Text>
-              <Text type="paragraph" size="lg" {color}>Sample text 123</Text>
-            </div>
-          {/each}
+  <!-- ── Text: colors ────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Text · color</Text>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      {#each colors as color (color)}
+        <div
+          class="grid items-baseline gap-4 rounded px-2 py-1 {$deviceType ===
+          'mobile'
+            ? 'grid-cols-1'
+            : 'grid-cols-[7rem_1fr]'}"
+          class:bg-ink={color === "white"}
+        >
+          <Text type="label" size="xs" color="muted">{color}</Text>
+          <Text type="paragraph" size="lg" {color}>Sample text 123</Text>
         </div>
-      </section>
+      {/each}
+    </div>
+  </section>
 
-      <!-- ── Text: links ─────────────────────────────────────── -->
-      <section class="flex flex-col gap-4">
-        <Text type="label" size="xs" color="muted">Text · links</Text>
-        <div class="flex flex-col gap-3 border-t border-line pt-4">
-          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-            <Text type="label" size="xs" color="muted">links</Text>
-            <Text type="paragraph" size="lg" color="black" links>
-              Hover over <a href="/">this link</a> to see the underline.
-            </Text>
-          </div>
+  <!-- ── Text: links ─────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Text · links</Text>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      <div
+        class="grid items-baseline gap-4 {$deviceType === 'mobile'
+          ? 'grid-cols-1'
+          : 'grid-cols-[10rem_1fr]'}"
+      >
+        <Text type="label" size="xs" color="muted">links</Text>
+        <Text type="paragraph" size="lg" color="black" links>
+          Hover over <a href="/">this link</a> to see the underline.
+        </Text>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Toaster (sonner) ────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Toaster · sonner</Text>
+    <div class="flex flex-wrap gap-2 border-t border-line pt-4">
+      <button
+        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+        onclick={() => toast("Saved", { description: "Your changes are live." })}
+      >
+        default
+      </button>
+      <button
+        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+        onclick={() => toast.success("Deployed to production")}
+      >
+        success
+      </button>
+      <button
+        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+        onclick={() => toast.error("Something went wrong")}
+      >
+        error
+      </button>
+      <button
+        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+        onclick={() =>
+          toast("Undo last action?", {
+            action: { label: "Undo", onClick: () => toast("Reverted") },
+          })}
+      >
+        with action
+      </button>
+      <button
+        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+        onclick={() =>
+          toast.promise(
+            new Promise((resolve) => setTimeout(resolve, 1500)),
+            {
+              loading: "Uploading…",
+              success: "Uploaded",
+              error: "Upload failed",
+            },
+          )}
+      >
+        promise
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Text: animations ────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center justify-between">
+      <Text type="label" size="xs" color="muted">Text · scramble animation</Text
+      >
+      <button
+        onclick={() => (replayKey += 1)}
+        class="font-mono text-xs text-accent underline-offset-4 hover:underline"
+      >
+        replay
+      </button>
+    </div>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      {#key replayKey}
+        <div
+          class="grid items-baseline gap-4 {$deviceType === 'mobile'
+            ? 'grid-cols-1'
+            : 'grid-cols-[10rem_1fr]'}"
+        >
+          <Text type="label" size="xs" color="muted">animate (on mount)</Text>
+          <Text type="heading" size="xl" color="black" animate>ON MOUNT</Text>
         </div>
-      </section>
-
-      <!-- ── LinkPreview ─────────────────────────────────────── -->
-      <section class="flex flex-col gap-4">
-        <Text type="label" size="xs" color="muted">LinkPreview</Text>
-        <div class="flex flex-col gap-3 border-t border-line pt-4">
-          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-            <Text type="label" size="xs" color="muted">inline hover</Text>
-            <Text type="paragraph" size="lg" color="black">
-              Currently at
-              <LinkPreview
-                href="https://textql.com/"
-                preview={getPreviewData("https://textql.com/")}
-              >
-                TextQL
-              </LinkPreview>
-              in NYC.
-            </Text>
-          </div>
-          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-            <Text type="label" size="xs" color="muted">no image</Text>
-            <Text type="paragraph" size="lg" color="black">
-              Previously at
-              <LinkPreview
-                href="https://example.com/"
-                preview={{ title: "Example Domain", description: "This is a placeholder preview without an image." }}
-              >
-                Example
-              </LinkPreview>.
-            </Text>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Text: animations ────────────────────────────────── -->
-      <section class="flex flex-col gap-4">
-        <div class="flex items-center justify-between">
-          <Text type="label" size="xs" color="muted"
-            >Text · scramble animation</Text
+        <div
+          class="grid items-baseline gap-4 {$deviceType === 'mobile'
+            ? 'grid-cols-1'
+            : 'grid-cols-[10rem_1fr]'}"
+        >
+          <Text type="label" size="xs" color="muted">animateOnView</Text>
+          <Text type="heading" size="xl" color="black" animateOnView
+            >ON VIEW</Text
           >
-          <button
-            onclick={() => (replayKey += 1)}
-            class="font-mono text-xs text-accent underline-offset-4 hover:underline"
-          >
-            replay
-          </button>
         </div>
-        <div class="flex flex-col gap-3 border-t border-line pt-4">
-          {#key replayKey}
-            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-              <Text type="label" size="xs" color="muted"
-                >animate (on mount)</Text
-              >
-              <Text type="heading" size="xl" color="black" animate
-                >ON MOUNT</Text
-              >
-            </div>
-            <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-              <Text type="label" size="xs" color="muted">animateOnView</Text>
-              <Text type="heading" size="xl" color="black" animateOnView
-                >ON VIEW</Text
-              >
-            </div>
-          {/key}
-          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-            <Text type="label" size="xs" color="muted">animateOnHover</Text>
-            <Text type="heading" size="xl" color="black" animateOnHover
-              >HOVER ME</Text
-            >
-          </div>
-          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
-            <Text type="label" size="xs" color="muted"
-              >paragraph (full charset)</Text
-            >
-            <Text type="paragraph" size="lg" color="black" animateOnHover>
-              hover for symbols too
-            </Text>
-          </div>
-        </div>
-      </section>
-    </Page>
+      {/key}
+      <div
+        class="grid items-baseline gap-4 {$deviceType === 'mobile'
+          ? 'grid-cols-1'
+          : 'grid-cols-[10rem_1fr]'}"
+      >
+        <Text type="label" size="xs" color="muted">animateOnHover</Text>
+        <Text type="heading" size="xl" color="black" animateOnHover
+          >HOVER ME</Text
+        >
+      </div>
+      <div
+        class="grid items-baseline gap-4 {$deviceType === 'mobile'
+          ? 'grid-cols-1'
+          : 'grid-cols-[10rem_1fr]'}"
+      >
+        <Text type="label" size="xs" color="muted"
+          >paragraph (full charset)</Text
+        >
+        <Text type="paragraph" size="lg" color="black" animateOnHover>
+          hover for symbols too
+        </Text>
+      </div>
+    </div>
+  </section>
+</Page>

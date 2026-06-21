@@ -1,7 +1,8 @@
 <script lang="ts">
   import Home from "./lib/Home.svelte";
   import Showcase from "./lib/Showcase.svelte";
-  import { Layout } from "./lib/primitives";
+  import { Blog, Pacing } from "./lib/blog";
+  import { Layout, Toaster } from "./lib/primitives";
 
   let path = $state(window.location.pathname);
 
@@ -38,7 +39,13 @@
 <Layout {path}>
   {#if path === "/xyz"}
     <Showcase />
+  {:else if path === "/blog"}
+    <Blog />
+  {:else if path === "/blog/pace-factor"}
+    <Pacing />
   {:else}
     <Home />
   {/if}
 </Layout>
+
+<Toaster />

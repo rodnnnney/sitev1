@@ -3,4 +3,4 @@
 export * from './Text';
 export * from './Page';
 export * from './Layout';
-export * from './LinkPreview';
+export * from './Toaster';
