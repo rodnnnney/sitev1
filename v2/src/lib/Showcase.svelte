@@ -2,6 +2,7 @@
   import {
     Text,
     Page,
+    LinkPreview,
     textSizeStyles,
     textColorStyles,
     textTypeStyles,
@@ -10,6 +11,7 @@
     type TextType,
   } from "./primitives";
   import { deviceType } from "./deviceStore";
+  import { getPreviewData } from "./previewData";
 
   // Derive every option straight from the style maps so this stays in sync.
   const sizes = Object.keys(textSizeStyles) as TextSize[];
@@ -77,6 +79,38 @@
             <Text type="label" size="xs" color="muted">links</Text>
             <Text type="paragraph" size="lg" color="black" links>
               Hover over <a href="/">this link</a> to see the underline.
+            </Text>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── LinkPreview ─────────────────────────────────────── -->
+      <section class="flex flex-col gap-4">
+        <Text type="label" size="xs" color="muted">LinkPreview</Text>
+        <div class="flex flex-col gap-3 border-t border-line pt-4">
+          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
+            <Text type="label" size="xs" color="muted">inline hover</Text>
+            <Text type="paragraph" size="lg" color="black">
+              Currently at
+              <LinkPreview
+                href="https://textql.com/"
+                preview={getPreviewData("https://textql.com/")}
+              >
+                TextQL
+              </LinkPreview>
+              in NYC.
+            </Text>
+          </div>
+          <div class="grid items-baseline gap-4 {$deviceType === 'mobile' ? 'grid-cols-1' : 'grid-cols-[10rem_1fr]'}">
+            <Text type="label" size="xs" color="muted">no image</Text>
+            <Text type="paragraph" size="lg" color="black">
+              Previously at
+              <LinkPreview
+                href="https://example.com/"
+                preview={{ title: "Example Domain", description: "This is a placeholder preview without an image." }}
+              >
+                Example
+              </LinkPreview>.
             </Text>
           </div>
         </div>

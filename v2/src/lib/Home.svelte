@@ -9,6 +9,7 @@
     TextQL.<br /><br />
 
     Previously, I went deep into the crypto rabbit hole, internted at a few cool
-    startups and even founded the blockchain club at my school.
+    startups, founded the blockchain club at my school and even spoke at
+    Consensus HK 2025.
   </Text>
 </Page>

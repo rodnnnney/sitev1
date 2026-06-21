@@ -49,15 +49,12 @@
 {/if}
 
 <div class="relative min-h-screen">
-  {#if $deviceType === 'desktop'}
+  {#if $deviceType === "desktop"}
     <!-- Desktop sidebar: fixed at 1/8 -->
     <aside
       class="fixed top-0 left-[12.5%] z-10 h-screen w-[12.5%] border-r border-line px-4 py-20"
     >
-      <nav
-        bind:this={navEl}
-        class="relative flex flex-col gap-2 text-right"
-      >
+      <nav bind:this={navEl} class="relative flex flex-col gap-0 text-right">
         <!-- Animated active indicator -->
         <div
           class="absolute -right-3 top-0 w-0.5 bg-accent transition-all duration-300 ease-out"
@@ -74,7 +71,8 @@
           <a
             bind:this={homeLink}
             href="/"
-            class={path === "/" ? "no-underline" : ""}>home</a>
+            class={path === "/" ? "no-underline" : ""}>home</a
+          >
         </Text>
 
         {#if $debugStore}
@@ -88,7 +86,8 @@
             <a
               bind:this={componentsLink}
               href="/xyz"
-              class={path === "/xyz" ? "no-underline" : ""}>components</a>
+              class={path === "/xyz" ? "no-underline" : ""}>components</a
+            >
           </Text>
         {/if}
       </nav>
@@ -115,7 +114,9 @@
             color={path === "/xyz" ? "accent" : "black"}
             links={path !== "/xyz"}
           >
-            <a href="/xyz" class={path === "/xyz" ? "no-underline" : ""}>components</a>
+            <a href="/xyz" class={path === "/xyz" ? "no-underline" : ""}
+              >components</a
+            >
           </Text>
         {/if}
       </div>
