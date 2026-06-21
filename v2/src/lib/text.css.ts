@@ -13,10 +13,10 @@ export const textSizeStyles: Record<TextSize, string> = {
 };
 
 export const textColorStyles: Record<TextColor, string> = {
-  black: 'text-neutral-900',
-  muted: 'text-neutral-500',
-  white: 'text-white',
-  accent: 'text-violet-600',
+  black: 'text-ink',
+  muted: 'text-muted',
+  white: 'text-paper',
+  accent: 'text-accent',
 };
 
 /** Per-type font family + tracking. `heading`/`important` use Geist Pixel. */
@@ -41,7 +41,8 @@ export const textDefaultStyles = 'leading-relaxed';
 export const textHiddenMeasureStyles =
   'pointer-events-none invisible absolute left-0 top-0 -z-10 select-none whitespace-pre';
 
-/** Pixel fonts usually lack lowercase/symbol glyphs — keep scramble within safe glyphs. */
-export const SCRAMBLE_CHARS_PIXEL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+/** Geist Pixel covers upper/lower/digits; keep symbols out (less certain coverage). */
+export const SCRAMBLE_CHARS_PIXEL =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 export const SCRAMBLE_CHARS_FULL =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()[]{}~⌘↵`';

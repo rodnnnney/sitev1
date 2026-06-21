@@ -41,14 +41,26 @@
   --font-mono: 'Ioskeley Mono', ui-monospace, monospace;
   --font-pixel: 'Geist Pixel', 'Ioskeley Mono', monospace;
   --default-font-family: var(--font-mono);
+
+  /* Light paper / editorial palette — accent is #20F */
+  --color-paper: #f5f4f0; /* page background */
+  --color-ink: #0a0a0a; /* primary text */
+  --color-muted: #6b6b6b; /* secondary text */
+  --color-line: #e3e1da; /* hairline guide rules */
+  --color-accent: #2200ff; /* #20F */
 }
 
 html {
   font-family: var(--font-mono);
 }
 
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
 /* Highlight color when text is selected / dragged to copy */
 ::selection {
-  background: var(--color-violet-500);
+  background: var(--color-accent);
   color: #fff;
 }

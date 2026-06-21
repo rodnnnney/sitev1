@@ -16,56 +16,6 @@
 
   // Bump to remount the animation demos (replay the scramble).
   let replayKey = $state(0)
-
-  // Candidate palettes for the gritty B&W / hacker-delight theme.
-  // Base (bg/fg/muted/border) is shared vibe; only the accent really changes.
-  type Palette = {
-    name: string
-    note: string
-    bg: string
-    fg: string
-    muted: string
-    border: string
-    accent: string
-  }
-  const palettes: Palette[] = [
-    {
-      name: 'Phosphor green',
-      note: 'matrix / CRT',
-      bg: '#0a0a0a',
-      fg: '#ededed',
-      muted: '#6b6b6b',
-      border: '#2a2a2a',
-      accent: '#3bf07a',
-    },
-    {
-      name: 'Amber monochrome',
-      note: 'warm retro',
-      bg: '#0a0a0a',
-      fg: '#ededed',
-      muted: '#6b6b6b',
-      border: '#2a2a2a',
-      accent: '#ffb000',
-    },
-    {
-      name: 'Electric cyan',
-      note: 'cyberpunk',
-      bg: '#0a0a0a',
-      fg: '#ededed',
-      muted: '#6b6b6b',
-      border: '#2a2a2a',
-      accent: '#22d3ee',
-    },
-    {
-      name: 'Pure monochrome',
-      note: 'brutalist',
-      bg: '#0a0a0a',
-      fg: '#ededed',
-      muted: '#6b6b6b',
-      border: '#2a2a2a',
-      accent: '#ededed',
-    },
-  ]
 </script>
 
 <main class="mx-auto flex max-w-3xl flex-col gap-16 px-6 py-20">
@@ -75,56 +25,6 @@
       Every option of the internal base components. /xyz
     </Text>
   </header>
-
-  <!-- ── Palette candidates ──────────────────────────────── -->
-  <section class="flex flex-col gap-4">
-    <Text type="label" size="xs" color="muted">Theme · accent palette</Text>
-    <div class="grid grid-cols-1 gap-4 border-t border-neutral-200 pt-4 sm:grid-cols-2">
-      {#each palettes as p (p.name)}
-        <div
-          class="flex flex-col gap-4 rounded-lg border p-5"
-          style="background:{p.bg};border-color:{p.border}"
-        >
-          <!-- terminal-style sample using the real fonts -->
-          <div class="flex items-baseline justify-between">
-            <span class="font-pixel text-2xl" style="color:{p.fg}">rodney</span>
-            <span class="font-mono text-[10px] uppercase tracking-wider" style="color:{p.muted}">
-              {p.note}
-            </span>
-          </div>
-
-          <div class="font-mono text-sm leading-relaxed" style="color:{p.fg}">
-            <div><span style="color:{p.accent}">&gt;</span> whoami</div>
-            <div style="color:{p.muted}">rodney — building things</div>
-            <div>
-              status: <span style="color:{p.accent}">[ ONLINE ]</span>
-            </div>
-            <div>
-              <span
-                style="background:{p.accent};color:{p.bg}"
-                class="px-1">selected text</span
-              >
-            </div>
-          </div>
-
-          <!-- swatches -->
-          <div class="flex flex-col gap-1.5">
-            <span class="font-mono text-xs" style="color:{p.fg}">{p.name}</span>
-            <div class="flex gap-1.5">
-              {#each [p.bg, p.fg, p.muted, p.border, p.accent] as swatch (swatch)}
-                <div
-                  class="h-6 w-6 rounded border"
-                  style="background:{swatch};border-color:{p.border}"
-                  title={swatch}
-                ></div>
-              {/each}
-            </div>
-            <span class="font-mono text-[10px]" style="color:{p.muted}">accent {p.accent}</span>
-          </div>
-        </div>
-      {/each}
-    </div>
-  </section>
 
   <!-- ── Text: types ─────────────────────────────────────── -->
   <section class="flex flex-col gap-4">
