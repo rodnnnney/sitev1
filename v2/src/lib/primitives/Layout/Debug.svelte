@@ -1,9 +1,5 @@
 <script lang="ts">
-  interface Props {
-    onClose?: () => void;
-  }
-
-  let { onClose }: Props = $props();
+  import { debugStore } from "../../debugStore";
 
   let divisions = $state(8);
 
@@ -25,7 +21,7 @@
     const url = new URL(window.location.href);
     url.searchParams.delete("debug");
     history.replaceState({}, "", url.toString());
-    onClose?.();
+    debugStore.set(false);
   };
 </script>
 

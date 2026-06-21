@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
+  import { onMount } from 'svelte'
   import { Text, type TextSize } from '../Text'
 
   let {
@@ -8,6 +9,7 @@
     lead,
     titleSize = 'lg',
     contentClass = 'flex flex-col gap-8',
+    showTime = false,
     children,
   }: {
     title: string
@@ -17,21 +19,65 @@
     titleSize?: TextSize
     /** Override the spacing of the content area per page. */
     contentClass?: string
+    /** Show the current Eastern Time in military format next to the title. */
+    showTime?: boolean
     children?: Snippet
   } = $props()
+
+  let dateString = $state('')
+  let timeString = $state('')
+
+  const updateTime = () => {
+    const now = new Date()
+    const date = now.toLocaleDateString('en-CA', {
+      timeZone: 'America/New_York',
+    })
+    const time = now.toLocaleTimeString('en-US', {
+      timeZone: 'America/New_York',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+    const zone = now
+      .toLocaleTimeString('en-US', {
+        timeZone: 'America/New_York',
+        timeZoneName: 'short',
+      })
+      .split(' ')
+      .pop()
+    dateString = date
+    timeString = `${time} ${zone}`
+  }
+
+  onMount(() => {
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  })
 </script>
 
 <main class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-12 px-6 py-20">
   <!-- Title block — same position on every page -->
-  <header class="flex flex-col gap-2">
+  <header class="flex flex-col">
     {#if label}
-      <Text type="label" size="xs" color="muted">{label}</Text>
+      <Text type="label" size="xs" color="muted" class="leading-none">{label}</Text>
     {/if}
-    <Text type="heading" size={titleSize} color="black" animate animateOnHover>
-      {title}
-    </Text>
+    <div class="flex items-end justify-between">
+      <Text type="heading" size={titleSize} color="black" animate animateOnHover class="leading-tight">
+        {title}
+      </Text>
+      {#if showTime}
+        <div class="flex items-end gap-1">
+          <Text type="label" size="xs" color="muted">{dateString}</Text>
+          <Text type="label" size="xs" color="muted" animate duration={200}>
+            {timeString}
+          </Text>
+        </div>
+      {/if}
+    </div>
     {#if lead}
-      <Text type="paragraph" size="sm" color="muted">{lead}</Text>
+      <Text type="paragraph" size="sm" color="muted" class="mt-2">{lead}</Text>
     {/if}
   </header>
 

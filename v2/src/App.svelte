@@ -35,12 +35,10 @@
   });
 </script>
 
-{#key path}
-  <Layout>
-    {#if path === "/xyz"}
-      <Showcase />
-    {:else}
-      <Home />
-    {/if}
-  </Layout>
-{/key}
+<Layout {path}>
+  {#if path === "/xyz"}
+    <Showcase />
+  {:else}
+    <Home />
+  {/if}
+</Layout>
