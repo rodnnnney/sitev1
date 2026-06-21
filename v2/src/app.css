@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+/* ── Body: Ioskeley Mono ─────────────────────────────── */
+@font-face {
+  font-family: 'Ioskeley Mono';
+  src: url('/fonts/IoskeleyMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ioskeley Mono';
+  src: url('/fonts/IoskeleyMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ioskeley Mono';
+  src: url('/fonts/IoskeleyMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Headers / important: Geist Pixel (Square) ───────────
+   Swap the variant by changing this one src + the name.
+   Options: Square · Grid · Circle · Line · Triangle      */
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('/fonts/GeistPixel-Square.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Tailwind theme tokens ───────────────────────────────
+   font-mono  -> body default (Ioskeley)
+   font-pixel -> Geist Pixel, use on headers & accents      */
+@theme {
+  --font-mono: 'Ioskeley Mono', ui-monospace, monospace;
+  --font-pixel: 'Geist Pixel', 'Ioskeley Mono', monospace;
+  --default-font-family: var(--font-mono);
+}
+
+html {
+  font-family: var(--font-mono);
+}
+
+/* Highlight color when text is selected / dragged to copy */
+::selection {
+  background: var(--color-violet-500);
+  color: #fff;
+}

@@ -1,0 +1,17 @@
+{
+	"name": "site",
+	"private": true,
+	"type": "module",
+	"workspaces": ["v1", "v2"],
+	"scripts": {
+		"dev": "bun --filter v2 dev",
+		"dev:v1": "bun --filter rodneyv1 dev",
+		"dev:v2": "bun --filter v2 dev",
+		"build": "bun --filter '*' build",
+		"build:v1": "bun --filter rodneyv1 build",
+		"build:v2": "bun --filter v2 build"
+	},
+	"engines": {
+		"node": "22.x"
+	}
+}
