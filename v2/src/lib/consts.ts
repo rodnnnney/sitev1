@@ -10,6 +10,25 @@ export const blog = [
   },
 ] as const;
 
+// Bangers — songs we play. Files self-hosted in /public/songs.
+export const bangers = [
+  {
+    title: 'Desire',
+    artist: 'Ian Asher',
+    url: '/songs/desire.mp3',
+  },
+  {
+    title: 'Jar Of Love',
+    artist: 'Wanting',
+    url: '/songs/jar-of-love.mp3',
+  },
+  {
+    title: 'Rock Ur World',
+    artist: 'Knock2 & fussy',
+    url: '/songs/rock-ur-world.mp3',
+  },
+] as const;
+
 // External works worth reading — not mine, just ones I like.
 export const reading = [
   {

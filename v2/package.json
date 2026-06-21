@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "beats": "node scripts/generate-beats.mjs",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
@@ -14,6 +15,7 @@
     "@tailwindcss/vite": "^4.1.8",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.12.3",
+    "audio-decode": "^3.10.2",
     "svelte": "^5.55.5",
     "svelte-check": "^4.4.8",
     "tailwindcss": "^4.1.8",

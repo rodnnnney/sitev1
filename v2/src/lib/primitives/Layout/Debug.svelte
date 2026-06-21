@@ -37,7 +37,7 @@
 
 <!-- Toggle panel -->
 <div
-  class="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded border border-line bg-paper p-2 shadow-sm"
+  class="fixed top-4 right-4 z-50 flex items-center gap-2 rounded border border-line bg-paper p-2 shadow-sm"
 >
   <span class="font-mono text-xs text-muted">grid</span>
   {#each [4, 8, 16] as n}

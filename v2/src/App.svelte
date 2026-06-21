@@ -3,6 +3,7 @@
   import Showcase from "./lib/Showcase.svelte";
   import { Blog, Pacing } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
+  import RandomBanger from "./lib/RandomBanger.svelte";
 
   let path = $state(window.location.pathname);
 
@@ -48,4 +49,5 @@
   {/if}
 </Layout>
 
+<RandomBanger />
 <Toaster />
