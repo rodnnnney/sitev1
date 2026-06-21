@@ -38,8 +38,10 @@
    font-mono  -> body default (Ioskeley)
    font-pixel -> Geist Pixel, use on headers & accents      */
 @theme {
-  --font-mono: 'Ioskeley Mono', ui-monospace, monospace;
-  --font-pixel: 'Geist Pixel', 'Ioskeley Mono', monospace;
+  --font-mono: 'Ioskeley Mono', ui-monospace, 'Hiragino Sans',
+    'Apple SD Gothic Neo', 'PingFang SC', 'Noto Sans CJK SC', monospace;
+  --font-pixel: 'Geist Pixel', 'Ioskeley Mono', 'Hiragino Sans',
+    'Apple SD Gothic Neo', 'PingFang SC', 'Noto Sans CJK SC', monospace;
   --default-font-family: var(--font-mono);
 
   /* Light paper / editorial palette — accent is #20F */

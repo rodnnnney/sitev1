@@ -1,20 +1,14 @@
 <script lang="ts">
   import { ArrowUpRight } from 'lucide-svelte'
-  import Text from './Text.svelte'
+  import { Text, Page } from './primitives'
 </script>
 
-<main class="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-8 px-6">
-  <!-- Pixel header: scrambles in on load + re-scrambles on hover -->
-  <Text type="heading" size="3xl" color="black" animate animateOnHover>
-    rodney
-  </Text>
-
+<Page title="rodney" label="Home">
   <Text type="paragraph" color="muted">
     Minimalist v2. Body text is set in Ioskeley Mono; headers and important
     bits use Geist Pixel and cycle their characters.
   </Text>
 
-  <!-- Important text that scrambles when it scrolls into view -->
   <Text type="important" size="lg" color="accent" animateOnView>
     IMPORTANT 2026
   </Text>
@@ -25,4 +19,4 @@
   >
     component showcase <ArrowUpRight class="size-4" />
   </a>
-</main>
+</Page>

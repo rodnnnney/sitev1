@@ -65,15 +65,10 @@
   let containerEl: HTMLParagraphElement | null = $state(null);
   let viewObserver: IntersectionObserver | null = null;
 
-  const randomChar = () => charset[Math.floor(Math.random() * charset.length)];
-
-  const getScrambledSuffix = (text: string, startIdx: number) => {
-    let suffix = '';
-    for (let i = startIdx; i < text.length; i++) {
-      suffix += text[i] === ' ' ? ' ' : randomChar();
-    }
-    return suffix;
-  };
+  // Split charset by code point so multi-byte glyphs (CJK) are atomic.
+  const glyphs = $derived([...charset]);
+  const randomChar = () => glyphs[Math.floor(Math.random() * glyphs.length)];
+  const isStable = (ch: string) => ch === ' ' || ch === '\n' || ch === '\t';
 
   const startAnimation = () => {
     const text = hiddenEl?.textContent ?? '';
@@ -84,40 +79,47 @@
 
     clearInterval(intervalId);
     isAnimating = true;
-    let currentIndex = 0;
-    let cycleCount = 0;
 
-    // Calculate speed: if duration is set, compute interval to finish in that time.
-    // Total ticks = cyclesPerChar+1 per non-space char, +1 per space.
-    const nonSpaceChars = text.replace(/\s/g, '').length;
-    const totalTicks = nonSpaceChars * (cyclesPerChar + 1) + (text.length - nonSpaceChars);
+    // Split by code point so CJK / multi-byte glyphs resolve as one unit.
+    const target = [...text];
+
+    // Everything from `index` onward is still scrambling (spaces pass through).
+    const scrambleFrom = (start: number) =>
+      target
+        .slice(start)
+        .map((ch) => (isStable(ch) ? ch : randomChar()))
+        .join('');
+
+    const nonSpace = target.filter((ch) => !isStable(ch)).length || 1;
+    const totalTicks = nonSpace * (cyclesPerChar + 1);
     const speed = duration ? Math.max(1, Math.floor(duration / totalTicks)) : animationSpeed;
 
-    displayText = getScrambledSuffix(text, 0);
+    let index = 0; // next position to lock — reveals left → right
+    let cycle = 0;
+
+    displayText = scrambleFrom(0); // initial fully-scrambled frame
 
     intervalId = setInterval(() => {
-      if (currentIndex >= text.length) {
+      // skip spaces/newlines instantly
+      while (index < target.length && isStable(target[index])) index++;
+
+      if (index >= target.length) {
+        displayText = text;
         clearInterval(intervalId);
         isAnimating = false;
         return;
       }
 
-      const targetChar = text[currentIndex];
+      const locked = target.slice(0, index).join('');
 
-      if (targetChar === ' ') {
-        displayText = text.slice(0, currentIndex + 1) + getScrambledSuffix(text, currentIndex + 1);
-        currentIndex++;
-        cycleCount = 0;
-        return;
-      }
-
-      if (cycleCount < cyclesPerChar) {
-        displayText = text.slice(0, currentIndex) + randomChar() + getScrambledSuffix(text, currentIndex + 1);
-        cycleCount++;
+      if (cycle < cyclesPerChar) {
+        // current slot flickers through random glyphs before settling
+        displayText = locked + randomChar() + scrambleFrom(index + 1);
+        cycle++;
       } else {
-        displayText = text.slice(0, currentIndex + 1) + getScrambledSuffix(text, currentIndex + 1);
-        currentIndex++;
-        cycleCount = 0;
+        index++; // lock the current character
+        cycle = 0;
+        displayText = target.slice(0, index).join('') + scrambleFrom(index);
       }
     }, speed);
   };

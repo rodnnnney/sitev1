@@ -1,13 +1,14 @@
 <script lang="ts">
-  import Text from './Text.svelte'
   import {
+    Text,
+    Page,
     textSizeStyles,
     textColorStyles,
     textTypeStyles,
     type TextSize,
     type TextColor,
     type TextType,
-  } from './text.css'
+  } from './primitives'
 
   // Derive every option straight from the style maps so this stays in sync.
   const sizes = Object.keys(textSizeStyles) as TextSize[]
@@ -18,18 +19,16 @@
   let replayKey = $state(0)
 </script>
 
-<main class="mx-auto flex max-w-3xl flex-col gap-16 px-6 py-20">
-  <header class="flex flex-col gap-2">
-    <Text type="heading" size="2xl" color="black">COMPONENTS</Text>
-    <Text type="paragraph" color="muted" size="sm">
-      Every option of the internal base components. /xyz
-    </Text>
-  </header>
-
+<Page
+  title="Components"
+  label="/xyz"
+  lead="Every option of the internal base components."
+  contentClass="flex flex-col gap-16"
+>
   <!-- ── Text: types ─────────────────────────────────────── -->
   <section class="flex flex-col gap-4">
     <Text type="label" size="xs" color="muted">Text · type</Text>
-    <div class="flex flex-col gap-3 border-t border-neutral-200 pt-4">
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each types as type (type)}
         <div class="grid grid-cols-[7rem_1fr] items-baseline gap-4">
           <Text type="label" size="xs" color="muted">{type}</Text>
@@ -42,7 +41,7 @@
   <!-- ── Text: sizes ─────────────────────────────────────── -->
   <section class="flex flex-col gap-4">
     <Text type="label" size="xs" color="muted">Text · size</Text>
-    <div class="flex flex-col gap-3 border-t border-neutral-200 pt-4">
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each sizes as size (size)}
         <div class="grid grid-cols-[7rem_1fr] items-baseline gap-4">
           <Text type="label" size="xs" color="muted">{size}</Text>
@@ -55,11 +54,11 @@
   <!-- ── Text: colors ────────────────────────────────────── -->
   <section class="flex flex-col gap-4">
     <Text type="label" size="xs" color="muted">Text · color</Text>
-    <div class="flex flex-col gap-3 border-t border-neutral-200 pt-4">
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each colors as color (color)}
         <div
           class="grid grid-cols-[7rem_1fr] items-baseline gap-4 rounded px-2 py-1"
-          class:bg-neutral-900={color === 'white'}
+          class:bg-ink={color === 'white'}
         >
           <Text type="label" size="xs" color="muted">{color}</Text>
           <Text type="paragraph" size="lg" {color}>Sample text 123</Text>
@@ -74,12 +73,12 @@
       <Text type="label" size="xs" color="muted">Text · scramble animation</Text>
       <button
         onclick={() => (replayKey += 1)}
-        class="font-mono text-xs text-violet-600 underline-offset-4 hover:underline"
+        class="font-mono text-xs text-accent underline-offset-4 hover:underline"
       >
         replay
       </button>
     </div>
-    <div class="flex flex-col gap-3 border-t border-neutral-200 pt-4">
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#key replayKey}
         <div class="grid grid-cols-[10rem_1fr] items-baseline gap-4">
           <Text type="label" size="xs" color="muted">animate (on mount)</Text>
@@ -105,8 +104,8 @@
 
   <a
     href="/"
-    class="font-mono text-sm text-neutral-900 underline-offset-4 hover:underline"
+    class="font-mono text-sm text-ink underline-offset-4 hover:underline"
   >
     ← back
   </a>
-</main>
+</Page>
