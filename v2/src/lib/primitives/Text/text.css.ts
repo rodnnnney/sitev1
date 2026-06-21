@@ -35,7 +35,10 @@ export const textTypeIsPixel: Record<TextType, boolean> = {
   important: true,
 };
 
-export const textDefaultStyles = 'leading-relaxed';
+export const textDefaultStyles = 'leading-relaxed w-fit';
+
+/** Smooth animated blue underline for links inside the text. */
+export const textLinkStyles = 'text-link-animate';
 
 /** Off-screen copy used to read the real text for measuring/scrambling. */
 export const textHiddenMeasureStyles =

@@ -4,6 +4,7 @@
     textSizeStyles,
     textColorStyles,
     textDefaultStyles,
+    textLinkStyles,
     textTypeStyles,
     textTypeIsPixel,
     textHiddenMeasureStyles,
@@ -34,6 +35,8 @@
     viewThreshold?: number;
     /** Charset used while scrambling. Defaults to a pixel-safe set for heading/important, full set otherwise. */
     chars?: string;
+    /** Animate a smooth blue underline on links inside the text. */
+    links?: boolean;
   }
 
   let {
@@ -51,6 +54,7 @@
     hovered = false,
     viewThreshold = 0.1,
     chars,
+    links = false,
     ...rest
   }: Props = $props();
 
@@ -175,7 +179,7 @@
 
 <p
   bind:this={containerEl}
-  class="{textSizeStyles[size]} {textColorStyles[color]} {textDefaultStyles} {textTypeStyles[type]} {className ?? ''}"
+  class="{textSizeStyles[size]} {textColorStyles[color]} {textDefaultStyles} {textTypeStyles[type]} {links ? textLinkStyles : ''} {className ?? ''}"
   onmouseenter={handleMouseEnter}
   {...rest}
 >
@@ -185,3 +189,19 @@
     {@render children?.()}
   {/if}
 </p>
+
+<style>
+  .text-link-animate :global(a) {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-position: 0% 100%;
+    background-size: 0% 2px;
+    background-repeat: no-repeat;
+    transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .text-link-animate :global(a:hover) {
+    background-size: 100% 2px;
+  }
+</style>

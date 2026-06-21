@@ -13,10 +13,9 @@
     IMPORTANT 2026
   </Text>
 
-  <a
-    href="/xyz"
-    class="inline-flex w-fit items-center gap-1 text-sm text-ink underline-offset-4 hover:underline"
-  >
-    component showcase <ArrowUpRight class="size-4" />
-  </a>
+  <Text type="paragraph" size="sm" color="black" links>
+    <a href="/xyz" class="inline-flex items-center gap-1">
+      component showcase <ArrowUpRight class="size-4" />
+    </a>
+  </Text>
 </Page>
