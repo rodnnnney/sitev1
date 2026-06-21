@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { Play, Pause, Shuffle } from "lucide-svelte";
+  import { Play, Pause, Shuffle, SlidersHorizontal } from "lucide-svelte";
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
   import { bangers } from "./consts";
-  import { toast } from "./primitives";
+  import { Text, Modal, Switch, toast } from "./primitives";
   import { triggerShake } from "./shake";
 
   // MediaElementSource is one-shot per <audio>; HMR would leave a dead graph.
@@ -31,6 +31,11 @@
   let lyrics = $state<Line[]>([]);
   let activeLine = $state(-1);
   const LYRIC_OFFSET = 0; // seconds; nudge if a track drifts from its lyrics
+
+  // Current song's lyric words — the preferred scramble source (see litRandom).
+  const lyricPool = $derived(
+    lyrics.flatMap((l) => l.text.split(/\s+/)).filter(Boolean),
+  );
 
   function parseLRC(raw: string): Line[] {
     const out: Line[] = [];
@@ -106,7 +111,6 @@
   let beatIdx = 0;
 
   // Ambient immersion.
-  let glow = $state(0); // smoothed bass level -> page glow opacity
   let flashEl: HTMLElement | null = null; // full-screen drop-flash overlay
   const FADE = 0.4; // seconds for play/pause/crossfade ramps
 
@@ -126,7 +130,7 @@
   // then snap back. Wrap every page word in a span once; each span keeps its
   // original text in data-w so we can restore it.
   let raveWords: HTMLElement[] | null = null;
-  let wordPool: string[] = []; // the original words, to scramble into
+  let wordPool: string[] = []; // the page's own words (fallback scramble source)
   const litWords = new Set<HTMLElement>();
 
   function collectRaveWords() {
@@ -198,6 +202,29 @@
   const reduceMotion = () =>
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 
+  // Per-effect toggles, persisted. Each gates one rave effect independently.
+  const loadFx = (k: string, def = true) => {
+    try {
+      const v = localStorage.getItem(k);
+      return v === null ? def : v === "1";
+    } catch {
+      return def;
+    }
+  };
+  let fxShake = $state(loadFx("fx-shake"));
+  let fxFlash = $state(loadFx("fx-flash"));
+  let fxWords = $state(loadFx("fx-words"));
+  let fxOpen = $state(false); // settings panel visibility
+  $effect(() => {
+    try {
+      localStorage.setItem("fx-shake", fxShake ? "1" : "0");
+      localStorage.setItem("fx-flash", fxFlash ? "1" : "0");
+      localStorage.setItem("fx-words", fxWords ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  });
+
   function clearLit() {
     for (const w of litWords) {
       w.style.color = "";
@@ -213,11 +240,13 @@
   ) {
     clearLit();
     if (!words.length) return;
+    // Prefer the song's lyric words; fall back to the page's own words.
+    const src = lyricPool.length ? lyricPool : wordPool;
     const count = Math.ceil(words.length * frac);
     for (let k = 0; k < count; k++) {
       const w = words[(Math.random() * words.length) | 0];
       w.style.color = palette[(Math.random() * palette.length) | 0];
-      w.textContent = wordPool[(Math.random() * wordPool.length) | 0]; // scramble
+      w.textContent = src[(Math.random() * src.length) | 0]; // scramble
       litWords.add(w);
     }
   }
@@ -225,7 +254,7 @@
   // Subtle per-beat word flicker (fires on every beat, all songs). Restores
   // shortly after so words don't stay scrambled through a quiet stretch.
   function pulseWords(intensity: number) {
-    if (reduceMotion()) return;
+    if (!fxWords || reduceMotion()) return;
     litRandom(
       ensureRaveWords(),
       0.04 + intensity * 0.06,
@@ -244,10 +273,9 @@
   }
 
   function flashDrop(intensity: number) {
-    // Only rave-tagged tracks get the strobe + scramble; calmer songs just
-    // shake + glow. Reduced-motion users get nothing flashy at all.
-    if (!flashEl || !current?.rave) return;
-    if (reduceMotion()) return;
+    // Rave-only, and only the sub-effects the user has left enabled.
+    if (!flashEl || !current?.rave || reduceMotion()) return;
+    if (!fxFlash && !fxWords) return;
     if (wordClearTimer) clearTimeout(wordClearTimer); // strobe owns the words now
 
     const peak = Math.min(0.92, 0.55 + intensity * 0.5);
@@ -264,12 +292,14 @@
         clearLit();
         return;
       }
-      flashEl.style.background = RAVE[colorTick++ % RAVE.length];
-      flashEl.style.opacity = String(peak);
-      litRandom(words, 0.18, RAVE); // more words, full palette, each pulse
+      if (fxFlash) {
+        flashEl.style.background = RAVE[colorTick++ % RAVE.length];
+        flashEl.style.opacity = String(peak);
+      }
+      if (fxWords) litRandom(words, 0.18, RAVE); // full palette, each pulse
       setTimeout(() => {
         if (!flashEl || gen !== strobeGen) return;
-        flashEl.style.opacity = "0"; // off phase — blue words show through
+        if (fxFlash) flashEl.style.opacity = "0"; // off phase
         n++;
         setTimeout(tick, 45);
       }, 55);
@@ -313,7 +343,7 @@
     }
 
     // Beat reactions (shake + word flicker + drop flash) are rave-only — calm
-    // tracks like Jar Of Love just get the glow, waveform, and lyrics.
+    // tracks like Jar Of Love just get the corner waveform and lyrics.
     if (beats.length && audio && current?.rave) {
       const now = audio.currentTime;
       let maxI = 0;
@@ -322,20 +352,17 @@
         beatIdx++;
       }
       if (maxI >= BEAT_MIN_INTENSITY) {
-        let amp = SHAKE_BASE + maxI * SHAKE_RANGE;
-        if (maxI >= DROP_INTENSITY) amp += DROP_SHAKE_BOOST; // extra kick on drops
-        triggerShake(amp);
-        pulseWords(maxI); // flicker/scramble a few words on every beat
+        if (fxShake) {
+          let amp = SHAKE_BASE + maxI * SHAKE_RANGE;
+          if (maxI >= DROP_INTENSITY) amp += DROP_SHAKE_BOOST; // extra kick on drops
+          triggerShake(amp);
+        }
+        pulseWords(maxI); // flicker/scramble a few words on every beat (gated)
       }
       if (maxI >= DROP_INTENSITY) flashDrop(maxI); // big drop -> full strobe
     }
 
     analyser.getByteFrequencyData(wave);
-
-    // Smoothed low-end level drives the ambient page glow.
-    const bassNow =
-      (wave[1] + wave[2] + wave[3] + wave[4] + wave[5] + wave[6]) / 6 / 255;
-    glow += (bassNow - glow) * 0.22;
 
     const usable = Math.floor(wave.length * 0.7); // lower bins carry most energy
     const step = usable / COLS;
@@ -411,21 +438,18 @@
     }
   }
 
-  function warnOnce() {
-    try {
-      if (localStorage.getItem("banger-photo-ack")) return;
-      localStorage.setItem("banger-photo-ack", "1");
-    } catch {}
-    toast.warning("Flashing lights ahead", {
-      description:
-        "This player uses strobe + screen-shake effects on the beat. Turn on your OS 'reduce motion' setting to disable them.",
-      duration: 9000,
-    });
+  // Flashing-lights warning: shown once before the first rave track plays.
+  let warnOpen = $state(false);
+  let pendingSong: (typeof bangers)[number] | null = null;
+  let flashAck = $state(false);
+  try {
+    flashAck = !!localStorage.getItem("banger-flash-ack");
+  } catch {
+    /* no localStorage — treat as un-acknowledged */
   }
 
-  async function playRandom() {
+  async function startSong(song: (typeof bangers)[number]) {
     if (!audio) return;
-    warnOnce();
     setupAudioGraph();
     await ctx?.resume();
     // Crossfade: dip the current track out before switching.
@@ -433,11 +457,39 @@
       rampGain(0, 0.2);
       await new Promise((r) => setTimeout(r, 200));
     }
-    const song = pickRandom();
     current = song;
     loadLyrics(song);
     loadBeats(song);
     await attemptPlay(song);
+  }
+
+  async function playRandom() {
+    if (!audio) return;
+    const song = pickRandom();
+    if (song.rave && !flashAck && !reduceMotion()) {
+      pendingSong = song;
+      warnOpen = true;
+      return;
+    }
+    await startSong(song);
+  }
+
+  function confirmWarning() {
+    flashAck = true;
+    try {
+      localStorage.setItem("banger-flash-ack", "1");
+    } catch {}
+    warnOpen = false;
+    if (pendingSong) {
+      const s = pendingSong;
+      pendingSong = null;
+      startSong(s);
+    }
+  }
+
+  function cancelWarning() {
+    warnOpen = false;
+    pendingSong = null;
   }
 
   function toggle() {
@@ -466,14 +518,12 @@
   }}
   onpause={() => {
     playing = false;
-    glow = 0;
     if (wordClearTimer) clearTimeout(wordClearTimer);
     clearLit();
     cancelAnimationFrame(raf);
   }}
   onended={() => {
     playing = false;
-    glow = 0;
     if (wordClearTimer) clearTimeout(wordClearTimer);
     clearLit();
     cancelAnimationFrame(raf);
@@ -481,36 +531,57 @@
   hidden
 ></audio>
 
-<!-- Full-bleed waveform: the same ASCII frame blown up as a faint, breathing
-     background layer behind the page content. -->
-{#if frame}
-  <div
-    aria-hidden="true"
-    class="pointer-events-none fixed inset-0 -z-10 flex flex-col items-center justify-center overflow-hidden text-accent"
-    style="opacity: {0.05 + glow * 0.13};"
-  >
-    <pre
-      class="font-mono leading-[0.8] tracking-tighter"
-      style="font-size: 2.6vw;">{frame}</pre>
-    <pre
-      class="font-mono leading-[0.8] tracking-tighter [transform:scaleY(-1)]"
-      style="font-size: 2.6vw;">{frame}</pre>
-  </div>
-{/if}
+<!-- Flashing-lights warning, shown once before the first EDM/rave track. -->
+<Modal
+  bind:open={warnOpen}
+  title="Flashing lights ahead"
+  onclose={cancelWarning}
+>
+  Heads up — this track might set off strobe flashes and some screen shake on
+  the beat. If you're sensitive to flashing lights, maybe sit this one out — or
+  flip on your device's <span class="text-ink">reduce motion</span> setting and
+  the effects stay off.
+  {#snippet actions()}
+    <button
+      onclick={cancelWarning}
+      class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-accent hover:text-accent"
+    >
+      not now
+    </button>
+    <button
+      onclick={confirmWarning}
+      class="rounded-sm bg-accent px-3 py-1.5 font-mono text-xs text-paper transition-opacity hover:opacity-90"
+    >
+      play anyway
+    </button>
+  {/snippet}
+</Modal>
 
-<!-- Ambient bass glow: a vignette in the accent that breathes with the low end.
-     Both the opacity AND the gradient radius (+ a slight scale) track the bass,
-     so it visibly expands/contracts instead of just fading. -->
-<div
-  aria-hidden="true"
-  class="pointer-events-none fixed inset-0 z-[1] will-change-transform"
-  style="opacity: {Math.min(0.5, glow * 1.05)}; transform: scale({1 +
-    glow *
-      0.08}); background: radial-gradient(circle at 50% 50%, transparent {Math.max(
-    12,
-    62 - glow * 65,
-  )}%, var(--color-accent) 115%);"
-></div>
+<!-- Effects config: toggle each rave effect independently. -->
+<Modal bind:open={fxOpen} title="Effects">
+  {#snippet fxRow(label: string, on: boolean, set: (v: boolean) => void)}
+    <div class="flex w-full items-center justify-between py-2 text-sm text-ink">
+      <span>{label}</span>
+      <Switch checked={on} onCheckedChange={set} aria-label={label} />
+    </div>
+  {/snippet}
+
+  <p class="mb-1">Beat-reactive effects on EDM tracks.</p>
+  <div class="flex flex-col">
+    {@render fxRow("screen shake", fxShake, (v) => (fxShake = v))}
+    {@render fxRow("screen flashing", fxFlash, (v) => (fxFlash = v))}
+    {@render fxRow("word flashing", fxWords, (v) => (fxWords = v))}
+  </div>
+
+  {#snippet actions()}
+    <button
+      onclick={() => (fxOpen = false)}
+      class="rounded-sm bg-accent px-3 py-1.5 font-mono text-xs text-paper transition-opacity hover:opacity-90"
+    >
+      done
+    </button>
+  {/snippet}
+</Modal>
 
 <!-- Drop flash: white-hot burst on big drops (opacity driven via .animate()). -->
 <div
@@ -561,21 +632,34 @@
     class="pointer-events-auto flex flex-col items-end gap-1.5 font-mono text-xs"
   >
     <div class="flex items-center gap-2">
-      <button
-        onclick={toggle}
-        class="inline-flex items-center gap-1.5 text-muted transition-colors hover:text-accent"
-      >
-        {#if playing}
-          <Pause size={12} />
-        {:else}
-          <Play size={12} />
-        {/if}
-        <span class="truncate">
+      {#if current}
+        <button
+          onclick={toggle}
+          aria-label={playing ? "Pause" : "Play"}
+          class="text-muted transition-colors hover:text-accent"
+        >
+          {#if playing}
+            <Pause size={12} />
+          {:else}
+            <Play size={12} />
+          {/if}
+        </button>
+      {/if}
+
+      <Text type="paragraph" size="xs" color="muted" links class="leading-none">
+        <a
+          href="#"
+          role="button"
+          onclick={(e) => {
+            e.preventDefault();
+            toggle();
+          }}
+        >
           {current
             ? `${current.title} — ${current.artist}`
-            : "I wonder waht this button does🤔"}
-        </span>
-      </button>
+            : "I wonder what this button does🤔"}
+        </a>
+      </Text>
 
       {#if current}
         <button
@@ -587,6 +671,15 @@
           <Shuffle size={12} />
         </button>
       {/if}
+
+      <button
+        onclick={() => (fxOpen = true)}
+        title="Effects"
+        aria-label="Effects"
+        class="text-muted transition-colors hover:text-accent"
+      >
+        <SlidersHorizontal size={12} />
+      </button>
     </div>
 
     {#if current && duration}

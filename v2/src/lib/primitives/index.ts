@@ -4,3 +4,5 @@ export * from './Text';
 export * from './Page';
 export * from './Layout';
 export * from './Toaster';
+export * from './Modal';
+export * from './Switch';
