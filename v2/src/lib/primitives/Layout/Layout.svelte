@@ -5,6 +5,7 @@
   import Debug from "./Debug.svelte";
   import { debugStore } from "../../debugStore";
   import { deviceType, initBreakpointListener } from "../../deviceStore";
+  import { isDebugEnabled } from "../../utils";
 
   let { children, path } = $props<{ children?: Snippet; path: string }>();
 
@@ -38,7 +39,7 @@
 
   $effect(() => {
     const onPop = () => {
-      debugStore.set(new URLSearchParams(window.location.search).has("debug"));
+      debugStore.set(isDebugEnabled());
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);

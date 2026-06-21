@@ -37,29 +37,20 @@
 
   const derivedLabel = $derived(label ?? getRouteLabel(currentPath));
 
-  let dateString = $state("");
   let timeString = $state("");
 
   const updateTime = () => {
-    const now = new Date();
-    const date = now.toLocaleDateString("en-CA", {
-      timeZone: "America/New_York",
-    });
-    const time = now.toLocaleTimeString("en-US", {
+    const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: "America/New_York",
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-    });
-    const zone = now
-      .toLocaleTimeString("en-US", {
-        timeZone: "America/New_York",
-        timeZoneName: "short",
-      })
-      .split(" ")
-      .pop();
-    timeString = `${time} ${zone}`;
+      timeZoneName: "short",
+    }).formatToParts(new Date());
+    const part = (type: Intl.DateTimeFormatPartTypes) =>
+      parts.find((p) => p.type === type)?.value ?? "";
+    timeString = `${part("hour")}:${part("minute")}:${part("second")} ${part("timeZoneName")}`;
   };
 
   onMount(() => {
@@ -99,7 +90,6 @@
       </Text>
       {#if showTime}
         <div class="flex items-end gap-1">
-          <Text type="label" size="xs" color="muted">{dateString}</Text>
           <Text type="label" size="xs" color="muted" animate duration={200}>
             {timeString}
           </Text>

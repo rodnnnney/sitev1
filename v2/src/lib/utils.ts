@@ -1,3 +1,8 @@
+/** Whether the `?debug` flag is present in the current URL. */
+export function isDebugEnabled(): boolean {
+  return new URLSearchParams(window.location.search).has('debug');
+}
+
 const sectionLabels: Record<string, string> = {
   '/': 'Home',
   '/blog': 'Blog',

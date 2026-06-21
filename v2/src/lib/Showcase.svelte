@@ -19,6 +19,12 @@
 
   // Bump to remount the animation demos (replay the scramble).
   let replayKey = $state(0);
+
+  // Two-column demo row: stacked on mobile, label + content on wider screens.
+  const rowGrid = (cols = "7rem") =>
+    `grid items-baseline gap-4 ${
+      $deviceType === "mobile" ? "grid-cols-1" : `grid-cols-[${cols}_1fr]`
+    }`;
 </script>
 
 <Page
@@ -31,11 +37,7 @@
     <Text type="label" size="xs" color="muted">Text · type</Text>
     <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each types as type (type)}
-        <div
-          class="grid items-baseline gap-4 {$deviceType === 'mobile'
-            ? 'grid-cols-1'
-            : 'grid-cols-[7rem_1fr]'}"
-        >
+        <div class={rowGrid()}>
           <Text type="label" size="xs" color="muted">{type}</Text>
           <Text {type} size="lg" color="black">The quick brown fox 123</Text>
         </div>
@@ -48,11 +50,7 @@
     <Text type="label" size="xs" color="muted">Text · size</Text>
     <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each sizes as size (size)}
-        <div
-          class="grid items-baseline gap-4 {$deviceType === 'mobile'
-            ? 'grid-cols-1'
-            : 'grid-cols-[7rem_1fr]'}"
-        >
+        <div class={rowGrid()}>
           <Text type="label" size="xs" color="muted">{size}</Text>
           <Text type="paragraph" {size} color="black">Sample text 123</Text>
         </div>
@@ -66,10 +64,7 @@
     <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each colors as color (color)}
         <div
-          class="grid items-baseline gap-4 rounded px-2 py-1 {$deviceType ===
-          'mobile'
-            ? 'grid-cols-1'
-            : 'grid-cols-[7rem_1fr]'}"
+          class="{rowGrid()} rounded px-2 py-1"
           class:bg-ink={color === "white"}
         >
           <Text type="label" size="xs" color="muted">{color}</Text>
@@ -83,11 +78,7 @@
   <section class="flex flex-col gap-4">
     <Text type="label" size="xs" color="muted">Text · links</Text>
     <div class="flex flex-col gap-3 border-t border-line pt-4">
-      <div
-        class="grid items-baseline gap-4 {$deviceType === 'mobile'
-          ? 'grid-cols-1'
-          : 'grid-cols-[10rem_1fr]'}"
-      >
+      <div class={rowGrid("10rem")}>
         <Text type="label" size="xs" color="muted">links</Text>
         <Text type="paragraph" size="lg" color="black" links>
           Hover over <a href="/">this link</a> to see the underline.
@@ -158,40 +149,24 @@
     </div>
     <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#key replayKey}
-        <div
-          class="grid items-baseline gap-4 {$deviceType === 'mobile'
-            ? 'grid-cols-1'
-            : 'grid-cols-[10rem_1fr]'}"
-        >
+        <div class={rowGrid("10rem")}>
           <Text type="label" size="xs" color="muted">animate (on mount)</Text>
           <Text type="heading" size="xl" color="black" animate>ON MOUNT</Text>
         </div>
-        <div
-          class="grid items-baseline gap-4 {$deviceType === 'mobile'
-            ? 'grid-cols-1'
-            : 'grid-cols-[10rem_1fr]'}"
-        >
+        <div class={rowGrid("10rem")}>
           <Text type="label" size="xs" color="muted">animateOnView</Text>
           <Text type="heading" size="xl" color="black" animateOnView
             >ON VIEW</Text
           >
         </div>
       {/key}
-      <div
-        class="grid items-baseline gap-4 {$deviceType === 'mobile'
-          ? 'grid-cols-1'
-          : 'grid-cols-[10rem_1fr]'}"
-      >
+      <div class={rowGrid("10rem")}>
         <Text type="label" size="xs" color="muted">animateOnHover</Text>
         <Text type="heading" size="xl" color="black" animateOnHover
           >HOVER ME</Text
         >
       </div>
-      <div
-        class="grid items-baseline gap-4 {$deviceType === 'mobile'
-          ? 'grid-cols-1'
-          : 'grid-cols-[10rem_1fr]'}"
-      >
+      <div class={rowGrid("10rem")}>
         <Text type="label" size="xs" color="muted"
           >paragraph (full charset)</Text
         >

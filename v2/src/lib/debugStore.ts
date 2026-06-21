@@ -1,7 +1,4 @@
 import { writable } from 'svelte/store'
+import { isDebugEnabled } from './utils'
 
-function isDebug() {
-  return new URLSearchParams(window.location.search).has('debug')
-}
-
-export const debugStore = writable(isDebug())
+export const debugStore = writable(isDebugEnabled())

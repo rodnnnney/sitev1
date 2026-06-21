@@ -10,17 +10,20 @@
     divisions = Number(debugParam);
   }
 
-  const setDivisions = (n: number) => {
-    divisions = n;
+  const writeDebugParam = (value: string | null) => {
     const url = new URL(window.location.href);
-    url.searchParams.set("debug", String(n));
+    if (value === null) url.searchParams.delete("debug");
+    else url.searchParams.set("debug", value);
     history.replaceState({}, "", url.toString());
   };
 
+  const setDivisions = (n: number) => {
+    divisions = n;
+    writeDebugParam(String(n));
+  };
+
   const close = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete("debug");
-    history.replaceState({}, "", url.toString());
+    writeDebugParam(null);
     debugStore.set(false);
   };
 </script>

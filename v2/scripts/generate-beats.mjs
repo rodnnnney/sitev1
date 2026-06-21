@@ -1,16 +1,69 @@
-// Offline beat-map generator. Decodes each mp3 in public/songs, isolates the
-// low end (kick/bass), detects onsets via energy flux with an adaptive
-// threshold, and writes a <name>.beats.json next to it:
+// Offline beat-map generator + R2 uploader. For each mp3 in public/songs it
+// isolates the low end (kick/bass), detects onsets via energy flux with an
+// adaptive threshold, and writes a <name>.beats.json next to it:
 //   { duration, beats: [{ t, i }] }   // t = seconds, i = intensity 0..1
+// Then, if the R2_* env vars are set, it uploads the mp3 + .lrc + .beats.json
+// to R2 (the URLs consts.ts points at).
 //
-// Run:  bun scripts/generate-beats.mjs
+// Run:  bun run beats        (add a song: drop <name>.mp3 in public/songs,
+//                             add it to FILES below, then run)
 import decode from "audio-decode";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, access } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const SONGS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../public/songs");
 const FILES = ["desire", "jar-of-love", "rock-ur-world", "atmosphere"];
+
+const R2_PREFIX = "static/songs"; // objects live under <bucket>/static/songs
+const CONTENT_TYPE = {
+  ".mp3": "audio/mpeg",
+  ".lrc": "text/plain; charset=utf-8",
+  ".beats.json": "application/json",
+};
+
+function r2Config() {
+  const raw = process.env.R2_API_ENDPOINT;
+  const key = process.env.R2_ACCESS_KEY;
+  const secret = process.env.R2_SECRET_ACCESS_KEY;
+  if (!raw || !key || !secret) return null;
+  const u = new URL(raw);
+  return {
+    endpoint: u.origin,
+    bucket: u.pathname.replace(/^\/+|\/+$/g, "") || "rod",
+    env: {
+      ...process.env,
+      AWS_ACCESS_KEY_ID: key,
+      AWS_SECRET_ACCESS_KEY: secret,
+      AWS_DEFAULT_REGION: "auto",
+      // newer aws-cli adds checksums R2 rejects — only send when required
+      AWS_REQUEST_CHECKSUM_CALCULATION: "when_required",
+      AWS_RESPONSE_CHECKSUM_VALIDATION: "when_required",
+    },
+  };
+}
+
+const exists = (p) => access(p).then(() => true).catch(() => false);
+
+function uploadFile(cfg, name, ext) {
+  const local = join(SONGS_DIR, name + ext);
+  execFileSync(
+    "aws",
+    [
+      "s3",
+      "cp",
+      local,
+      // Per-song folder: <bucket>/static/songs/<name>/<name><ext>
+      `s3://${cfg.bucket}/${R2_PREFIX}/${name}/${name}${ext}`,
+      "--content-type",
+      CONTENT_TYPE[ext],
+      "--endpoint-url",
+      cfg.endpoint,
+    ],
+    { env: cfg.env, stdio: "ignore" },
+  );
+}
 
 const HOP_MS = 10; // analysis resolution (100 frames/sec)
 const LP_CUTOFF = 200; // Hz — keep kick/bass, drop the rest
@@ -88,17 +141,27 @@ function analyze(buffer) {
   return { duration: +(low.length / sr).toFixed(2), beats };
 }
 
+const cfg = r2Config();
+
 for (const name of FILES) {
   const mp3 = join(SONGS_DIR, `${name}.mp3`);
   const audio = await decode(await readFile(mp3));
   const result = analyze(audio);
-  await writeFile(
-    join(SONGS_DIR, `${name}.beats.json`),
-    JSON.stringify(result),
-  );
+  await writeFile(join(SONGS_DIR, `${name}.beats.json`), JSON.stringify(result));
   const avg =
     result.beats.reduce((s, b) => s + b.i, 0) / (result.beats.length || 1);
   console.log(
     `${name}: ${result.beats.length} beats over ${result.duration}s, avg intensity ${avg.toFixed(2)}`,
   );
+
+  if (cfg) {
+    uploadFile(cfg, name, ".mp3");
+    uploadFile(cfg, name, ".beats.json");
+    if (await exists(join(SONGS_DIR, `${name}.lrc`))) uploadFile(cfg, name, ".lrc");
+    console.log(`  ↑ uploaded to r2://${cfg.bucket}/${R2_PREFIX}/`);
+  }
+}
+
+if (!cfg) {
+  console.log("\n(R2_* env vars not set — skipped upload, only wrote beats.json)");
 }
