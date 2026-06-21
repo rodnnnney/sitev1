@@ -9,6 +9,7 @@ export function triggerShake(amplitude = 5) {
   if (typeof document === 'undefined') return;
   const b = document.body;
   b.style.setProperty('--shake-amp', `${amplitude}px`);
+  b.style.setProperty('--shake-scale', String(1 + Math.min(0.045, amplitude / 700)));
   b.classList.remove('beat-shake');
   void b.offsetWidth; // force reflow so the animation restarts
   b.classList.add('beat-shake');

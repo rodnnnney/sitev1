@@ -10,22 +10,33 @@ export const blog = [
   },
 ] as const;
 
-// Bangers — songs we play. Files self-hosted in /public/songs.
+// Bangers — songs we play. Assets (mp3 + .lrc + .beats.json) live on R2 under
+// ${bucketURL}/songs. `rave: true` enables the full strobe + word-scramble drop
+// effect; others just get the (calmer) beat shake + ambient glow.
 export const bangers = [
   {
     title: 'Desire',
     artist: 'Ian Asher',
-    url: '/songs/desire.mp3',
+    url: `${bucketURL}/songs/desire.mp3`,
+    rave: true,
   },
   {
     title: 'Jar Of Love',
     artist: 'Wanting',
-    url: '/songs/jar-of-love.mp3',
+    url: `${bucketURL}/songs/jar-of-love.mp3`,
+    rave: false,
   },
   {
     title: 'Rock Ur World',
     artist: 'Knock2 & fussy',
-    url: '/songs/rock-ur-world.mp3',
+    url: `${bucketURL}/songs/rock-ur-world.mp3`,
+    rave: true,
+  },
+  {
+    title: 'Atmosphere',
+    artist: 'Fisher',
+    url: `${bucketURL}/songs/atmosphere.mp3`,
+    rave: true,
   },
 ] as const;
 

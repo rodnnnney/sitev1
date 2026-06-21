@@ -73,9 +73,11 @@
   const view = $derived.by(() => {
     if (!lyrics.length) return [];
     const start = Math.max(0, activeLine - 2);
-    return lyrics
-      .slice(start, start + 7)
-      .map((l, k) => ({ ...l, i: start + k, active: start + k === activeLine }));
+    return lyrics.slice(start, start + 7).map((l, k) => ({
+      ...l,
+      i: start + k,
+      active: start + k === activeLine,
+    }));
   });
 
   const COLS = 64;
@@ -88,6 +90,7 @@
 
   let ctx: AudioContext | null = null;
   let analyser: AnalyserNode | null = null;
+  let gain: GainNode | null = null;
   let wave: Uint8Array | null = null;
   let smooth = new Array(COLS).fill(0);
   let lastFrame = 0;
@@ -95,10 +98,184 @@
 
   // Beat-driven page shake, played back from a precomputed <name>.beats.json.
   const BEAT_MIN_INTENSITY = 0.12; // ignore micro-onsets
-  const SHAKE_BASE = 3; // px at the faintest beat
-  const SHAKE_RANGE = 28; // extra px scaled by beat intensity (drops hit hard)
+  const SHAKE_BASE = 4; // px at the faintest beat
+  const SHAKE_RANGE = 36; // extra px scaled by beat intensity
+  const DROP_INTENSITY = 0.45; // a beat this strong is a "drop" -> flash + kick
+  const DROP_SHAKE_BOOST = 14; // extra px of shake on a drop
   let beats: { t: number; i: number }[] = [];
   let beatIdx = 0;
+
+  // Ambient immersion.
+  let glow = $state(0); // smoothed bass level -> page glow opacity
+  let flashEl: HTMLElement | null = null; // full-screen drop-flash overlay
+  const FADE = 0.4; // seconds for play/pause/crossfade ramps
+
+  // Rave strobe colours, cycled per pulse on each drop.
+  const RAVE = [
+    "#ff2d95",
+    "#00e5ff",
+    "#7cff00",
+    "#ffe600",
+    "#ff5e00",
+    "#2200ff",
+  ];
+  let strobeGen = 0; // cancels an in-flight strobe when a new drop lands
+  let colorTick = 0;
+
+  // During a drop, random words flash accent AND scramble to a random word,
+  // then snap back. Wrap every page word in a span once; each span keeps its
+  // original text in data-w so we can restore it.
+  let raveWords: HTMLElement[] | null = null;
+  let wordPool: string[] = []; // the original words, to scramble into
+  const litWords = new Set<HTMLElement>();
+
+  function collectRaveWords() {
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          const p = node.parentElement;
+          if (!p || !node.textContent?.trim()) return NodeFilter.FILTER_REJECT;
+          if (
+            p.closest(
+              "[data-no-rave],[aria-hidden='true'],nav,script,style,button",
+            )
+          )
+            return NodeFilter.FILTER_REJECT;
+          if (p.classList.contains("rave-w")) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        },
+      },
+    );
+    const textNodes: Text[] = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+
+    const words: HTMLElement[] = [];
+    wordPool = [];
+    for (const tn of textNodes) {
+      const frag = document.createDocumentFragment();
+      for (const part of (tn.textContent ?? "").split(/(\s+)/)) {
+        if (part === "") continue;
+        if (/^\s+$/.test(part)) {
+          frag.append(part);
+        } else {
+          const s = document.createElement("span");
+          s.className = "rave-w";
+          s.textContent = part;
+          s.dataset.w = part; // original, for restore
+          frag.append(s);
+          words.push(s);
+          wordPool.push(part);
+        }
+      }
+      tn.replaceWith(frag);
+    }
+
+    // Lock each word's footprint to its original width (one batched measure)
+    // so swapping in a different-length word never reflows the page. Longer
+    // swaps overflow the fixed box instead of pushing neighbours around.
+    const widths = words.map((w) => w.getBoundingClientRect().width);
+    words.forEach((w, i) => {
+      w.style.display = "inline-block";
+      w.style.width = `${widths[i]}px`;
+      w.style.textAlign = "center";
+      w.style.whiteSpace = "nowrap";
+      w.style.overflow = "visible";
+    });
+    return words;
+  }
+
+  function ensureRaveWords() {
+    // Re-wrap if uncollected or the cached spans were swapped out (navigation).
+    if (!raveWords || !raveWords[0]?.isConnected)
+      raveWords = collectRaveWords();
+    return raveWords;
+  }
+
+  let wordClearTimer: ReturnType<typeof setTimeout> | null = null;
+  const ACCENT = ["var(--color-accent)"]; // calm palette for non-rave songs
+  const reduceMotion = () =>
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
+  function clearLit() {
+    for (const w of litWords) {
+      w.style.color = "";
+      if (w.dataset.w !== undefined) w.textContent = w.dataset.w; // restore word
+    }
+    litWords.clear();
+  }
+
+  function litRandom(
+    words: HTMLElement[],
+    frac: number,
+    palette: readonly string[],
+  ) {
+    clearLit();
+    if (!words.length) return;
+    const count = Math.ceil(words.length * frac);
+    for (let k = 0; k < count; k++) {
+      const w = words[(Math.random() * words.length) | 0];
+      w.style.color = palette[(Math.random() * palette.length) | 0];
+      w.textContent = wordPool[(Math.random() * wordPool.length) | 0]; // scramble
+      litWords.add(w);
+    }
+  }
+
+  // Subtle per-beat word flicker (fires on every beat, all songs). Restores
+  // shortly after so words don't stay scrambled through a quiet stretch.
+  function pulseWords(intensity: number) {
+    if (reduceMotion()) return;
+    litRandom(
+      ensureRaveWords(),
+      0.04 + intensity * 0.06,
+      current?.rave ? RAVE : ACCENT,
+    );
+    if (wordClearTimer) clearTimeout(wordClearTimer);
+    wordClearTimer = setTimeout(clearLit, 200);
+  }
+
+  function rampGain(to: number, dur = FADE) {
+    if (!ctx || !gain) return;
+    const now = ctx.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.linearRampToValueAtTime(to, now + dur);
+  }
+
+  function flashDrop(intensity: number) {
+    // Only rave-tagged tracks get the strobe + scramble; calmer songs just
+    // shake + glow. Reduced-motion users get nothing flashy at all.
+    if (!flashEl || !current?.rave) return;
+    if (reduceMotion()) return;
+    if (wordClearTimer) clearTimeout(wordClearTimer); // strobe owns the words now
+
+    const peak = Math.min(0.92, 0.55 + intensity * 0.5);
+    const words = ensureRaveWords();
+
+    // Rapid colour-cycling strobe — more pulses for bigger drops.
+    const pulses = 3 + Math.round(intensity * 4); // 3..7
+    const gen = ++strobeGen;
+    let n = 0;
+    const tick = () => {
+      if (!flashEl || gen !== strobeGen) return;
+      if (n >= pulses) {
+        flashEl.style.opacity = "0";
+        clearLit();
+        return;
+      }
+      flashEl.style.background = RAVE[colorTick++ % RAVE.length];
+      flashEl.style.opacity = String(peak);
+      litRandom(words, 0.18, RAVE); // more words, full palette, each pulse
+      setTimeout(() => {
+        if (!flashEl || gen !== strobeGen) return;
+        flashEl.style.opacity = "0"; // off phase — blue words show through
+        n++;
+        setTimeout(tick, 45);
+      }, 55);
+    };
+    tick();
+  }
 
   function setupAudioGraph() {
     if (ctx || !audio) return;
@@ -106,13 +283,16 @@
       (window as unknown as { webkitAudioContext: typeof AudioContext })
         .webkitAudioContext)();
     const src = ctx.createMediaElementSource(audio);
+    gain = ctx.createGain();
+    gain.gain.value = 0; // start silent, fade in on play
     analyser = ctx.createAnalyser();
     analyser.fftSize = 256;
     analyser.smoothingTimeConstant = 0.8;
     analyser.minDecibels = -90; // wider dB window — avoids pegging every bin
     analyser.maxDecibels = -10;
     wave = new Uint8Array(analyser.frequencyBinCount);
-    src.connect(analyser);
+    src.connect(gain);
+    gain.connect(analyser);
     analyser.connect(ctx.destination);
   }
 
@@ -132,20 +312,30 @@
       activeLine = idx;
     }
 
-    // Fire page shakes from the precomputed beat map, scaled by intensity so
-    // drops hit hard and soft kicks barely nudge. Collapse beats that fall in
-    // the same frame down to their strongest one.
-    if (beats.length && audio) {
+    // Beat reactions (shake + word flicker + drop flash) are rave-only — calm
+    // tracks like Jar Of Love just get the glow, waveform, and lyrics.
+    if (beats.length && audio && current?.rave) {
       const now = audio.currentTime;
       let maxI = 0;
       while (beatIdx < beats.length && beats[beatIdx].t <= now) {
         if (beats[beatIdx].i > maxI) maxI = beats[beatIdx].i;
         beatIdx++;
       }
-      if (maxI >= BEAT_MIN_INTENSITY) triggerShake(SHAKE_BASE + maxI * SHAKE_RANGE);
+      if (maxI >= BEAT_MIN_INTENSITY) {
+        let amp = SHAKE_BASE + maxI * SHAKE_RANGE;
+        if (maxI >= DROP_INTENSITY) amp += DROP_SHAKE_BOOST; // extra kick on drops
+        triggerShake(amp);
+        pulseWords(maxI); // flicker/scramble a few words on every beat
+      }
+      if (maxI >= DROP_INTENSITY) flashDrop(maxI); // big drop -> full strobe
     }
 
     analyser.getByteFrequencyData(wave);
+
+    // Smoothed low-end level drives the ambient page glow.
+    const bassNow =
+      (wave[1] + wave[2] + wave[3] + wave[4] + wave[5] + wave[6]) / 6 / 255;
+    glow += (bassNow - glow) * 0.22;
 
     const usable = Math.floor(wave.length * 0.7); // lower bins carry most energy
     const step = usable / COLS;
@@ -182,16 +372,13 @@
     raf = requestAnimationFrame(render);
   }
 
-  let recent: (typeof bangers)[number][] = []; // played this cycle; avoids repeats
-
   function pickRandom() {
-    if (bangers.length === 1) return bangers[0];
-    // Prefer songs not yet played this cycle; once all are played, start a fresh
-    // cycle but exclude the one just played so it never repeats back-to-back.
-    let pool = bangers.filter((b) => !recent.includes(b));
-    if (pool.length === 0) pool = bangers.filter((b) => b !== current);
-    const next = pool[Math.floor(Math.random() * pool.length)];
-    recent = recent.length >= bangers.length ? [next] : [...recent, next];
+    if (bangers.length <= 1) return bangers[0];
+    // Truly random each time — only avoid repeating the song just played.
+    let next = current;
+    while (next === current) {
+      next = bangers[Math.floor(Math.random() * bangers.length)];
+    }
     return next;
   }
 
@@ -202,8 +389,10 @@
     if (!audio) return;
     audio.src = song.url;
     audio.load();
+    gain?.gain.setValueAtTime(0, ctx?.currentTime ?? 0); // start silent
     try {
       await audio.play();
+      rampGain(1); // fade in
       toast.success(song.title, { description: song.artist });
     } catch (err) {
       if ((err as DOMException)?.name === "AbortError") return; // src swap during pending play()
@@ -222,10 +411,28 @@
     }
   }
 
+  function warnOnce() {
+    try {
+      if (localStorage.getItem("banger-photo-ack")) return;
+      localStorage.setItem("banger-photo-ack", "1");
+    } catch {}
+    toast.warning("Flashing lights ahead", {
+      description:
+        "This player uses strobe + screen-shake effects on the beat. Turn on your OS 'reduce motion' setting to disable them.",
+      duration: 9000,
+    });
+  }
+
   async function playRandom() {
     if (!audio) return;
+    warnOnce();
     setupAudioGraph();
     await ctx?.resume();
+    // Crossfade: dip the current track out before switching.
+    if (playing) {
+      rampGain(0, 0.2);
+      await new Promise((r) => setTimeout(r, 200));
+    }
     const song = pickRandom();
     current = song;
     loadLyrics(song);
@@ -235,10 +442,13 @@
 
   function toggle() {
     if (!audio) return;
-    if (playing) audio.pause();
-    else if (current && !audio.ended) {
+    if (playing) {
+      rampGain(0, 0.25); // fade out, then pause
+      setTimeout(() => audio?.pause(), 250);
+    } else if (current && !audio.ended) {
       ctx?.resume();
-      audio.play();
+      audio.play(); // onplay fades back in
+      rampGain(1);
     } else playRandom();
   }
 
@@ -256,14 +466,59 @@
   }}
   onpause={() => {
     playing = false;
+    glow = 0;
+    if (wordClearTimer) clearTimeout(wordClearTimer);
+    clearLit();
     cancelAnimationFrame(raf);
   }}
   onended={() => {
     playing = false;
+    glow = 0;
+    if (wordClearTimer) clearTimeout(wordClearTimer);
+    clearLit();
     cancelAnimationFrame(raf);
   }}
   hidden
 ></audio>
+
+<!-- Full-bleed waveform: the same ASCII frame blown up as a faint, breathing
+     background layer behind the page content. -->
+{#if frame}
+  <div
+    aria-hidden="true"
+    class="pointer-events-none fixed inset-0 -z-10 flex flex-col items-center justify-center overflow-hidden text-accent"
+    style="opacity: {0.05 + glow * 0.13};"
+  >
+    <pre
+      class="font-mono leading-[0.8] tracking-tighter"
+      style="font-size: 2.6vw;">{frame}</pre>
+    <pre
+      class="font-mono leading-[0.8] tracking-tighter [transform:scaleY(-1)]"
+      style="font-size: 2.6vw;">{frame}</pre>
+  </div>
+{/if}
+
+<!-- Ambient bass glow: a vignette in the accent that breathes with the low end.
+     Both the opacity AND the gradient radius (+ a slight scale) track the bass,
+     so it visibly expands/contracts instead of just fading. -->
+<div
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-0 z-[1] will-change-transform"
+  style="opacity: {Math.min(0.5, glow * 1.05)}; transform: scale({1 +
+    glow *
+      0.08}); background: radial-gradient(circle at 50% 50%, transparent {Math.max(
+    12,
+    62 - glow * 65,
+  )}%, var(--color-accent) 115%);"
+></div>
+
+<!-- Drop flash: white-hot burst on big drops (opacity driven via .animate()). -->
+<div
+  bind:this={flashEl}
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-0 z-[2]"
+  style="opacity: 0; background: radial-gradient(circle at 50% 45%, #ffffff 0%, var(--color-accent) 55%, var(--color-accent) 100%);"
+></div>
 
 {#if view.length}
   <div
@@ -286,6 +541,7 @@
 {/if}
 
 <div
+  data-no-rave
   class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-1.5"
 >
   {#if frame}
@@ -317,7 +573,7 @@
         <span class="truncate">
           {current
             ? `${current.title} — ${current.artist}`
-            : "play a random song i like"}
+            : "I wonder waht this button does🤔"}
         </span>
       </button>
 

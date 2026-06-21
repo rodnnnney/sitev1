@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const SONGS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../public/songs");
-const FILES = ["desire", "jar-of-love", "rock-ur-world"];
+const FILES = ["desire", "jar-of-love", "rock-ur-world", "atmosphere"];
 
 const HOP_MS = 10; // analysis resolution (100 frames/sec)
 const LP_CUTOFF = 200; // Hz — keep kick/bass, drop the rest

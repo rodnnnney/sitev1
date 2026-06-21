@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Self-hosted song assets — served from R2, kept locally only for beat-gen
+public/songs/

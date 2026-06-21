@@ -79,15 +79,16 @@ body {
    Magnitude is driven by --shake-amp, set per-beat in JS so it scales. */
 body.beat-shake {
   --shake-amp: 5px;
+  --shake-scale: 1;
   animation: beat-shake 0.22s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 @keyframes beat-shake {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  20% { transform: translate3d(calc(var(--shake-amp) * -1), calc(var(--shake-amp) * 0.6), 0); }
-  40% { transform: translate3d(var(--shake-amp), calc(var(--shake-amp) * -0.6), 0); }
-  60% { transform: translate3d(calc(var(--shake-amp) * -0.6), calc(var(--shake-amp) * -0.3), 0); }
-  80% { transform: translate3d(calc(var(--shake-amp) * 0.6), calc(var(--shake-amp) * 0.3), 0); }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  20% { transform: translate3d(calc(var(--shake-amp) * -1), calc(var(--shake-amp) * 0.6), 0) scale(var(--shake-scale)); }
+  40% { transform: translate3d(var(--shake-amp), calc(var(--shake-amp) * -0.6), 0) scale(var(--shake-scale)); }
+  60% { transform: translate3d(calc(var(--shake-amp) * -0.6), calc(var(--shake-amp) * -0.3), 0) scale(var(--shake-scale)); }
+  80% { transform: translate3d(calc(var(--shake-amp) * 0.6), calc(var(--shake-amp) * 0.3), 0) scale(var(--shake-scale)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
