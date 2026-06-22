@@ -562,7 +562,7 @@
     <div class="relative h-4 overflow-hidden">
       {#key activeLine}
         <div
-          class="absolute inset-0"
+          class="absolute inset-0 flex items-center"
           in:fly={{ y: 14, duration: 350 }}
           out:fly={{ y: -14, duration: 350 }}
         >
@@ -570,7 +570,7 @@
             text={currentLyric}
             speed={28}
             center
-            class="font-mono text-xs text-accent"
+            class="w-full font-mono text-xs leading-none text-accent"
           />
         </div>
       {/key}

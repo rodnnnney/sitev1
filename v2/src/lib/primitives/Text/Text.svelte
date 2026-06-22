@@ -177,10 +177,15 @@
   </span>
 {/if}
 
+<!-- Self-animating Text owns its own scramble and toggles its content between
+     {displayText} and {@render children}. The rave word-swap mutates the DOM
+     directly (replaceWith), which Svelte can't reconcile across that toggle —
+     leaving orphaned wrapped words behind. Opt these out of the rave collector. -->
 <p
   bind:this={containerEl}
   class="{textSizeStyles[size]} {textColorStyles[color]} {textDefaultStyles} {textTypeStyles[type]} {links ? textLinkStyles : ''} {className ?? ''}"
   onmouseenter={handleMouseEnter}
+  data-no-rave={animate || animateOnView || animateOnHover ? "" : undefined}
   {...rest}
 >
   {#if isAnimating}
