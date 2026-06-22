@@ -13,7 +13,6 @@ const DANCE_INTENSITY = 0.6; // min drop intensity to spawn any dancers
 const DANCE_MIN = 3; // dancers at the threshold
 const DANCE_MAX = 16; // dancers at full intensity
 const SRCS = [
-  `${bucketURL}/osaka-spin.gif`,
   `${bucketURL}/anime.gif`,
   `${bucketURL}/reze.gif`,
   `${bucketURL}/dancing-cat.gif`,

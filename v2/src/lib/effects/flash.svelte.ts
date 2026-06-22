@@ -6,12 +6,11 @@ import type { WordsFx } from "./words.svelte";
  * word scramble in lockstep so flashes and word swaps pulse together.
  */
 export class FlashFx {
-  enabled = $state(loadFx("fx-flash"));
-  /** The fixed full-screen overlay element (bind:this from the player). */
+  enabled = $state(loadFx("fx-flash", false));
   el: HTMLElement | null = null;
 
-  #gen = 0; // bumped to cancel an in-flight strobe when a new drop lands
-  #color = 0; // rotates through RAVE
+  #gen = 0;
+  #color = 0;
 
   setEnabled(v: boolean) {
     this.enabled = v;

@@ -152,8 +152,7 @@
   let lastFrame = 0;
   let raf = 0;
 
-  // Beat schedule, played back from a precomputed <name>.beats.json.
-  let beats: { t: number; i: number }[] = [];
+  let beats = $state<{ t: number; i: number }[]>([]);
   let beatIdx = 0;
 
   const FADE = 0.4; // play/pause/crossfade ramp duration
@@ -521,7 +520,7 @@
   style="opacity: 0; background: radial-gradient(circle at 50% 45%, #ffffff 0%, var(--color-accent) 55%, var(--color-accent) 100%);"
 ></div>
 
-<!-- mix-blend-multiply drops light gif backgrounds into the paper. -->
+<!-- mix-blend-multiply drops the transparent-bg gifs into the paper. -->
 {#if dancersFx.dancers.length && !isMobile}
   <div
     aria-hidden="true"
