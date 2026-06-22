@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "beats": "node scripts/generate-beats.mjs",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
@@ -16,11 +18,13 @@
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.12.3",
     "audio-decode": "^3.10.2",
+    "jsdom": "^29.1.1",
     "svelte": "^5.55.5",
     "svelte-check": "^4.4.8",
     "tailwindcss": "^4.1.8",
     "typescript": "~6.0.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vitest": "^4.1.9"
   },
   "dependencies": {
     "lucide-svelte": "^0.523.0",
