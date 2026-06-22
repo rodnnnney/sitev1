@@ -73,11 +73,7 @@
         >{derivedLabel}</Text
       >
     {/if}
-    <div
-      class="flex justify-between gap-1 {$deviceType === 'mobile'
-        ? 'flex-col items-start'
-        : 'flex-row items-end'}"
-    >
+    <div class="flex flex-row items-end justify-between gap-2">
       <Text
         type="heading"
         size={titleSize}
@@ -89,7 +85,9 @@
         {title}
       </Text>
       {#if showTime}
-        <div class="flex items-end gap-1">
+        <!-- shrink-0 keeps the clock on the title's baseline row; the title
+             wraps before it pushes the time off-screen on narrow viewports. -->
+        <div class="flex shrink-0 items-end gap-1">
           <Text type="label" size="xs" color="muted" animate duration={200}>
             {timeString}
           </Text>
