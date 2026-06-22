@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Text } from "./primitives";
+  import { audioViz } from "./audioStore.svelte";
 
   type Day = { date: string; contributionCount: number; weekday: number };
   type Week = { contributionDays: Day[] };
@@ -59,6 +60,61 @@
       return col;
     }) ?? [],
   );
+
+  const prefersReduced =
+    typeof window !== "undefined" &&
+    (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
+
+  // Rave flicker: on each beat of a rave track, splash a small fraction of the
+  // squares with random palette colours, then restore — the same tasteful pulse
+  // the page's words do (see WordsFx.pulse).
+  const RAVE = [
+    "#ff2d95",
+    "#00e5ff",
+    "#7cff00",
+    "#ffe600",
+    "#ff5e00",
+    "#2200ff",
+  ];
+
+  let cellColors = $state<Record<number, string>>({});
+  let clearTimer: ReturnType<typeof setTimeout> | null = null;
+
+  $effect(() => {
+    const seq = audioViz.seq; // tracked → re-runs once per beat
+    const total = columns.length * 7;
+    if (
+      prefersReduced ||
+      !audioViz.playing ||
+      !audioViz.rave ||
+      !seq ||
+      !total
+    ) {
+      if (Object.keys(cellColors).length) cellColors = {};
+      return;
+    }
+    // Scale the splash with how hard the beat hits — quiet beats flip a few
+    // squares, loud drops light up a big chunk of the grid.
+    const count = Math.ceil(total * (0.03 + audioViz.intensity * 0.32));
+    const next: Record<number, string> = {};
+    for (let k = 0; k < count; k++) {
+      next[(Math.random() * total) | 0] =
+        RAVE[(Math.random() * RAVE.length) | 0];
+    }
+    cellColors = next;
+    if (clearTimer) clearTimeout(clearTimer);
+    clearTimer = setTimeout(() => (cellColors = {}), 200);
+  });
+
+  // Clear the restore timer on unmount.
+  $effect(() => () => {
+    if (clearTimer) clearTimeout(clearTimer);
+  });
+
+  const cellStyle = (w: number, wd: number): string => {
+    const c = cellColors[w * 7 + wd];
+    return c ? `background-color: ${c};` : "";
+  };
 
   const MONTHS = [
     "January",
@@ -139,9 +195,10 @@
                     data-cell
                     role="gridcell"
                     tabindex="-1"
-                    class="h-2.5 w-2.5 rounded-[2px] {LEVELS[
+                    class="h-2.5 w-2.5 rounded-[2px] transition-colors duration-75 {LEVELS[
                       level(day.contributionCount)
                     ]}"
+                    style={cellStyle(w, wd)}
                     onmouseenter={(e) => showTip(e, day)}
                     onmouseleave={hideTip}
                     onclick={(e) => showTip(e, day)}

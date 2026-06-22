@@ -11,6 +11,7 @@
   import { backOut } from "svelte/easing";
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
+  import { audioViz } from "./audioStore.svelte";
   import { Text, Modal, Switch, toast } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
@@ -108,8 +109,10 @@
 
   const view = $derived.by(() => {
     if (!lyrics.length) return [];
-    const start = Math.max(0, activeLine - 2);
-    return lyrics.slice(start, start + 7).map((l, k) => ({
+    // Desktop has room for a taller karaoke window: a few lines of lead-in and
+    // several upcoming lines around the one being sung.
+    const start = Math.max(0, activeLine - 3);
+    return lyrics.slice(start, start + 12).map((l, k) => ({
       ...l,
       i: start + k,
       active: start + k === activeLine,
@@ -229,6 +232,7 @@
             : null;
         shakeFx.beat(maxI);
         wordsFx.pulse(maxI);
+        audioViz.beat(maxI); // drives the contribution-graph rave flicker
       }
       if (maxI >= DROP_INTENSITY) flashFx.drop(maxI, wordsFx, !!current?.rave);
       if (!isMobile) dancersFx.spawn(maxI);
@@ -238,8 +242,6 @@
 
     analyser.getByteFrequencyData(wave);
 
-    // Live bass level: PEAK of the lowpassed signal → dBFS. Peak (not RMS) so
-    // kicks visibly pump; fast attack / slow release like a real meter.
     if (bassAnalyser && bassWave) {
       bassAnalyser.getFloatTimeDomainData(bassWave);
       let peak = 0;
@@ -291,6 +293,7 @@
     wordsFx.reset();
     dancersFx.reset();
     flashFx.reset();
+    audioViz.playing = false;
     cancelAnimationFrame(raf);
   }
 
@@ -357,6 +360,7 @@
       await new Promise((r) => setTimeout(r, 200));
     }
     current = song;
+    audioViz.rave = !!song.rave;
     loadLyrics(song);
     loadBeats(song);
     await attemptPlay(song);
@@ -413,6 +417,7 @@
   ontimeupdate={() => (position = audio?.currentTime ?? 0)}
   onplay={() => {
     playing = true;
+    audioViz.playing = true;
     startLoop();
   }}
   onpause={() => {
