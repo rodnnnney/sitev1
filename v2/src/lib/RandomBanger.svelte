@@ -691,16 +691,9 @@
         : 'pointer-events-auto translate-y-0 opacity-100'}"
     >
       <Text type="paragraph" size="xs" color="muted" links class="leading-none">
-        <a
-          href="#"
-          role="button"
-          onclick={(e) => {
-            e.preventDefault();
-            toggle();
-          }}
-        >
+        <button type="button" onclick={toggle}>
           I wonder what this button does🤔
-        </a>
+        </button>
       </Text>
     </div>
   {/if}
@@ -715,16 +708,9 @@
       class="pointer-events-auto fixed right-5 bottom-5 z-40 font-mono text-xs"
     >
       <Text type="paragraph" size="xs" color="muted" links class="leading-none">
-        <a
-          href="#"
-          role="button"
-          onclick={(e) => {
-            e.preventDefault();
-            toggle();
-          }}
-        >
+        <button type="button" onclick={toggle}>
           I wonder what this button does🤔
-        </a>
+        </button>
       </Text>
     </div>
   {/if}

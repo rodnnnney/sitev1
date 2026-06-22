@@ -196,9 +196,17 @@
 </p>
 
 <style>
-  .text-link-animate :global(a) {
+  /* Buttons styled as links get the same animated underline (and a button
+     reset) so an in-text action can be a real <button> without looking like one. */
+  .text-link-animate :global(a),
+  .text-link-animate :global(button) {
     color: inherit;
     text-decoration: none;
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
     background-image: linear-gradient(var(--color-accent), var(--color-accent));
     background-position: 0% 100%;
     background-size: 0% 0.075em;
@@ -206,7 +214,8 @@
     transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .text-link-animate :global(a:hover) {
+  .text-link-animate :global(a:hover),
+  .text-link-animate :global(button:hover) {
     background-size: 100% 0.075em;
   }
 </style>

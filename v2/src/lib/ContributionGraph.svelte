@@ -210,6 +210,10 @@
             <div class="flex flex-col gap-[3px]">
               {#each col as day, wd (wd)}
                 {#if day}
+                  <!-- Decorative heatmap cell: the click just mirrors hover to
+                       open the tooltip on touch. It's tabindex="-1" (not a
+                       focusable control), so a keyboard handler is moot. -->
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <div
                     data-cell
                     role="gridcell"
