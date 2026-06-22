@@ -44,7 +44,7 @@
     maximize shareholder value at
     <span class="text-accent">TextQL</span>.<br /><br />
 
-    Previously, I went deep into the crypto rabbit hole, internted at a few cool
+    Previously, I went deep into the crypto rabbit hole, interned at a few cool
     startups, founded the blockchain club at my school and even spoke at
     <span class="text-accent">Consensus HK 2025</span>.
   </Text>
