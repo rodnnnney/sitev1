@@ -225,3 +225,57 @@ describe('effects/WordsFx — re-collection after navigation', () => {
     expect(texts()).toEqual(['brand', 'new', 'content', 'here'])
   })
 })
+
+// Regression (prod-only): the large Ioskeley body font is `font-display: swap`,
+// so on a cold network load the first beat can lock widths to the fallback
+// font; once the real font lands the boxes are wrong and overflow:hidden clips
+// the swap. We re-measure on document.fonts.ready.
+describe('effects/WordsFx — re-measures widths after web fonts load', () => {
+  it('re-locks word widths once document.fonts.ready resolves', async () => {
+    let measured = 10 // fallback-font metrics at first measure
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(
+      () =>
+        ({
+          width: measured,
+          height: 0,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    )
+
+    let resolveReady!: () => void
+    const ready = new Promise<void>((r) => (resolveReady = r))
+    Object.defineProperty(document, 'fonts', {
+      value: { ready },
+      configurable: true,
+    })
+
+    try {
+      document.body.innerHTML = '<p>word</p>'
+      const fx = new WordsFx()
+      fx.scramble(0) // locks to the fallback width
+      const span = raveWords()[0]
+      expect(span.style.width).toBe('10px')
+
+      measured = 50 // real font is wider
+      resolveReady()
+      await ready
+      await Promise.resolve() // flush the .then() microtask
+
+      expect(span.style.width).toBe('50px')
+    } finally {
+      delete (document as unknown as { fonts?: unknown }).fonts
+    }
+  })
+
+  it('does not throw when document.fonts is unavailable', () => {
+    delete (document as unknown as { fonts?: unknown }).fonts
+    document.body.innerHTML = '<p>word</p>'
+    expect(() => new WordsFx().scramble(0)).not.toThrow()
+  })
+})

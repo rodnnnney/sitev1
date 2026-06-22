@@ -1,16 +1,10 @@
 import { ACCENT, loadFx, reduceMotion, saveFx } from "./shared";
 
-/**
- * "Word replacing" — wraps every visible page word in a fixed-width span
- * (data-w = the original word) so beats can recolour and swap the text in/out
- * without ever reflowing the page, then restore it.
- */
+/** Wrap page words in fixed-width spans (data-w) so beats can swap/restore without reflow. */
 export class WordsFx {
   enabled = $state(loadFx("fx-words"));
 
-  // Scramble context, refreshed each frame by the player: `palette` colours the
-  // swapped words, `sources` are the words to swap in (the line being sung, else
-  // the whole song's lyrics). null falls back to the page's own words.
+  // Set each frame by the player: palette colours swaps; sources = lyric words (null → page words).
   palette: readonly string[] = ACCENT;
   sources: string[] | null = null;
 
@@ -18,6 +12,7 @@ export class WordsFx {
   #pool: string[] = [];
   #lit = new Set<HTMLElement>();
   #clearTimer: ReturnType<typeof setTimeout> | null = null;
+  #fontsHooked = false;
 
   setEnabled(v: boolean) {
     this.enabled = v;
@@ -67,6 +62,14 @@ export class WordsFx {
       tn.replaceWith(frag);
     }
 
+    this.#lockWidths(words);
+    this.#hookFonts();
+    return words;
+  }
+
+  // overflow, not clip-path: clip-path composites the span and blocks repaints during #shake-root shake.
+  #lockWidths(words: HTMLElement[]) {
+    for (const w of words) w.style.width = "";
     const widths = words.map((w) => w.getBoundingClientRect().width);
     words.forEach((w, i) => {
       w.style.display = "inline-block";
@@ -75,10 +78,20 @@ export class WordsFx {
       w.style.whiteSpace = "nowrap";
       w.style.overflow = "hidden";
     });
-    return words;
   }
 
-  // Re-wrap if uncollected or the cached spans were swapped out (navigation).
+  // font-display: swap can lock widths to the fallback before Ioskeley loads (prod-only).
+  #hookFonts() {
+    if (this.#fontsHooked || !document.fonts?.ready) return;
+    this.#fontsHooked = true;
+    document.fonts.ready.then(() => {
+      if (!this.#words?.length) return;
+      this.clear(); // measure originals, not in-flight swaps
+      this.#lockWidths(this.#words);
+    });
+  }
+
+  // Re-wrap after navigation if cached spans were detached.
   #ensure(): HTMLElement[] {
     if (!this.#words || !this.#words[0]?.isConnected)
       this.#words = this.#collect();
@@ -93,7 +106,7 @@ export class WordsFx {
     this.#lit.clear();
   }
 
-  /** Recolour + text-swap a fraction of the page's words. No auto-restore. */
+  /** No auto-restore — caller or pulse handles timing. */
   scramble(frac: number, palette: readonly string[] = this.palette) {
     this.clear();
     const words = this.#ensure();
@@ -109,7 +122,7 @@ export class WordsFx {
     }
   }
 
-  /** Per-beat flicker; auto-restores after 200ms so words don't stay scrambled. */
+  /** Auto-restores after 200ms. */
   pulse(intensity: number) {
     if (!this.enabled || reduceMotion()) return;
     this.scramble(0.04 + intensity * 0.06);
@@ -117,7 +130,7 @@ export class WordsFx {
     this.#clearTimer = setTimeout(() => this.clear(), 200);
   }
 
-  /** Cancel the pending auto-restore — the flash strobe drives the words now. */
+  /** Cancel auto-restore; flash strobe owns word timing. */
   takeover() {
     if (this.#clearTimer) clearTimeout(this.#clearTimer);
   }
