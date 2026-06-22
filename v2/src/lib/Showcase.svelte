@@ -64,7 +64,7 @@
     <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#each colors as color (color)}
         <div
-          class="{rowGrid()} rounded px-2 py-1"
+          class="{rowGrid()} rounded-sm px-2 py-1"
           class:bg-ink={color === "white"}
         >
           <Text type="label" size="xs" color="muted">{color}</Text>
@@ -93,7 +93,8 @@
     <div class="flex flex-wrap gap-2 border-t border-line pt-4">
       <button
         class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
-        onclick={() => toast("Saved", { description: "Your changes are live." })}
+        onclick={() =>
+          toast("Saved", { description: "Your changes are live." })}
       >
         default
       </button>
@@ -121,14 +122,11 @@
       <button
         class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
         onclick={() =>
-          toast.promise(
-            new Promise((resolve) => setTimeout(resolve, 1500)),
-            {
-              loading: "Uploading…",
-              success: "Uploaded",
-              error: "Upload failed",
-            },
-          )}
+          toast.promise(new Promise((resolve) => setTimeout(resolve, 1500)), {
+            loading: "Uploading…",
+            success: "Uploaded",
+            error: "Upload failed",
+          })}
       >
         promise
       </button>

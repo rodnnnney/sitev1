@@ -16,7 +16,7 @@
   toastOptions={{
     classes: {
       toast:
-        "!font-mono !rounded-md !shadow-[0_8px_30px_-6px_rgba(10,10,10,0.18)]",
+        "!font-mono !rounded-sm !shadow-[0_8px_30px_-6px_rgba(10,10,10,0.18)]",
       title: "!font-mono !text-sm !font-medium",
       description: "!font-mono !text-xs",
       actionButton: "!bg-accent !text-paper !font-mono !text-xs !rounded-sm",

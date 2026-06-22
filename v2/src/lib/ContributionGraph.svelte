@@ -195,7 +195,7 @@
                     data-cell
                     role="gridcell"
                     tabindex="-1"
-                    class="h-2.5 w-2.5 rounded-[2px] transition-colors duration-75 {LEVELS[
+                    class="h-2.5 w-2.5 rounded-sm transition-colors duration-75 {LEVELS[
                       level(day.contributionCount)
                     ]}"
                     style={cellStyle(w, wd)}
@@ -204,7 +204,7 @@
                     onclick={(e) => showTip(e, day)}
                   ></div>
                 {:else}
-                  <div class="h-2.5 w-2.5 rounded-[2px]"></div>
+                  <div class="h-2.5 w-2.5 rounded-sm"></div>
                 {/if}
               {/each}
             </div>
@@ -214,7 +214,7 @@
 
       {#if tip}
         <div
-          class="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-md bg-ink px-2 py-1 font-mono text-xs whitespace-nowrap text-paper"
+          class="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-sm bg-ink px-2 py-1 font-mono text-xs whitespace-nowrap text-paper"
           style="left: {tip.x}px; top: {tip.y - 6}px;"
         >
           {tip.text}
@@ -225,7 +225,7 @@
     <div class="flex items-center justify-end gap-1">
       <Text type="label" size="xs" color="muted">less</Text>
       {#each LEVELS as c (c)}
-        <div class="h-2.5 w-2.5 rounded-[2px] {c}"></div>
+        <div class="h-2.5 w-2.5 rounded-sm {c}"></div>
       {/each}
       <Text type="label" size="xs" color="muted">more</Text>
     </div>

@@ -53,7 +53,7 @@
     ></button>
 
     <div
-      class="relative z-10 w-full max-w-sm rounded-lg border border-line bg-paper p-6 shadow-[0_20px_60px_-12px_rgba(10,10,10,0.35)]"
+      class="relative z-10 w-full max-w-sm rounded-sm border border-line bg-paper p-6 shadow-[0_20px_60px_-12px_rgba(10,10,10,0.35)]"
       transition:scale={{ duration: 180, start: 0.96 }}
     >
       {#if title}

@@ -160,6 +160,15 @@
 
   let fxOpen = $state(false);
 
+  let waveEl = $state<HTMLElement | null>(null);
+  let waveW = $state(0);
+  $effect(() => {
+    if (!waveEl) return;
+    const ro = new ResizeObserver((e) => (waveW = e[0].contentRect.width));
+    ro.observe(waveEl);
+    return () => ro.disconnect();
+  });
+
   function rampGain(to: number, dur = FADE) {
     if (!ctx || !gain) return;
     const now = ctx.currentTime;
@@ -578,11 +587,11 @@
             <img
               src={current.cover}
               alt=""
-              class="size-10 shrink-0 rounded object-cover"
+              class="size-10 shrink-0 rounded-sm object-cover"
             />
           {:else}
             <div
-              class="grid size-10 shrink-0 place-items-center rounded bg-line/50 text-accent"
+              class="grid size-10 shrink-0 place-items-center rounded-sm bg-line/50 text-accent"
             >
               <Music size={18} />
             </div>
@@ -678,10 +687,12 @@
 {:else}
   <div
     data-no-rave
-    class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-1.5"
+    class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-2"
   >
+    <!-- The large ASCII sound wave stays above the player. -->
     {#if frame}
       <div
+        bind:this={waveEl}
         aria-hidden="true"
         class="flex max-w-[40vw] select-none flex-col overflow-hidden text-accent transition-opacity duration-300"
         class:opacity-25={!playing}
@@ -693,38 +704,109 @@
       </div>
     {/if}
 
-    <div
-      class="pointer-events-auto flex flex-col items-end gap-1.5 font-mono text-xs"
-    >
-      <div class="flex min-w-0 items-center gap-2">
-        {#if current?.cover}
-          <img
-            src={current.cover}
-            alt=""
-            class="size-4 shrink-0 rounded-[2px] object-cover"
-          />
-        {/if}
+    {#if current}
+      <!-- Structured player card, mirroring the mobile bar's layout. Width is
+           matched to the soundwave above it (falls back to w-64 pre-measure). -->
+      <div
+        class="pointer-events-auto flex w-64 flex-col gap-2 rounded-sm border border-line bg-paper/95 px-3 py-2.5 font-mono backdrop-blur"
+        style={waveW ? `width: ${waveW}px` : undefined}
+      >
+        <div class="flex items-center gap-3">
+          {#if current.cover}
+            <img
+              src={current.cover}
+              alt=""
+              class="size-10 shrink-0 rounded-sm object-cover"
+            />
+          {:else}
+            <div
+              class="grid size-10 shrink-0 place-items-center rounded-sm bg-line/50 text-accent"
+            >
+              <Music size={18} />
+            </div>
+          {/if}
 
-        {#if current}
           <button
             onclick={toggle}
+            class="flex min-w-0 flex-1 flex-col text-left"
             aria-label={playing ? "Pause" : "Play"}
-            class="shrink-0 text-muted transition-colors hover:text-accent"
           >
-            {#if playing}
-              <Pause size={12} />
-            {:else}
-              <Play size={12} />
-            {/if}
+            <span class="truncate text-xs font-medium text-ink">
+              {current.title}
+            </span>
+            <span class="truncate text-[10px] text-muted">
+              {current.artist}
+            </span>
           </button>
-        {/if}
 
+          <div class="flex shrink-0 items-center gap-3 text-muted">
+            <button
+              onclick={playRandom}
+              aria-label="Play another"
+              class="transition-colors hover:text-accent"
+            >
+              <Shuffle size={14} />
+            </button>
+            <button
+              onclick={toggle}
+              aria-label={playing ? "Pause" : "Play"}
+              class="text-ink transition-colors hover:text-accent"
+            >
+              {#if playing}
+                <Pause size={18} />
+              {:else}
+                <Play size={18} />
+              {/if}
+            </button>
+            <button
+              onclick={() => (fxOpen = true)}
+              aria-label="Effects"
+              class="transition-colors hover:text-accent"
+            >
+              <SlidersHorizontal size={14} />
+            </button>
+          </div>
+        </div>
+
+        {#if duration}
+          <!-- Energy meter: per-bucket beat intensity, filled to the playhead.
+               A transparent range input on top handles seek/keyboard. -->
+          <div class="relative h-5 w-full">
+            <div class="flex h-full items-center gap-px">
+              {#each energyBars as v, i (i)}
+                <div
+                  class="flex-1 transition-colors"
+                  style="height: {Math.max(12, v * 100)}%; background: {(i +
+                    0.5) /
+                    ENERGY_BARS <=
+                  position / duration
+                    ? 'var(--color-accent)'
+                    : 'var(--color-line)'};"
+                ></div>
+              {/each}
+            </div>
+            <input
+              type="range"
+              min="0"
+              max={duration}
+              step="0.1"
+              value={position}
+              oninput={seek}
+              aria-label="Seek"
+              class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+          </div>
+        {/if}
+      </div>
+    {:else}
+      <!-- Nothing playing yet: keep the quiet easter-egg prompt. -->
+      <div class="pointer-events-auto font-mono text-xs">
         <Text
           type="paragraph"
           size="xs"
           color="muted"
           links
-          class="truncate leading-none"
+          class="leading-none"
         >
           <a
             href="#"
@@ -734,62 +816,10 @@
               toggle();
             }}
           >
-            {current
-              ? `${current.title} — ${current.artist}`
-              : "I wonder what this button does🤔"}
+            I wonder what this button does🤔
           </a>
         </Text>
-
-        {#if current}
-          <button
-            onclick={playRandom}
-            title="Play another"
-            aria-label="Play another"
-            class="shrink-0 text-muted transition-colors hover:text-accent"
-          >
-            <Shuffle size={12} />
-          </button>
-        {/if}
-
-        <button
-          onclick={() => (fxOpen = true)}
-          title="Effects"
-          aria-label="Effects"
-          class="shrink-0 text-muted transition-colors hover:text-accent"
-        >
-          <SlidersHorizontal size={12} />
-        </button>
       </div>
-
-      {#if current && duration}
-        <!-- Energy meter: per-bucket beat intensity across the track, filled to
-             the playhead. A transparent range input on top handles seek/keyboard. -->
-        <div class="relative h-5 w-44">
-          <div class="flex h-full items-center gap-px">
-            {#each energyBars as v, i (i)}
-              <div
-                class="flex-1 transition-colors"
-                style="height: {Math.max(12, v * 100)}%; background: {(i +
-                  0.5) /
-                  ENERGY_BARS <=
-                position / duration
-                  ? 'var(--color-accent)'
-                  : 'var(--color-line)'};"
-              ></div>
-            {/each}
-          </div>
-          <input
-            type="range"
-            min="0"
-            max={duration}
-            step="0.1"
-            value={position}
-            oninput={seek}
-            aria-label="Seek"
-            class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-          />
-        </div>
-      {/if}
-    </div>
+    {/if}
   </div>
 {/if}

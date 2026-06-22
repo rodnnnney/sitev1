@@ -38,7 +38,7 @@
     <img
       src="{bucketURL}/blog/aura.avif"
       alt="stats"
-      class="w-full rounded-lg object-cover"
+      class="w-full rounded-sm object-cover"
     />
 
     <Text type="paragraph" size="sm" color="black">
@@ -54,7 +54,7 @@
     </Text>
 
     <div
-      class="my-4 overflow-x-auto rounded-lg border border-line bg-paper p-4"
+      class="my-4 overflow-x-auto rounded-sm border border-line bg-paper p-4"
     >
       <div bind:this={formulaElement}></div>
     </div>
@@ -102,7 +102,7 @@
     <img
       src="{bucketURL}/blog/stats.png"
       alt="stats"
-      class="w-full rounded-lg object-cover"
+      class="w-full rounded-sm object-cover"
     />
 
     <Text type="paragraph" size="sm" color="black">
