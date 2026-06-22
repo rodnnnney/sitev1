@@ -2,6 +2,7 @@
   import { Text, Page } from "./primitives";
   import { triggerShake } from "./shake";
   import { debugStore } from "./debugStore";
+  import ContributionGraph from "./ContributionGraph.svelte";
 
   let shakeAmp = $state(14); // shake amplitude in px
 </script>
@@ -19,6 +20,8 @@
     startups, founded the blockchain club at my school and even spoke at
     Consensus HK 2025.
   </Text>
+
+  <ContributionGraph />
 
   {#if $debugStore}
     <div class="flex items-center gap-3 font-mono text-xs text-muted">
