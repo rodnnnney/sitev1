@@ -54,8 +54,12 @@ async function handleContributions(
   if (cached) return cached;
 
   const login = env.GITHUB_LOGIN ?? "rodnnnney";
-  const from = url.searchParams.get("from") || undefined;
-  const to = url.searchParams.get("to") || undefined;
+  // Default to the full current calendar year (Jan 1 → Dec 31) so the grid
+  // spans the whole year; future days come back as zeros. Rolls over each new
+  // year. Overridable via ?from / ?to.
+  const year = new Date().getUTCFullYear();
+  const from = url.searchParams.get("from") || `${year}-01-01T00:00:00Z`;
+  const to = url.searchParams.get("to") || `${year}-12-31T23:59:59Z`;
 
   const ghRes = await fetch("https://api.github.com/graphql", {
     method: "POST",
