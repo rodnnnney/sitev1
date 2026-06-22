@@ -39,7 +39,10 @@ export class DancersFx {
     const H = window.innerHeight;
     const maxSize = Math.min(W, H) * 0.42;
     // Scale the count by how far into the dance range the drop reaches.
-    const t = Math.min(1, (intensity - DANCE_INTENSITY) / (1 - DANCE_INTENSITY));
+    const t = Math.min(
+      1,
+      (intensity - DANCE_INTENSITY) / (1 - DANCE_INTENSITY),
+    );
     const count = Math.round(DANCE_MIN + t * (DANCE_MAX - DANCE_MIN));
     const placed: Dancer[] = [];
     for (let tries = 0; placed.length < count && tries < count * 40; tries++) {

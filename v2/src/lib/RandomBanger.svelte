@@ -435,14 +435,18 @@
 
 {#snippet fxToggles()}
   <div class="flex flex-col">
-    {@render fxRow("screen shake", shakeFx.enabled, (v) => shakeFx.setEnabled(v))}
+    {@render fxRow("screen shake", shakeFx.enabled, (v) =>
+      shakeFx.setEnabled(v),
+    )}
     {@render fxRow("screen flashing", flashFx.enabled, (v) =>
       flashFx.setEnabled(v),
     )}
     {@render fxRow("word flashing", wordsFx.enabled, (v) =>
       wordsFx.setEnabled(v),
     )}
-    {@render fxRow("dancers", dancersFx.enabled, (v) => dancersFx.setEnabled(v))}
+    {@render fxRow("dancers", dancersFx.enabled, (v) =>
+      dancersFx.setEnabled(v),
+    )}
   </div>
 {/snippet}
 
