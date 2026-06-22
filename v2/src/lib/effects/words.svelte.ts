@@ -73,7 +73,7 @@ export class WordsFx {
       w.style.width = `${widths[i]}px`;
       w.style.textAlign = "center";
       w.style.whiteSpace = "nowrap";
-      w.style.clipPath = "inset(0)";
+      w.style.overflow = "hidden";
     });
     return words;
   }
