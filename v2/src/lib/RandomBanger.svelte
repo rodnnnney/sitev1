@@ -12,7 +12,7 @@
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
   import { audioViz } from "./audioStore.svelte";
-  import { Text, Modal, Switch, toast } from "./primitives";
+  import { Text, Modal, Switch, Button, toast } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
   import { WordsFx } from "./effects/words.svelte";
@@ -484,18 +484,8 @@
   the effects stay off.
   <div class="mt-3">{@render fxToggles()}</div>
   {#snippet actions()}
-    <button
-      onclick={cancelWarning}
-      class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-accent hover:text-accent"
-    >
-      not now
-    </button>
-    <button
-      onclick={confirmWarning}
-      class="rounded-sm bg-accent px-3 py-1.5 font-mono text-xs text-paper transition-opacity hover:opacity-90"
-    >
-      play anyway
-    </button>
+    <Button variant="surface" onclick={cancelWarning}>not now</Button>
+    <Button onclick={confirmWarning}>play anyway</Button>
   {/snippet}
 </Modal>
 
@@ -504,12 +494,7 @@
   {@render fxToggles()}
 
   {#snippet actions()}
-    <button
-      onclick={() => (fxOpen = false)}
-      class="rounded-sm bg-accent px-3 py-1.5 font-mono text-xs text-paper transition-opacity hover:opacity-90"
-    >
-      done
-    </button>
+    <Button onclick={() => (fxOpen = false)}>done</Button>
   {/snippet}
 </Modal>
 

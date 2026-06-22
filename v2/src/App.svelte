@@ -1,5 +1,6 @@
 <script lang="ts">
   import Home from "./lib/Home.svelte";
+  import NotFound from "./lib/NotFound.svelte";
   import Showcase from "./lib/Showcase.svelte";
   import { Blog, Pacing } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
@@ -41,14 +42,16 @@
      HUD / bass meter (rendered outside it) stays steady. -->
 <div id="shake-root">
   <Layout {path}>
-    {#if path === "/xyz"}
+    {#if path === "/"}
+      <Home />
+    {:else if path === "/xyz"}
       <Showcase />
     {:else if path === "/blog"}
       <Blog />
     {:else if path === "/blog/pace-factor"}
       <Pacing />
     {:else}
-      <Home />
+      <NotFound {path} />
     {/if}
   </Layout>
 </div>

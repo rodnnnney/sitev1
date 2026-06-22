@@ -1,5 +1,6 @@
 <script lang="ts">
   import { debugStore } from "../../debugStore";
+  import { Button } from "../Button";
 
   let divisions = $state(8);
 
@@ -44,20 +45,20 @@
 >
   <span class="font-mono text-xs text-muted">grid</span>
   {#each [4, 8, 16] as n}
-    <button
+    <Button
+      size="sm"
+      variant={divisions === n ? "solid" : "ghost"}
       onclick={() => setDivisions(n)}
-      class="px-2 py-1 font-mono text-xs {divisions === n
-        ? 'bg-accent text-paper'
-        : 'text-ink hover:bg-line'}"
     >
       {n}
-    </button>
+    </Button>
   {/each}
-  <button
-    onclick={close}
-    class="px-2 py-1 font-mono text-xs text-muted hover:text-ink"
+  <Button
+    size="sm"
+    variant="ghost"
     aria-label="Close debug grid"
+    onclick={close}
   >
     ×
-  </button>
+  </Button>
 </div>

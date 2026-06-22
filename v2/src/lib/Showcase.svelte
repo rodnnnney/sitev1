@@ -2,6 +2,7 @@
   import {
     Text,
     Page,
+    Button,
     toast,
     textSizeStyles,
     textColorStyles,
@@ -16,6 +17,16 @@
   const sizes = Object.keys(textSizeStyles) as TextSize[];
   const colors = Object.keys(textColorStyles) as TextColor[];
   const types = Object.keys(textTypeStyles) as TextType[];
+
+  const buttonVariants = [
+    "solid",
+    "classic",
+    "soft",
+    "surface",
+    "outline",
+    "ghost",
+  ] as const;
+  const buttonSizes = ["xs", "sm", "md", "lg", "xl"] as const;
 
   // Bump to remount the animation demos (replay the scramble).
   let replayKey = $state(0);
@@ -87,40 +98,75 @@
     </div>
   </section>
 
+  <!-- ── Button: variants ────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Button · variant</Text>
+    <div class="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+      {#each buttonVariants as v (v)}
+        <Button variant={v}>{v}</Button>
+      {/each}
+    </div>
+  </section>
+
+  <!-- ── Button: size ────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Button · size</Text>
+    <div class="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+      {#each buttonSizes as s (s)}
+        <Button size={s}>{s}</Button>
+      {/each}
+    </div>
+  </section>
+
+  <!-- ── Button: state & link ────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Button · state & link</Text>
+    <div class="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+      <Button variant="surface" href="/xyz">as link</Button>
+      <Button disabled>disabled</Button>
+      <Button variant="surface" disabled>disabled</Button>
+    </div>
+  </section>
+
   <!-- ── Toaster (sonner) ────────────────────────────────── -->
   <section class="flex flex-col gap-4">
     <Text type="label" size="xs" color="muted">Toaster · sonner</Text>
     <div class="flex flex-wrap gap-2 border-t border-line pt-4">
-      <button
-        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+      <Button
+        variant="surface"
+        size="sm"
         onclick={() =>
           toast("Saved", { description: "Your changes are live." })}
       >
         default
-      </button>
-      <button
-        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+      </Button>
+      <Button
+        variant="surface"
+        size="sm"
         onclick={() => toast.success("Deployed to production")}
       >
         success
-      </button>
-      <button
-        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+      </Button>
+      <Button
+        variant="surface"
+        size="sm"
         onclick={() => toast.error("Something went wrong")}
       >
         error
-      </button>
-      <button
-        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+      </Button>
+      <Button
+        variant="surface"
+        size="sm"
         onclick={() =>
           toast("Undo last action?", {
             action: { label: "Undo", onClick: () => toast("Reverted") },
           })}
       >
         with action
-      </button>
-      <button
-        class="rounded-sm border border-line bg-paper px-3 py-1.5 font-mono text-xs text-ink hover:border-accent hover:text-accent"
+      </Button>
+      <Button
+        variant="surface"
+        size="sm"
         onclick={() =>
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1500)), {
             loading: "Uploading…",
@@ -129,7 +175,7 @@
           })}
       >
         promise
-      </button>
+      </Button>
     </div>
   </section>
 
@@ -138,12 +184,9 @@
     <div class="flex items-center justify-between">
       <Text type="label" size="xs" color="muted">Text · scramble animation</Text
       >
-      <button
-        onclick={() => (replayKey += 1)}
-        class="font-mono text-xs text-accent underline-offset-4 hover:underline"
-      >
+      <Button variant="ghost" size="sm" onclick={() => (replayKey += 1)}>
         replay
-      </button>
+      </Button>
     </div>
     <div class="flex flex-col gap-3 border-t border-line pt-4">
       {#key replayKey}

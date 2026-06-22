@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Text, Page } from "./primitives";
+  import { Text, Page, Button } from "./primitives";
   import { triggerShake } from "./shake";
   import { debugStore } from "./debugStore";
   import ContributionGraph from "./ContributionGraph.svelte";
@@ -13,8 +13,8 @@
       >Chengdu/Ottawa</span
     >
     and now based out of <span class="text-accent">NYC</span>. Currently, I'm
-    putting school on pause (sorry mom) to maximize shareholder value at <span class="text-accent">TextQL</span>.<br
-    /><br />
+    putting school on pause (sorry mom) to maximize shareholder value at
+    <span class="text-accent">TextQL</span>.<br /><br />
 
     Previously, I went deep into the crypto rabbit hole, internted at a few cool
     startups, founded the blockchain club at my school and even spoke at
@@ -25,12 +25,9 @@
 
   {#if $debugStore}
     <div class="flex items-center gap-3 font-mono text-xs text-muted">
-      <button
-        onclick={() => triggerShake(shakeAmp)}
-        class="transition-colors hover:text-accent"
-      >
+      <Button variant="ghost" size="sm" onclick={() => triggerShake(shakeAmp)}>
         shake
-      </button>
+      </Button>
       <input
         type="range"
         min="2"
