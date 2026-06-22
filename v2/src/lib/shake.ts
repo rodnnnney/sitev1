@@ -7,7 +7,8 @@ let beatTimer: ReturnType<typeof setTimeout> | null = null;
  */
 export function triggerShake(amplitude = 5) {
   if (typeof document === 'undefined') return;
-  const b = document.body;
+  // Shake the page content, not the whole body, so fixed HUD stays steady.
+  const b = document.getElementById('shake-root') ?? document.body;
   b.style.setProperty('--shake-amp', `${amplitude}px`);
   b.style.setProperty('--shake-scale', String(1 + Math.min(0.045, amplitude / 700)));
   b.classList.remove('beat-shake');

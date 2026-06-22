@@ -2,7 +2,7 @@
   import { Play, Pause, Shuffle, SlidersHorizontal } from "lucide-svelte";
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
-  import { bangers } from "./consts";
+  import { bangers, bucketURL } from "./consts";
   import { Text, Modal, Switch, toast } from "./primitives";
   import { triggerShake } from "./shake";
 
@@ -13,8 +13,9 @@
   let playing = $state(false);
   let current = $state<(typeof bangers)[number] | null>(null);
   let frame = $state("");
-  let position = $state(0); // seconds into the track
+  let position = $state(0);
   let duration = $state(0);
+  let bassDb = $state(-60); // live low-end level in dBFS (top-right readout)
 
   function seek(e: Event) {
     if (!audio) return;
@@ -32,9 +33,15 @@
   let activeLine = $state(-1);
   const LYRIC_OFFSET = 0; // seconds; nudge if a track drifts from its lyrics
 
-  // Current song's lyric words — the preferred scramble source (see litRandom).
+  // All lyric words (whole song) — fallback scramble source.
   const lyricPool = $derived(
     lyrics.flatMap((l) => l.text.split(/\s+/)).filter(Boolean),
+  );
+  // Words from the line being sung right now — the preferred scramble source.
+  const nowWords = $derived(
+    activeLine >= 0 && lyrics[activeLine]
+      ? lyrics[activeLine].text.split(/\s+/).filter(Boolean)
+      : [],
   );
 
   function parseLRC(raw: string): Line[] {
@@ -57,9 +64,7 @@
     try {
       const res = await fetch(lrcUrl);
       if (res.ok) lyrics = parseLRC(await res.text());
-    } catch {
-      /* no lyrics for this track — fine */
-    }
+    } catch {}
   }
 
   async function loadBeats(song: (typeof bangers)[number]) {
@@ -74,7 +79,6 @@
     }
   }
 
-  // The window of lines shown (a couple above the active one, several below).
   const view = $derived.by(() => {
     if (!lyrics.length) return [];
     const start = Math.max(0, activeLine - 2);
@@ -83,6 +87,21 @@
       i: start + k,
       active: start + k === activeLine,
     }));
+  });
+
+  // Bass/energy profile across the whole track — drives the progress meter.
+  const ENERGY_BARS = 56;
+  const energyBars = $derived.by(() => {
+    if (!beats.length || !duration) return [];
+    const buckets = new Array(ENERGY_BARS).fill(0);
+    for (const b of beats) {
+      const idx = Math.min(
+        ENERGY_BARS - 1,
+        Math.floor((b.t / duration) * ENERGY_BARS),
+      );
+      if (b.i > buckets[idx]) buckets[idx] = b.i; // peak energy per time-bucket
+    }
+    return buckets;
   });
 
   const COLS = 64;
@@ -97,24 +116,23 @@
   let analyser: AnalyserNode | null = null;
   let gain: GainNode | null = null;
   let wave: Uint8Array | null = null;
+  let bassAnalyser: AnalyserNode | null = null; // lowpassed tap for dBFS meter
+  let bassWave: Float32Array | null = null;
   let smooth = new Array(COLS).fill(0);
   let lastFrame = 0;
   let raf = 0;
 
   // Beat-driven page shake, played back from a precomputed <name>.beats.json.
-  const BEAT_MIN_INTENSITY = 0.12; // ignore micro-onsets
-  const SHAKE_BASE = 4; // px at the faintest beat
-  const SHAKE_RANGE = 36; // extra px scaled by beat intensity
-  const DROP_INTENSITY = 0.45; // a beat this strong is a "drop" -> flash + kick
-  const DROP_SHAKE_BOOST = 14; // extra px of shake on a drop
+  const BEAT_MIN_INTENSITY = 0.12;
+  const SHAKE_BASE = 4;
+  const SHAKE_RANGE = 36;
+  const DROP_INTENSITY = 0.45; // "drop" threshold → flash + kick
+  const DROP_SHAKE_BOOST = 14;
   let beats: { t: number; i: number }[] = [];
   let beatIdx = 0;
 
-  // Ambient immersion.
-  let flashEl: HTMLElement | null = null; // full-screen drop-flash overlay
-  const FADE = 0.4; // seconds for play/pause/crossfade ramps
-
-  // Rave strobe colours, cycled per pulse on each drop.
+  let flashEl: HTMLElement | null = null;
+  const FADE = 0.4; // play/pause/crossfade ramp duration
   const RAVE = [
     "#ff2d95",
     "#00e5ff",
@@ -126,11 +144,63 @@
   let strobeGen = 0; // cancels an in-flight strobe when a new drop lands
   let colorTick = 0;
 
-  // During a drop, random words flash accent AND scramble to a random word,
-  // then snap back. Wrap every page word in a span once; each span keeps its
-  // original text in data-w so we can restore it.
+  // Dancing reaction memes — scatter across the screen on a big drop (>= 60%).
+  const DANCE_INTENSITY = 0.75;
+  const DANCE_COUNT = 10;
+  const DANCERS = [
+    `${bucketURL}/osaka-spin.gif`,
+    `${bucketURL}/anime.gif`,
+    `${bucketURL}/reze.gif`,
+    `${bucketURL}/dancing-cat.gif`,
+  ];
+
+  type Dancer = {
+    src: string;
+    x: number;
+    y: number;
+    size: number;
+    rot: number;
+  };
+  let dancers = $state<Dancer[]>([]);
+  let danceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function showDance() {
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const maxSize = Math.min(W, H) * 0.42;
+    const placed: Dancer[] = [];
+    for (
+      let tries = 0;
+      placed.length < DANCE_COUNT && tries < DANCE_COUNT * 40;
+      tries++
+    ) {
+      const size = Math.min(90 + Math.random() * 130, maxSize);
+      const rot = -18 + Math.random() * 36;
+      const rad = (rot * Math.PI) / 180;
+      const half =
+        (size / 2) * (Math.abs(Math.cos(rad)) + Math.abs(Math.sin(rad)));
+      if (W <= 2 * half || H <= 2 * half) continue;
+      const x = half + Math.random() * (W - 2 * half);
+      const y = half + Math.random() * (H - 2 * half);
+      const r = size / 2;
+      if (!placed.every((p) => Math.hypot(p.x - x, p.y - y) >= p.size / 2 + r))
+        continue;
+      placed.push({
+        src: DANCERS[(Math.random() * DANCERS.length) | 0],
+        x,
+        y,
+        size,
+        rot,
+      });
+    }
+    dancers = placed;
+    if (danceTimer) clearTimeout(danceTimer);
+    danceTimer = setTimeout(() => (dancers = []), 2600);
+  }
+
+  // Wrap page words in spans (data-w = original) so rave can scramble and restore.
   let raveWords: HTMLElement[] | null = null;
-  let wordPool: string[] = []; // the page's own words (fallback scramble source)
+  let wordPool: string[] = [];
   const litWords = new Set<HTMLElement>();
 
   function collectRaveWords() {
@@ -167,7 +237,7 @@
           const s = document.createElement("span");
           s.className = "rave-w";
           s.textContent = part;
-          s.dataset.w = part; // original, for restore
+          s.dataset.w = part;
           frag.append(s);
           words.push(s);
           wordPool.push(part);
@@ -202,7 +272,7 @@
   const reduceMotion = () =>
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 
-  // Per-effect toggles, persisted. Each gates one rave effect independently.
+  // Per-effect toggles, persisted in localStorage.
   const loadFx = (k: string, def = true) => {
     try {
       const v = localStorage.getItem(k);
@@ -214,12 +284,14 @@
   let fxShake = $state(loadFx("fx-shake"));
   let fxFlash = $state(loadFx("fx-flash"));
   let fxWords = $state(loadFx("fx-words"));
-  let fxOpen = $state(false); // settings panel visibility
+  let fxDance = $state(loadFx("fx-dance"));
+  let fxOpen = $state(false);
   $effect(() => {
     try {
       localStorage.setItem("fx-shake", fxShake ? "1" : "0");
       localStorage.setItem("fx-flash", fxFlash ? "1" : "0");
       localStorage.setItem("fx-words", fxWords ? "1" : "0");
+      localStorage.setItem("fx-dance", fxDance ? "1" : "0");
     } catch {
       /* ignore */
     }
@@ -228,7 +300,7 @@
   function clearLit() {
     for (const w of litWords) {
       w.style.color = "";
-      if (w.dataset.w !== undefined) w.textContent = w.dataset.w; // restore word
+      if (w.dataset.w !== undefined) w.textContent = w.dataset.w;
     }
     litWords.clear();
   }
@@ -240,19 +312,22 @@
   ) {
     clearLit();
     if (!words.length) return;
-    // Prefer the song's lyric words; fall back to the page's own words.
-    const src = lyricPool.length ? lyricPool : wordPool;
+    // Scramble into the line being sung now → else the whole song → else page.
+    const src = nowWords.length
+      ? nowWords
+      : lyricPool.length
+        ? lyricPool
+        : wordPool;
     const count = Math.ceil(words.length * frac);
     for (let k = 0; k < count; k++) {
       const w = words[(Math.random() * words.length) | 0];
       w.style.color = palette[(Math.random() * palette.length) | 0];
-      w.textContent = src[(Math.random() * src.length) | 0]; // scramble
+      w.textContent = src[(Math.random() * src.length) | 0];
       litWords.add(w);
     }
   }
 
-  // Subtle per-beat word flicker (fires on every beat, all songs). Restores
-  // shortly after so words don't stay scrambled through a quiet stretch.
+  // Per-beat word flicker; auto-restores so words don't stay scrambled.
   function pulseWords(intensity: number) {
     if (!fxWords || reduceMotion()) return;
     litRandom(
@@ -273,7 +348,6 @@
   }
 
   function flashDrop(intensity: number) {
-    // Rave-only, and only the sub-effects the user has left enabled.
     if (!flashEl || !current?.rave || reduceMotion()) return;
     if (!fxFlash && !fxWords) return;
     if (wordClearTimer) clearTimeout(wordClearTimer); // strobe owns the words now
@@ -281,7 +355,7 @@
     const peak = Math.min(0.92, 0.55 + intensity * 0.5);
     const words = ensureRaveWords();
 
-    // Rapid colour-cycling strobe — more pulses for bigger drops.
+    // More strobe pulses on bigger drops.
     const pulses = 3 + Math.round(intensity * 4); // 3..7
     const gen = ++strobeGen;
     let n = 0;
@@ -296,10 +370,10 @@
         flashEl.style.background = RAVE[colorTick++ % RAVE.length];
         flashEl.style.opacity = String(peak);
       }
-      if (fxWords) litRandom(words, 0.18, RAVE); // full palette, each pulse
+      if (fxWords) litRandom(words, 0.18, RAVE);
       setTimeout(() => {
         if (!flashEl || gen !== strobeGen) return;
-        if (fxFlash) flashEl.style.opacity = "0"; // off phase
+        if (fxFlash) flashEl.style.opacity = "0";
         n++;
         setTimeout(tick, 45);
       }, 55);
@@ -324,6 +398,16 @@
     src.connect(gain);
     gain.connect(analyser);
     analyser.connect(ctx.destination);
+
+    // Separate lowpass tap (kick/sub only) for a true dBFS bass reading.
+    const bassFilter = ctx.createBiquadFilter();
+    bassFilter.type = "lowpass";
+    bassFilter.frequency.value = 150;
+    bassAnalyser = ctx.createAnalyser();
+    bassAnalyser.fftSize = 1024;
+    bassWave = new Float32Array(bassAnalyser.fftSize);
+    gain.connect(bassFilter);
+    bassFilter.connect(bassAnalyser); // measurement only — not routed to output
   }
 
   function render(t = 0) {
@@ -334,7 +418,6 @@
 
     if (audio) position = audio.currentTime;
 
-    // Advance the karaoke highlight to the latest line at/under the playhead.
     if (lyrics.length && audio) {
       const now = audio.currentTime + LYRIC_OFFSET;
       let idx = -1;
@@ -354,15 +437,29 @@
       if (maxI >= BEAT_MIN_INTENSITY) {
         if (fxShake) {
           let amp = SHAKE_BASE + maxI * SHAKE_RANGE;
-          if (maxI >= DROP_INTENSITY) amp += DROP_SHAKE_BOOST; // extra kick on drops
+          if (maxI >= DROP_INTENSITY) amp += DROP_SHAKE_BOOST;
           triggerShake(amp);
         }
-        pulseWords(maxI); // flicker/scramble a few words on every beat (gated)
+        pulseWords(maxI);
       }
-      if (maxI >= DROP_INTENSITY) flashDrop(maxI); // big drop -> full strobe
+      if (maxI >= DROP_INTENSITY) flashDrop(maxI);
+      if (maxI >= DANCE_INTENSITY && fxDance && !reduceMotion()) showDance();
     }
 
     analyser.getByteFrequencyData(wave);
+
+    // Live bass level: PEAK of the lowpassed signal → dBFS. Peak (not RMS) so
+    // kicks visibly pump; fast attack / slow release like a real meter.
+    if (bassAnalyser && bassWave) {
+      bassAnalyser.getFloatTimeDomainData(bassWave);
+      let peak = 0;
+      for (let i = 0; i < bassWave.length; i++) {
+        const a = Math.abs(bassWave[i]);
+        if (a > peak) peak = a;
+      }
+      const db = peak > 0 ? Math.max(-60, 20 * Math.log10(peak)) : -60;
+      bassDb += (db - bassDb) * (db > bassDb ? 0.7 : 0.12);
+    }
 
     const usable = Math.floor(wave.length * 0.7); // lower bins carry most energy
     const step = usable / COLS;
@@ -399,13 +496,17 @@
     raf = requestAnimationFrame(render);
   }
 
+  // Avoid repeating the last couple of tracks so the rotation feels even.
+  let recent: (typeof bangers)[number][] = [];
+  const RECENT_KEEP = 2;
+
   function pickRandom() {
     if (bangers.length <= 1) return bangers[0];
-    // Truly random each time — only avoid repeating the song just played.
-    let next = current;
-    while (next === current) {
-      next = bangers[Math.floor(Math.random() * bangers.length)];
-    }
+    let pool = bangers.filter((b) => !recent.includes(b));
+    if (pool.length === 0) pool = bangers.filter((b) => b !== current);
+    const next = pool[Math.floor(Math.random() * pool.length)];
+    recent.push(next);
+    if (recent.length > RECENT_KEEP) recent.shift();
     return next;
   }
 
@@ -416,10 +517,10 @@
     if (!audio) return;
     audio.src = song.url;
     audio.load();
-    gain?.gain.setValueAtTime(0, ctx?.currentTime ?? 0); // start silent
+    gain?.gain.setValueAtTime(0, ctx?.currentTime ?? 0);
     try {
       await audio.play();
-      rampGain(1); // fade in
+      rampGain(1);
       toast.success(song.title, { description: song.artist });
     } catch (err) {
       if ((err as DOMException)?.name === "AbortError") return; // src swap during pending play()
@@ -495,11 +596,11 @@
   function toggle() {
     if (!audio) return;
     if (playing) {
-      rampGain(0, 0.25); // fade out, then pause
+      rampGain(0, 0.25);
       setTimeout(() => audio?.pause(), 250);
     } else if (current && !audio.ended) {
       ctx?.resume();
-      audio.play(); // onplay fades back in
+      audio.play();
       rampGain(1);
     } else playRandom();
   }
@@ -518,20 +619,51 @@
   }}
   onpause={() => {
     playing = false;
+    bassDb = -60;
     if (wordClearTimer) clearTimeout(wordClearTimer);
+    if (danceTimer) clearTimeout(danceTimer);
+    dancers = [];
     clearLit();
     cancelAnimationFrame(raf);
   }}
   onended={() => {
     playing = false;
+    bassDb = -60;
     if (wordClearTimer) clearTimeout(wordClearTimer);
+    if (danceTimer) clearTimeout(danceTimer);
+    dancers = [];
     clearLit();
     cancelAnimationFrame(raf);
   }}
   hidden
 ></audio>
 
-<!-- Flashing-lights warning, shown once before the first EDM/rave track. -->
+<!-- Live bass level (dBFS) — pinned top-right, steady (outside #shake-root). -->
+{#if current}
+  <div
+    class="pointer-events-none fixed top-5 right-5 z-40 font-mono text-xs tabular-nums text-accent"
+  >
+    {bassDb.toFixed(1)} dB
+  </div>
+{/if}
+
+<!-- One effect-toggle row + the full set; shared by both modals. -->
+{#snippet fxRow(label: string, on: boolean, set: (v: boolean) => void)}
+  <div class="flex w-full items-center justify-between py-2 text-sm text-ink">
+    <span>{label}</span>
+    <Switch checked={on} onCheckedChange={set} aria-label={label} />
+  </div>
+{/snippet}
+
+{#snippet fxToggles()}
+  <div class="flex flex-col">
+    {@render fxRow("screen shake", fxShake, (v) => (fxShake = v))}
+    {@render fxRow("screen flashing", fxFlash, (v) => (fxFlash = v))}
+    {@render fxRow("word flashing", fxWords, (v) => (fxWords = v))}
+    {@render fxRow("dancers", fxDance, (v) => (fxDance = v))}
+  </div>
+{/snippet}
+
 <Modal
   bind:open={warnOpen}
   title="Flashing lights ahead"
@@ -541,6 +673,7 @@
   the beat. If you're sensitive to flashing lights, maybe sit this one out — or
   flip on your device's <span class="text-ink">reduce motion</span> setting and
   the effects stay off.
+  <div class="mt-3">{@render fxToggles()}</div>
   {#snippet actions()}
     <button
       onclick={cancelWarning}
@@ -557,21 +690,9 @@
   {/snippet}
 </Modal>
 
-<!-- Effects config: toggle each rave effect independently. -->
 <Modal bind:open={fxOpen} title="Effects">
-  {#snippet fxRow(label: string, on: boolean, set: (v: boolean) => void)}
-    <div class="flex w-full items-center justify-between py-2 text-sm text-ink">
-      <span>{label}</span>
-      <Switch checked={on} onCheckedChange={set} aria-label={label} />
-    </div>
-  {/snippet}
-
   <p class="mb-1">Beat-reactive effects on EDM tracks.</p>
-  <div class="flex flex-col">
-    {@render fxRow("screen shake", fxShake, (v) => (fxShake = v))}
-    {@render fxRow("screen flashing", fxFlash, (v) => (fxFlash = v))}
-    {@render fxRow("word flashing", fxWords, (v) => (fxWords = v))}
-  </div>
+  {@render fxToggles()}
 
   {#snippet actions()}
     <button
@@ -583,13 +704,30 @@
   {/snippet}
 </Modal>
 
-<!-- Drop flash: white-hot burst on big drops (opacity driven via .animate()). -->
 <div
   bind:this={flashEl}
   aria-hidden="true"
   class="pointer-events-none fixed inset-0 z-[2]"
   style="opacity: 0; background: radial-gradient(circle at 50% 45%, #ffffff 0%, var(--color-accent) 55%, var(--color-accent) 100%);"
 ></div>
+
+<!-- mix-blend-multiply drops light gif backgrounds into the paper. -->
+{#if dancers.length}
+  <div
+    aria-hidden="true"
+    class="pointer-events-none fixed inset-0 z-20"
+    transition:fade={{ duration: 150 }}
+  >
+    {#each dancers as d, i (i)}
+      <img
+        src={d.src}
+        alt=""
+        class="absolute object-contain mix-blend-multiply"
+        style="left: {d.x}px; top: {d.y}px; width: {d.size}px; height: {d.size}px; transform: translate(-50%, -50%) rotate({d.rot}deg);"
+      />
+    {/each}
+  </div>
+{/if}
 
 {#if view.length}
   <div
@@ -683,16 +821,32 @@
     </div>
 
     {#if current && duration}
-      <input
-        type="range"
-        min="0"
-        max={duration}
-        step="0.1"
-        value={position}
-        oninput={seek}
-        aria-label="Seek"
-        class="h-1 w-44 cursor-pointer accent-accent"
-      />
+      <!-- Energy meter: per-bucket beat intensity across the track, filled to
+           the playhead. A transparent range input on top handles seek/keyboard. -->
+      <div class="relative h-5 w-44">
+        <div class="flex h-full items-center gap-px">
+          {#each energyBars as v, i (i)}
+            <div
+              class="flex-1 transition-colors"
+              style="height: {Math.max(12, v * 100)}%; background: {(i + 0.5) /
+                ENERGY_BARS <=
+              position / duration
+                ? 'var(--color-accent)'
+                : 'var(--color-line)'};"
+            ></div>
+          {/each}
+        </div>
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          step="0.1"
+          value={position}
+          oninput={seek}
+          aria-label="Seek"
+          class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        />
+      </div>
     {/if}
   </div>
 </div>

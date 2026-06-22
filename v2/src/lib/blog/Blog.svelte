@@ -27,7 +27,7 @@
   </div>
 
   <!-- Other works — external pieces I like, not mine. -->
-  <section class="mt-16 flex flex-col">
+  <section class="mt-6 flex flex-col">
     <Text type="label" size="xs" color="muted">Worth reading</Text>
     <div class="mt-4 flex flex-col border-t border-line">
       {#each reading as work (work.href)}

@@ -37,17 +37,21 @@
   });
 </script>
 
-<Layout {path}>
-  {#if path === "/xyz"}
-    <Showcase />
-  {:else if path === "/blog"}
-    <Blog />
-  {:else if path === "/blog/pace-factor"}
-    <Pacing />
-  {:else}
-    <Home />
-  {/if}
-</Layout>
+<!-- The beat shake transforms #shake-root (page content) only, so the player
+     HUD / bass meter (rendered outside it) stays steady. -->
+<div id="shake-root">
+  <Layout {path}>
+    {#if path === "/xyz"}
+      <Showcase />
+    {:else if path === "/blog"}
+      <Blog />
+    {:else if path === "/blog/pace-factor"}
+      <Pacing />
+    {:else}
+      <Home />
+    {/if}
+  </Layout>
+</div>
 
 <RandomBanger />
 <Toaster />

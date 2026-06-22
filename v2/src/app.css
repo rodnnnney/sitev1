@@ -77,7 +77,7 @@ body {
 
 /* Whole-page shake, triggered on each detected beat (or manually).
    Magnitude is driven by --shake-amp, set per-beat in JS so it scales. */
-body.beat-shake {
+.beat-shake {
   --shake-amp: 5px;
   --shake-scale: 1;
   animation: beat-shake 0.22s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -92,5 +92,5 @@ body.beat-shake {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.beat-shake { animation: none; }
+  .beat-shake { animation: none; }
 }

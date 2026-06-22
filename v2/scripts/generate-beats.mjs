@@ -14,7 +14,14 @@ import { dirname, join } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const SONGS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../public/songs");
-const FILES = ["desire", "jar-of-love", "rock-ur-world", "atmosphere"];
+const FILES = [
+  "desire",
+  "jar-of-love",
+  "rock-ur-world",
+  "atmosphere",
+  "fuck-the-speakerz-up",
+  "money-on-the-dash",
+];
 
 const R2_PREFIX = "static/songs"; // objects live under <bucket>/static/songs
 const CONTENT_TYPE = {
@@ -145,6 +152,10 @@ const cfg = r2Config();
 
 for (const name of FILES) {
   const mp3 = join(SONGS_DIR, `${name}.mp3`);
+  if (!(await exists(mp3))) {
+    console.log(`${name}: no local mp3 — skipped`);
+    continue;
+  }
   const audio = await decode(await readFile(mp3));
   const result = analyze(audio);
   await writeFile(join(SONGS_DIR, `${name}.beats.json`), JSON.stringify(result));

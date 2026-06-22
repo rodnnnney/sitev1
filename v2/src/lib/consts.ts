@@ -39,6 +39,18 @@ export const bangers = [
     url: `${bucketURL}/songs/atmosphere/atmosphere.mp3`,
     rave: true,
   },
+  {
+    title: 'FUCK THE SPEAKERZ UP',
+    artist: 'ISOxo',
+    url: `${bucketURL}/songs/fuck-the-speakerz-up/fuck-the-speakerz-up.mp3`,
+    rave: true,
+  },
+  {
+    title: 'MONEY ON THE DASH (sped up)',
+    artist: 'Elley Duhé',
+    url: `${bucketURL}/songs/money-on-the-dash/money-on-the-dash.mp3`,
+    rave: true,
+  },
 ] as const;
 
 // External works worth reading — not mine, just ones I like.
