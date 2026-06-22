@@ -651,6 +651,30 @@
     </div>
   {/if}
 {:else}
+  <!-- Pre-play prompt lives in its own fixed element (not the player's flex
+       column) so fading it out never reflows the card that flies up to replace
+       it — that reflow was cancelling the slide. -->
+  {#if !current}
+    <div
+      data-no-rave
+      out:fade={{ duration: 120 }}
+      class="pointer-events-auto fixed right-5 bottom-5 z-40 font-mono text-xs"
+    >
+      <Text type="paragraph" size="xs" color="muted" links class="leading-none">
+        <a
+          href="#"
+          role="button"
+          onclick={(e) => {
+            e.preventDefault();
+            toggle();
+          }}
+        >
+          I wonder what this button does🤔
+        </a>
+      </Text>
+    </div>
+  {/if}
+
   <div
     data-no-rave
     class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-2"
@@ -661,6 +685,7 @@
       <div
         bind:this={waveEl}
         aria-hidden="true"
+        in:fly={{ y: 48, duration: reduceMotion() ? 0 : 520, easing: backOut }}
         class="flex h-12 max-w-[40vw] select-none items-center overflow-hidden transition-opacity duration-300"
         class:opacity-25={!playing}
       >
@@ -679,6 +704,11 @@
       <div
         class="pointer-events-auto flex w-64 flex-col gap-2 rounded-sm border border-line bg-paper/95 px-3 py-2.5 font-mono backdrop-blur"
         style={waveW ? `width: ${waveW}px` : undefined}
+        in:fly={{
+          y: 48,
+          duration: reduceMotion() ? 0 : 520,
+          easing: backOut,
+        }}
       >
         <div class="flex items-center gap-3">
           {#if current.cover}
@@ -767,28 +797,6 @@
             />
           </div>
         {/if}
-      </div>
-    {:else}
-      <!-- Nothing playing yet: keep the quiet easter-egg prompt. -->
-      <div class="pointer-events-auto font-mono text-xs">
-        <Text
-          type="paragraph"
-          size="xs"
-          color="muted"
-          links
-          class="leading-none"
-        >
-          <a
-            href="#"
-            role="button"
-            onclick={(e) => {
-              e.preventDefault();
-              toggle();
-            }}
-          >
-            I wonder what this button does🤔
-          </a>
-        </Text>
       </div>
     {/if}
   </div>

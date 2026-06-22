@@ -30,9 +30,7 @@
       // pushed_at is "YYYY-MM-DD…"; parse the parts directly (no timezone drift).
       const [y, m, d] = pushed_at.slice(0, 10).split("-");
       lastPushed = cachedPush = `${d}/${m}/${y.slice(2)}`;
-    } catch {
-      /* rate-limited or offline — just omit the timestamp */
-    }
+    } catch {}
   });
 </script>
 

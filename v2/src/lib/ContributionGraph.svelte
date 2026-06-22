@@ -186,11 +186,11 @@
 
 {#snippet legend()}
   <div class="flex items-center justify-end gap-1">
-    <Text type="label" size="xs" color="muted">less</Text>
+    <Text type="label" size="xs" color="muted" class="leading-none">less</Text>
     {#each LEVELS as c (c)}
       <div class="h-2.5 w-2.5 rounded-sm {c}"></div>
     {/each}
-    <Text type="label" size="xs" color="muted">more</Text>
+    <Text type="label" size="xs" color="muted" class="leading-none">more</Text>
   </div>
 {/snippet}
 
