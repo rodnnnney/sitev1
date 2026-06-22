@@ -573,12 +573,20 @@
           : 'translate-y-0'}"
       >
         <div class="flex items-center gap-3 px-4 py-2.5">
-          <!-- Art slot — no per-song cover art, so a music glyph stands in. -->
-          <div
-            class="grid size-10 shrink-0 place-items-center rounded bg-line/50 text-accent"
-          >
-            <Music size={18} />
-          </div>
+          <!-- Cover art, with a music glyph as the fallback. -->
+          {#if current.cover}
+            <img
+              src={current.cover}
+              alt=""
+              class="size-10 shrink-0 rounded object-cover"
+            />
+          {:else}
+            <div
+              class="grid size-10 shrink-0 place-items-center rounded bg-line/50 text-accent"
+            >
+              <Music size={18} />
+            </div>
+          {/if}
 
           <button
             onclick={toggle}
@@ -689,6 +697,14 @@
       class="pointer-events-auto flex flex-col items-end gap-1.5 font-mono text-xs"
     >
       <div class="flex min-w-0 items-center gap-2">
+        {#if current?.cover}
+          <img
+            src={current.cover}
+            alt=""
+            class="size-4 shrink-0 rounded-[2px] object-cover"
+          />
+        {/if}
+
         {#if current}
           <button
             onclick={toggle}
