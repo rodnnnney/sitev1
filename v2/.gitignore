@@ -25,3 +25,10 @@ dist-ssr
 
 # Self-hosted song assets — served from R2, kept locally only for beat-gen
 public/songs/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
