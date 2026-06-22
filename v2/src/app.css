@@ -69,6 +69,16 @@ body {
   color: var(--color-ink);
 }
 
+/* Never allow horizontal page scroll, at any width. `clip` (not `hidden`) stops
+   the overflow without spawning a scroll container, so fixed/sticky chrome — the
+   top nav and the bottom music bar — keep working. Inner wide blocks (KaTeX,
+   code) still scroll via their own overflow-x-auto wrappers. */
+html,
+body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
 /* Highlight color when text is selected / dragged to copy */
 ::selection {
   background: var(--color-accent);

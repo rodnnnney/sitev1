@@ -4,7 +4,11 @@
   import { Text } from "../Text";
   import Debug from "./Debug.svelte";
   import { debugStore } from "../../debugStore";
-  import { deviceType, initBreakpointListener } from "../../deviceStore";
+  import {
+    deviceType,
+    initBreakpointListener,
+    initScrollListener,
+  } from "../../deviceStore";
   import { isDebugEnabled } from "../../utils";
 
   let { children, path } = $props<{ children?: Snippet; path: string }>();
@@ -46,7 +50,12 @@
   });
 
   onMount(() => {
-    return initBreakpointListener();
+    const stopBreakpoints = initBreakpointListener();
+    const stopScroll = initScrollListener();
+    return () => {
+      stopBreakpoints();
+      stopScroll();
+    };
   });
 </script>
 
@@ -133,8 +142,7 @@
           color={isBlogPath(path) ? "accent" : "black"}
           links={!isBlogPath(path)}
         >
-          <a href="/blog" class={isBlogPath(path) ? "no-underline" : ""}
-            >blog</a
+          <a href="/blog" class={isBlogPath(path) ? "no-underline" : ""}>blog</a
           >
         </Text>
 

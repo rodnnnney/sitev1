@@ -63,7 +63,7 @@
 <main
   class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-12 {$deviceType ===
   'mobile'
-    ? 'px-4 py-12'
+    ? 'px-4 pt-12 pb-28'
     : 'px-6 py-20'}"
 >
   <!-- Title block — same position on every page -->

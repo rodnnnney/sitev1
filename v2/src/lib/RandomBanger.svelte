@@ -1,8 +1,16 @@
 <script lang="ts">
-  import { Play, Pause, Shuffle, SlidersHorizontal } from "lucide-svelte";
+  import {
+    Play,
+    Pause,
+    Shuffle,
+    SlidersHorizontal,
+    Music,
+  } from "lucide-svelte";
   import { flip } from "svelte/animate";
-  import { fade } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
+  import { backOut } from "svelte/easing";
   import { bangers } from "./consts";
+  import { deviceType, scrollDirection } from "./deviceStore";
   import { Text, Modal, Switch, toast } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
@@ -19,14 +27,14 @@
   // MediaElementSource is one-shot per <audio>; HMR would leave a dead graph.
   if (import.meta.hot) import.meta.hot.decline();
 
-  // The four beat-reactive effects, each self-contained: screen shaking,
-  // screen flashing, word replacing, anime dancing. The render loop below feeds
-  // them the per-beat intensity; everything else (toggles, persistence, DOM,
-  // reduce-motion) lives in each effect module.
   const shakeFx = new ShakeFx();
   const flashFx = new FlashFx();
   const wordsFx = new WordsFx();
   const dancersFx = new DancersFx();
+
+  const isMobile = $derived($deviceType === "mobile");
+
+  const barHidden = $derived(isMobile && $scrollDirection === "down");
 
   let audio = $state<HTMLAudioElement | null>(null);
   let playing = $state(false);
@@ -223,8 +231,10 @@
         wordsFx.pulse(maxI);
       }
       if (maxI >= DROP_INTENSITY) flashFx.drop(maxI, wordsFx, !!current?.rave);
-      dancersFx.spawn(maxI);
+      if (!isMobile) dancersFx.spawn(maxI);
     }
+
+    if (isMobile) return;
 
     analyser.getByteFrequencyData(wave);
 
@@ -417,7 +427,7 @@
 ></audio>
 
 <!-- Live bass level (dBFS) — pinned top-right, steady (outside #shake-root). -->
-{#if current}
+{#if current && !isMobile}
   <div
     class="pointer-events-none fixed top-5 right-5 z-40 font-mono text-xs tabular-nums text-accent"
   >
@@ -498,7 +508,7 @@
 ></div>
 
 <!-- mix-blend-multiply drops light gif backgrounds into the paper. -->
-{#if dancersFx.dancers.length}
+{#if dancersFx.dancers.length && !isMobile}
   <div
     aria-hidden="true"
     class="pointer-events-none fixed inset-0 z-20"
@@ -515,7 +525,7 @@
   </div>
 {/if}
 
-{#if view.length}
+{#if view.length && !isMobile}
   <div
     aria-hidden="true"
     class="pointer-events-none fixed top-1/2 right-6 z-30 flex max-w-[42vw] -translate-y-1/2 flex-col items-end gap-2 text-right font-mono transition-opacity duration-300"
@@ -535,41 +545,109 @@
   </div>
 {/if}
 
-<div
-  data-no-rave
-  class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-1.5"
->
-  {#if frame}
+{#if isMobile}
+  {#if current}
+    <!-- Spotify-style mini player: only appears once a track is loaded, sliding
+         up from the bottom the first time a song starts. The outer wrapper owns
+         the entrance transition; the inner bar owns the scroll show/hide so the
+         two transforms never fight. -->
     <div
-      aria-hidden="true"
-      class="flex max-w-[40vw] select-none flex-col overflow-hidden text-accent transition-opacity duration-300"
-      class:opacity-25={!playing}
+      data-no-rave
+      class="pointer-events-none fixed inset-x-0 bottom-0 z-40"
+      in:fly={{
+        y: 80,
+        duration: reduceMotion() ? 0 : 480,
+        delay: 90,
+        easing: backOut,
+      }}
+      out:fade={{ duration: 150 }}
     >
-      <pre
-        class="font-mono text-[8px] leading-[0.8] tracking-tighter">{frame}</pre>
-      <pre
-        class="font-mono text-[8px] leading-[0.8] tracking-tighter [transform:scaleY(-1)]">{frame}</pre>
+      <div
+        class="pointer-events-auto border-t border-line bg-paper/95 backdrop-blur transition-transform duration-300 {barHidden
+          ? 'translate-y-full'
+          : 'translate-y-0'}"
+      >
+        <div class="flex items-center gap-3 px-4 py-2.5">
+          <!-- Art slot — no per-song cover art, so a music glyph stands in. -->
+          <div
+            class="grid size-10 shrink-0 place-items-center rounded bg-line/50 text-accent"
+          >
+            <Music size={18} />
+          </div>
+
+          <button
+            onclick={toggle}
+            class="flex min-w-0 flex-1 flex-col text-left"
+            aria-label={playing ? "Pause" : "Play"}
+          >
+            <span class="truncate font-mono text-sm font-medium text-ink">
+              {current.title}
+            </span>
+            <span class="truncate font-mono text-xs text-muted">
+              {current.artist}
+            </span>
+          </button>
+
+          <div class="flex shrink-0 items-center gap-4 text-muted">
+            <button
+              onclick={playRandom}
+              aria-label="Play another"
+              class="transition-colors hover:text-accent"
+            >
+              <Shuffle size={18} />
+            </button>
+            <button
+              onclick={toggle}
+              aria-label={playing ? "Pause" : "Play"}
+              class="text-ink transition-colors hover:text-accent"
+            >
+              {#if playing}
+                <Pause size={22} />
+              {:else}
+                <Play size={22} />
+              {/if}
+            </button>
+            <button
+              onclick={() => (fxOpen = true)}
+              aria-label="Effects"
+              class="transition-colors hover:text-accent"
+            >
+              <SlidersHorizontal size={18} />
+            </button>
+          </div>
+        </div>
+
+        {#if current && duration}
+          <!-- Thin progress line; a transparent range overlay makes it seekable. -->
+          <div class="relative h-1 w-full">
+            <div class="absolute inset-0 bg-line"></div>
+            <div
+              class="absolute inset-y-0 left-0 bg-accent"
+              style="width: {(position / duration) * 100}%;"
+            ></div>
+            <input
+              type="range"
+              min="0"
+              max={duration}
+              step="0.1"
+              value={position}
+              oninput={seek}
+              aria-label="Seek"
+              class="absolute inset-x-0 bottom-0 h-3 w-full cursor-pointer opacity-0"
+            />
+          </div>
+        {/if}
+      </div>
     </div>
-  {/if}
-
-  <div
-    class="pointer-events-auto flex flex-col items-end gap-1.5 font-mono text-xs"
-  >
-    <div class="flex items-center gap-2">
-      {#if current}
-        <button
-          onclick={toggle}
-          aria-label={playing ? "Pause" : "Play"}
-          class="text-muted transition-colors hover:text-accent"
-        >
-          {#if playing}
-            <Pause size={12} />
-          {:else}
-            <Play size={12} />
-          {/if}
-        </button>
-      {/if}
-
+  {:else}
+    <!-- Easter egg: before anything plays, the player is just a quiet prompt. -->
+    <div
+      data-no-rave
+      out:fade={{ duration: 150 }}
+      class="fixed right-4 bottom-4 z-40 font-mono text-xs transition-all duration-300 {barHidden
+        ? 'pointer-events-none translate-y-16 opacity-0'
+        : 'pointer-events-auto translate-y-0 opacity-100'}"
+    >
       <Text type="paragraph" size="xs" color="muted" links class="leading-none">
         <a
           href="#"
@@ -579,60 +657,118 @@
             toggle();
           }}
         >
-          {current
-            ? `${current.title} — ${current.artist}`
-            : "I wonder what this button does🤔"}
+          I wonder what this button does🤔
         </a>
       </Text>
-
-      {#if current}
-        <button
-          onclick={playRandom}
-          title="Play another"
-          aria-label="Play another"
-          class="text-muted transition-colors hover:text-accent"
-        >
-          <Shuffle size={12} />
-        </button>
-      {/if}
-
-      <button
-        onclick={() => (fxOpen = true)}
-        title="Effects"
-        aria-label="Effects"
-        class="text-muted transition-colors hover:text-accent"
-      >
-        <SlidersHorizontal size={12} />
-      </button>
     </div>
-
-    {#if current && duration}
-      <!-- Energy meter: per-bucket beat intensity across the track, filled to
-           the playhead. A transparent range input on top handles seek/keyboard. -->
-      <div class="relative h-5 w-44">
-        <div class="flex h-full items-center gap-px">
-          {#each energyBars as v, i (i)}
-            <div
-              class="flex-1 transition-colors"
-              style="height: {Math.max(12, v * 100)}%; background: {(i + 0.5) /
-                ENERGY_BARS <=
-              position / duration
-                ? 'var(--color-accent)'
-                : 'var(--color-line)'};"
-            ></div>
-          {/each}
-        </div>
-        <input
-          type="range"
-          min="0"
-          max={duration}
-          step="0.1"
-          value={position}
-          oninput={seek}
-          aria-label="Seek"
-          class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-        />
+  {/if}
+{:else}
+  <div
+    data-no-rave
+    class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-1.5"
+  >
+    {#if frame}
+      <div
+        aria-hidden="true"
+        class="flex max-w-[40vw] select-none flex-col overflow-hidden text-accent transition-opacity duration-300"
+        class:opacity-25={!playing}
+      >
+        <pre
+          class="font-mono text-[8px] leading-[0.8] tracking-tighter">{frame}</pre>
+        <pre
+          class="font-mono text-[8px] leading-[0.8] tracking-tighter [transform:scaleY(-1)]">{frame}</pre>
       </div>
     {/if}
+
+    <div
+      class="pointer-events-auto flex flex-col items-end gap-1.5 font-mono text-xs"
+    >
+      <div class="flex min-w-0 items-center gap-2">
+        {#if current}
+          <button
+            onclick={toggle}
+            aria-label={playing ? "Pause" : "Play"}
+            class="shrink-0 text-muted transition-colors hover:text-accent"
+          >
+            {#if playing}
+              <Pause size={12} />
+            {:else}
+              <Play size={12} />
+            {/if}
+          </button>
+        {/if}
+
+        <Text
+          type="paragraph"
+          size="xs"
+          color="muted"
+          links
+          class="truncate leading-none"
+        >
+          <a
+            href="#"
+            role="button"
+            onclick={(e) => {
+              e.preventDefault();
+              toggle();
+            }}
+          >
+            {current
+              ? `${current.title} — ${current.artist}`
+              : "I wonder what this button does🤔"}
+          </a>
+        </Text>
+
+        {#if current}
+          <button
+            onclick={playRandom}
+            title="Play another"
+            aria-label="Play another"
+            class="shrink-0 text-muted transition-colors hover:text-accent"
+          >
+            <Shuffle size={12} />
+          </button>
+        {/if}
+
+        <button
+          onclick={() => (fxOpen = true)}
+          title="Effects"
+          aria-label="Effects"
+          class="shrink-0 text-muted transition-colors hover:text-accent"
+        >
+          <SlidersHorizontal size={12} />
+        </button>
+      </div>
+
+      {#if current && duration}
+        <!-- Energy meter: per-bucket beat intensity across the track, filled to
+             the playhead. A transparent range input on top handles seek/keyboard. -->
+        <div class="relative h-5 w-44">
+          <div class="flex h-full items-center gap-px">
+            {#each energyBars as v, i (i)}
+              <div
+                class="flex-1 transition-colors"
+                style="height: {Math.max(12, v * 100)}%; background: {(i +
+                  0.5) /
+                  ENERGY_BARS <=
+                position / duration
+                  ? 'var(--color-accent)'
+                  : 'var(--color-line)'};"
+              ></div>
+            {/each}
+          </div>
+          <input
+            type="range"
+            min="0"
+            max={duration}
+            step="0.1"
+            value={position}
+            oninput={seek}
+            aria-label="Seek"
+            class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          />
+        </div>
+      {/if}
+    </div>
   </div>
-</div>
+{/if}
