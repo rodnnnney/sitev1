@@ -18,7 +18,7 @@
         >
         <div class="flex flex-col gap-2">
           <Text type="heading" size="xl" color="black">{post.title}</Text>
-          <Text type="paragraph" size="sm" color="muted"
+          <Text type="paragraph" size="sm" color="black"
             >{post.description}</Text
           >
         </div>

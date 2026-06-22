@@ -7,9 +7,12 @@
 </script>
 
 <Page title="rodney shen" showTime>
-  <Text size="sm" color="muted"
-    >Hey there, I'm Rodney, I'm originally from Chengdu/Ottawa. Currently, I'm
-    putting school on pause (sorry mom) to maximize shareholder value at TextQL.<br
+  <Text size="sm" color="black"
+    >Hey there, I'm Rodney, I'm originally from <span class="text-accent"
+      >Chengdu/Ottawa</span
+    >
+    and now based out of <span class="text-accent">NYC</span>. Currently, I'm
+    putting school on pause (sorry mom) to maximize shareholder value at <span class="text-accent">TextQL</span>.<br
     /><br />
 
     Previously, I went deep into the crypto rabbit hole, internted at a few cool
