@@ -5,7 +5,7 @@ export const blog = [
   {
     title: "Pace Factor",
     slug: "pace-factor",
-    date: "06.06.25",
+    date: "06/06/25",
     description: "Crazy effects of environments on people.",
     cover: `${bucketURL}/blog/aura.avif`,
   },
