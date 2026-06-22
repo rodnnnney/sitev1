@@ -34,7 +34,7 @@ export class WordsFx {
           if (!p || !node.textContent?.trim()) return NodeFilter.FILTER_REJECT;
           if (
             p.closest(
-              "[data-no-rave],[aria-hidden='true'],nav,script,style,button",
+              "[data-no-rave],[aria-hidden='true'],script,style,button",
             )
           )
             return NodeFilter.FILTER_REJECT;

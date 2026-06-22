@@ -17,6 +17,8 @@ const SRCS = [
   `${bucketURL}/vibing.gif`,
   `${bucketURL}/reze.gif`,
   `${bucketURL}/dancing-cat.gif`,
+  `${bucketURL}/kirby.gif`,
+  `${bucketURL}/duong.gif`,
 ];
 
 /**
