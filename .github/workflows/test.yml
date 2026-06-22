@@ -1,0 +1,25 @@
+name: test
+
+# Runs the v2 test suite on every PR (gate merges via a required status check)
+# and on pushes to main (visibility alongside the Cloudflare auto-deploy).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 22 to satisfy the repo's engines field; bun for installs + scripts.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+      - run: bun --filter v2 test
