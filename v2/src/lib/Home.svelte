@@ -47,7 +47,7 @@
 
     Previously, I went deep into the crypto rabbit hole, internted at a few cool
     startups, founded the blockchain club at my school and even spoke at
-    Consensus HK 2025.
+    <span class="text-accent">Consensus HK 2025</span>.
   </Text>
 
   <ContributionGraph />
