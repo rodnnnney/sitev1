@@ -12,7 +12,7 @@ const DROP_SHAKE_BOOST = 11; // extra kick once a beat crosses the drop threshol
  * there), so this only gates on the user toggle.
  */
 export class ShakeFx {
-  enabled = $state(loadFx("fx-shake", false));
+  enabled = $state(loadFx("fx-shake", true));
 
   setEnabled(v: boolean) {
     this.enabled = v;

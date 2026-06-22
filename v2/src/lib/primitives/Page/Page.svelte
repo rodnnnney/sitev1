@@ -26,14 +26,10 @@
     children,
   }: {
     title: string;
-    /** Override the dynamic route label shown above the title. */
     label?: string;
     lead?: string;
-    /** Title is capped at a restrained size by default for consistency. */
     titleSize?: TextSize;
-    /** Override the spacing of the content area per page. */
     contentClass?: string;
-    /** Show the current Eastern Time in military format next to the title. */
     showTime?: boolean;
     children?: Snippet;
   } = $props();

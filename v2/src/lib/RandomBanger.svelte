@@ -45,14 +45,17 @@
   let duration = $state(0);
   let bassDb = $state(-60); // live low-end level in dBFS (top-right readout)
 
-  function seek(e: Event) {
+  function seekTo(t: number) {
     if (!audio) return;
-    const t = +(e.target as HTMLInputElement).value;
     audio.currentTime = t;
     position = t;
     // Re-point the forward-only beat cursor to the new playhead.
     beatIdx = beats.findIndex((b) => b.t > t);
     if (beatIdx < 0) beatIdx = beats.length;
+  }
+
+  function seek(e: Event) {
+    seekTo(+(e.target as HTMLInputElement).value);
   }
 
   // Karaoke: line-synced lyrics loaded from a .lrc next to the .mp3.
@@ -218,9 +221,11 @@
       activeLine = idx;
     }
 
-    // Beat reactions (shake + word flicker + drop flash + dancers) are rave-only
-    // — calm tracks like Jar Of Love just get the corner waveform and lyrics.
-    if (beats.length && audio && current?.rave) {
+    // Beat reactions fire on any track with a beat map. Screen shake + the drop
+    // flash are the photosensitive ones, so they're gated to rave tracks; the
+    // word flicker + dancers are fair game everywhere (calm tracks just use the
+    // accent palette instead of the rave strobe colours).
+    if (beats.length && audio) {
       const now = audio.currentTime;
       let maxI = 0;
       while (beatIdx < beats.length && beats[beatIdx].t <= now) {
@@ -236,11 +241,12 @@
           : lyricPool.length
             ? lyricPool
             : null;
-        shakeFx.beat(maxI);
         wordsFx.pulse(maxI);
         if (wordsFx.enabled) audioViz.beat(maxI);
+        if (current?.rave) shakeFx.beat(maxI);
       }
-      if (maxI >= DROP_INTENSITY) flashFx.drop(maxI, wordsFx, !!current?.rave);
+      if (maxI >= DROP_INTENSITY && current?.rave)
+        flashFx.drop(maxI, wordsFx, true);
       if (!isMobile) dancersFx.spawn(maxI);
     }
 
@@ -461,8 +467,9 @@
   title="Photosensitivity warning"
   onclose={cancelWarning}
 >
-  Beat-reactive visuals. Flashing and shake are
-  <span class="text-ink">off by default</span>, toggle any effect below:
+  This track flashes and shakes the screen on the beat.
+  <span class="text-accent">Screen flashing is off by default</span>; toggle any
+  effect below:
   <div class="mt-3">{@render fxToggles()}</div>
   {#snippet actions()}
     <Button variant="surface" onclick={cancelWarning}>not now</Button>
@@ -511,15 +518,21 @@
     class:opacity-40={!playing}
   >
     {#each view as l (l.i)}
-      <p
+      <!-- Lyrics are time-synced, so a click seeks the track to that line.
+           pointer-events-auto only on the lines themselves keeps the gaps
+           between them click-through (the container stays pointer-events-none). -->
+      <button
+        type="button"
         animate:flip={{ duration: 400 }}
         transition:fade={{ duration: 250 }}
-        class="text-sm leading-snug transition-all duration-500 {l.active
+        onclick={() => seekTo(l.t)}
+        title="Jump to this line"
+        class="lyric-line pointer-events-auto m-0 cursor-pointer border-0 bg-transparent p-0 text-right text-sm leading-snug hover:opacity-100 {l.active
           ? 'font-medium text-accent'
           : 'text-muted opacity-40'}"
       >
         {l.text}
-      </p>
+      </button>
     {/each}
   </div>
 {/if}
@@ -820,5 +833,26 @@
       color-mix(in srgb, var(--color-accent) 85%, transparent) 80% 90%,
       color-mix(in srgb, var(--color-accent) 100%, transparent) 90% 100%
     );
+  }
+
+  /* Karaoke lines get the same animated link underline as the Text `links`
+     style (see Text.svelte .text-link-animate): an accent bar that wipes in
+     from the left on hover. Driven by background-size so it never reflows. */
+  .lyric-line {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-position: 0% 100%;
+    background-size: 0% 0.075em;
+    background-repeat: no-repeat;
+    /* All of this line's transitions live here so nothing overrides the others:
+       colour/opacity fade as the active line moves (keeps the downward
+       progression smooth), and the underline wipes in on hover. The vertical
+       slide between lines is handled separately by Svelte's animate:flip. */
+    transition:
+      color 0.5s,
+      opacity 0.5s,
+      background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .lyric-line:hover {
+    background-size: 100% 0.075em;
   }
 </style>
