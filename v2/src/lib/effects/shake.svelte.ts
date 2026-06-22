@@ -1,17 +1,18 @@
 import { triggerShake } from "../shake";
 import { DROP_INTENSITY, loadFx, saveFx } from "./shared";
 
-const SHAKE_BASE = 4;
-const SHAKE_RANGE = 36;
-const DROP_SHAKE_BOOST = 14; // extra kick once a beat crosses the drop threshold
+// ~20% gentler than before (base 4→3.2, range 36→29, boost 14→11).
+const SHAKE_BASE = 3.2;
+const SHAKE_RANGE = 29;
+const DROP_SHAKE_BOOST = 11; // extra kick once a beat crosses the drop threshold
 
 /**
- * "Screen shaking" — jolts the page on each beat, harder on drops. Reduce-motion
- * is honoured in CSS (.beat-shake is disabled there), so this only gates on the
- * user toggle.
+ * "Screen shaking" — jolts the page on each beat, harder on drops. Off by
+ * default (opt-in). Reduce-motion is honoured in CSS (.beat-shake is disabled
+ * there), so this only gates on the user toggle.
  */
 export class ShakeFx {
-  enabled = $state(loadFx("fx-shake"));
+  enabled = $state(loadFx("fx-shake", false));
 
   setEnabled(v: boolean) {
     this.enabled = v;

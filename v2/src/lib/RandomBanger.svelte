@@ -458,13 +458,11 @@
 
 <Modal
   bind:open={warnOpen}
-  title="Flashing lights ahead"
+  title="Photosensitivity warning"
   onclose={cancelWarning}
 >
-  Heads up — this track might set off strobe flashes and some screen shake on
-  the beat. If you're sensitive to flashing lights, maybe sit this one out — or
-  flip on your device's <span class="text-ink">reduce motion</span> setting and
-  the effects stay off.
+  Beat-reactive visuals. Flashing and shake are
+  <span class="text-ink">off by default</span>, toggle any effect below:
   <div class="mt-3">{@render fxToggles()}</div>
   {#snippet actions()}
     <Button variant="surface" onclick={cancelWarning}>not now</Button>

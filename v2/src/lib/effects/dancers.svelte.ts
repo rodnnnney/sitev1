@@ -14,6 +14,7 @@ const DANCE_MIN = 3; // dancers at the threshold
 const DANCE_MAX = 16; // dancers at full intensity
 const SRCS = [
   `${bucketURL}/anime.gif`,
+  `${bucketURL}/vibing.gif`,
   `${bucketURL}/reze.gif`,
   `${bucketURL}/dancing-cat.gif`,
 ];
