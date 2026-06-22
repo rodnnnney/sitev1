@@ -37,6 +37,13 @@
 
   const barHidden = $derived(isMobile && $scrollDirection === "down");
 
+  let navH = $state(56);
+  $effect(() => {
+    if (!isMobile || !current) return;
+    const nav = document.querySelector("nav");
+    if (nav) navH = nav.getBoundingClientRect().height;
+  });
+
   let audio = $state<HTMLAudioElement | null>(null);
   let playing = $state(false);
   let current = $state<(typeof bangers)[number] | null>(null);
@@ -73,6 +80,9 @@
     activeLine >= 0 && lyrics[activeLine]
       ? lyrics[activeLine].text.split(/\s+/).filter(Boolean)
       : [],
+  );
+  const currentLyric = $derived(
+    activeLine >= 0 && lyrics[activeLine] ? lyrics[activeLine].text : "",
   );
 
   function parseLRC(raw: string): Line[] {
@@ -221,10 +231,6 @@
       activeLine = idx;
     }
 
-    // Beat reactions fire on any track with a beat map. Screen shake + the drop
-    // flash are the photosensitive ones, so they're gated to rave tracks; the
-    // word flicker + dancers are fair game everywhere (calm tracks just use the
-    // accent palette instead of the rave strobe colours).
     if (beats.length && audio) {
       const now = audio.currentTime;
       let maxI = 0;
@@ -233,8 +239,6 @@
         beatIdx++;
       }
       if (maxI >= BEAT_MIN_INTENSITY) {
-        // Refresh the word-scramble context for this frame: scramble into the
-        // line being sung now → else the whole song → else the page's words.
         wordsFx.palette = current?.rave ? RAVE : ACCENT;
         wordsFx.sources = nowWords.length
           ? nowWords
@@ -243,7 +247,11 @@
             : null;
         wordsFx.pulse(maxI);
         if (wordsFx.enabled) audioViz.beat(maxI);
-        if (current?.rave) shakeFx.beat(maxI);
+        if (current?.rave) {
+          if (isMobile) {
+            if (maxI >= DROP_INTENSITY) shakeFx.beat(maxI, 0.25);
+          } else shakeFx.beat(maxI);
+        }
       }
       if (maxI >= DROP_INTENSITY && current?.rave)
         flashFx.drop(maxI, wordsFx, true);
@@ -534,6 +542,38 @@
         {l.text}
       </button>
     {/each}
+  </div>
+{/if}
+
+<!-- Mobile now-singing banner: the desktop karaoke panel has no room on a phone,
+     so the current line scrolls as a marquee pinned just under the top nav. -->
+{#if isMobile && currentLyric}
+  <div
+    data-no-rave
+    aria-hidden="true"
+    class="pointer-events-none fixed inset-x-0 z-[9] overflow-hidden border-b border-line bg-paper/95 px-4 py-1.5 backdrop-blur"
+    style="top: {navH}px;"
+    transition:fade={{ duration: 200 }}
+  >
+    <!-- Each new line flies up into place as the old one slides out, mirroring
+         the desktop karaoke's line-by-line advance. Keyed on activeLine so even
+         a repeated line still animates; absolute layering lets the two lines
+         cross without changing the banner's height. -->
+    <div class="relative h-4 overflow-hidden">
+      {#key activeLine}
+        <div
+          class="absolute inset-0"
+          in:fly={{ y: 14, duration: 350 }}
+          out:fly={{ y: -14, duration: 350 }}
+        >
+          <Marquee
+            text={currentLyric}
+            speed={28}
+            class="font-mono text-xs text-accent"
+          />
+        </div>
+      {/key}
+    </div>
   </div>
 {/if}
 
