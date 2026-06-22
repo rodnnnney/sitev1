@@ -12,7 +12,7 @@
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
   import { audioViz } from "./audioStore.svelte";
-  import { Text, Modal, Switch, Button, toast } from "./primitives";
+  import { Text, Modal, Switch, Button, Marquee, toast } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
   import { WordsFx } from "./effects/words.svelte";
@@ -447,7 +447,7 @@
     {@render fxRow("screen flashing", flashFx.enabled, (v) =>
       flashFx.setEnabled(v),
     )}
-    {@render fxRow("word flashing", wordsFx.enabled, (v) =>
+    {@render fxRow("words/components flashing", wordsFx.enabled, (v) =>
       wordsFx.setEnabled(v),
     )}
     {@render fxRow("dancers", dancersFx.enabled, (v) =>
@@ -569,9 +569,10 @@
             class="flex min-w-0 flex-1 flex-col text-left"
             aria-label={playing ? "Pause" : "Play"}
           >
-            <span class="truncate font-mono text-sm font-medium text-ink">
-              {current.title}
-            </span>
+            <Marquee
+              text={current.title}
+              class="font-mono text-sm font-medium text-ink"
+            />
             <span class="truncate font-mono text-xs text-muted">
               {current.artist}
             </span>
@@ -701,9 +702,10 @@
             class="flex min-w-0 flex-1 flex-col text-left"
             aria-label={playing ? "Pause" : "Play"}
           >
-            <span class="truncate text-xs font-medium text-ink">
-              {current.title}
-            </span>
+            <Marquee
+              text={current.title}
+              class="text-xs font-medium text-ink"
+            />
             <span class="truncate text-[10px] text-muted">
               {current.artist}
             </span>
