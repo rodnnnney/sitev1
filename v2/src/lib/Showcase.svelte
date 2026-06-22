@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import {
     Text,
     Page,
@@ -36,6 +37,21 @@
     `grid items-baseline gap-4 ${
       $deviceType === "mobile" ? "grid-cols-1" : `grid-cols-[${cols}_1fr]`
     }`;
+
+  // The site's one hue, plus the semantic roles it plugs into.
+  const blueSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+  const palette = ["paper", "ink", "muted", "line", "accent"];
+
+  // Resolve each token's hex once mounted so the labels never drift from app.css.
+  let hexes = $state<Record<string, string>>({});
+  onMount(() => {
+    const cs = getComputedStyle(document.documentElement);
+    const read = (n: string) => cs.getPropertyValue(`--color-${n}`).trim();
+    const next: Record<string, string> = {};
+    for (const s of blueSteps) next[`blue-${s}`] = read(`blue-${s}`);
+    for (const p of palette) next[p] = read(p);
+    hexes = next;
+  });
 </script>
 
 <Page
@@ -43,6 +59,48 @@
   lead="Every option of the internal base components."
   contentClass="flex flex-col gap-16"
 >
+  {#snippet swatch(name: string, key: string, main = false)}
+    <div class="flex flex-col gap-1.5">
+      <div
+        class="h-12 w-full rounded-sm border {main
+          ? 'border-accent ring-2 ring-accent ring-offset-2 ring-offset-paper'
+          : 'border-line'}"
+        style="background-color: var(--color-{key})"
+      ></div>
+      <Text type="label" size="xs" color={main ? "accent" : "black"}>
+        {name}{main ? " · main" : ""}
+      </Text>
+      <Text type="label" size="xs" color="muted">{hexes[key] ?? "—"}</Text>
+    </div>
+  {/snippet}
+
+  <!-- ── Color: blue scale ───────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-baseline justify-between">
+      <Text type="label" size="xs" color="muted">Color · blue scale</Text>
+      <Text type="label" size="xs" color="muted">
+        main brand blue · #2200FF (#20F) · blue-500 · accent
+      </Text>
+    </div>
+    <div
+      class="grid grid-cols-5 gap-3 border-t border-line pt-4 sm:grid-cols-10"
+    >
+      {#each blueSteps as s (s)}
+        {@render swatch(`blue-${s}`, `blue-${s}`, s === 500)}
+      {/each}
+    </div>
+  </section>
+
+  <!-- ── Color: palette ──────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Color · palette</Text>
+    <div class="grid grid-cols-2 gap-3 border-t border-line pt-4 sm:grid-cols-5">
+      {#each palette as p (p)}
+        {@render swatch(p, p)}
+      {/each}
+    </div>
+  </section>
+
   <!-- ── Text: types ─────────────────────────────────────── -->
   <section class="flex flex-col gap-4">
     <Text type="label" size="xs" color="muted">Text · type</Text>

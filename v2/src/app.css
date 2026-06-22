@@ -55,7 +55,10 @@
   /* secondary text */
   --color-line: #e3e1da;
   /* hairline guide rules */
-  --color-accent: #2200ff;
+
+  /* Accent is the mid of the blue scale (defined in the @theme static block
+     below) — one source of truth for the brand blue. */
+  --color-accent: var(--color-blue-500);
   /* #20F */
 
   /* Site rule: keep corners barely rounded. The radius scale is collapsed to a
@@ -65,6 +68,25 @@
   --radius-sm: 2px;
   --radius-md: 3px;
   --radius-lg: 4px;
+}
+
+/* Blue scale — the site's single hue, light tints → deep shades, anchored on
+   the main brand blue #20F (= blue-500 = --color-accent). `static` forces every
+   step into :root even when a step isn't yet referenced by a utility, so
+   var(--color-blue-300) etc. resolve everywhere (e.g. the /xyz showcase) and
+   bg-blue-300 / text-blue-700 / … utilities are all generated. */
+@theme static {
+  --color-blue-50: #ecebff;
+  --color-blue-100: #d6d4ff;
+  --color-blue-200: #b9b4ff;
+  --color-blue-300: #8f88ff;
+  --color-blue-400: #5c4dff;
+  --color-blue-500: #2200ff;
+  /* ── main brand blue (#20F) ── */
+  --color-blue-600: #1e00e0;
+  --color-blue-700: #1a00bf;
+  --color-blue-800: #140093;
+  --color-blue-900: #0d0066;
 }
 
 html {
