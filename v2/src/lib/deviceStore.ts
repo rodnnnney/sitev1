@@ -35,10 +35,6 @@ export const deviceType = derived<typeof currentBreakpoint, DeviceType>(
   },
 );
 
-export const setInitialDeviceType = (isMobile: boolean) => {
-  currentBreakpoint.set(isMobile ? "sm" : "xl");
-};
-
 export type ScrollDirection = "up" | "down";
 
 /** Latest vertical scroll direction; 'down' until the user scrolls up. */

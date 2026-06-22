@@ -17,14 +17,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Ioskeley Mono';
-  src: url('/fonts/IoskeleyMono-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ── Headers / important: Geist Pixel (Square) ───────────
    Swap the variant by changing this one src + the name.
    Options: Square · Grid · Circle · Line · Triangle      */
@@ -133,4 +125,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .beat-shake { animation: none; }
+}
+
+/* Snappy crossfade for route changes (View Transitions API). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.26s;
 }

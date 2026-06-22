@@ -1,12 +1,30 @@
 <script lang="ts">
+  import { tick } from "svelte";
   import Home from "./lib/Home.svelte";
   import NotFound from "./lib/NotFound.svelte";
   import Showcase from "./lib/Showcase.svelte";
   import { Blog, Pacing } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
   import RandomBanger from "./lib/RandomBanger.svelte";
+  import { reduceMotion } from "./lib/effects/shared";
 
   let path = $state(window.location.pathname);
+
+  // Crossfade between routes via the View Transitions API where supported —
+  // pure progressive enhancement: unsupported browsers (and reduced-motion
+  // users) just get the instant swap.
+  function go(to: string) {
+    const swap = () => {
+      path = to;
+      window.scrollTo(0, 0);
+      return tick(); // let Svelte paint the new route before the snapshot
+    };
+    if (document.startViewTransition && !reduceMotion()) {
+      document.startViewTransition(swap);
+    } else {
+      swap();
+    }
+  }
 
   function onClick(e: MouseEvent) {
     if (e.defaultPrevented || e.button !== 0) return;
@@ -22,8 +40,7 @@
     e.preventDefault();
     if (url.pathname !== path) {
       history.pushState({}, "", url.pathname + url.search + url.hash);
-      path = url.pathname;
-      window.scrollTo(0, 0);
+      go(url.pathname);
     }
   }
 

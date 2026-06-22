@@ -1,11 +1,12 @@
-// Offline beat-map generator + R2 uploader. For each mp3 in public/songs it
+// Offline beat-map generator + R2 uploader. For each mp3 in media/songs it
 // isolates the low end (kick/bass), detects onsets via energy flux with an
 // adaptive threshold, and writes a <name>.beats.json next to it:
 //   { duration, beats: [{ t, i }] }   // t = seconds, i = intensity 0..1
 // Then, if the R2_* env vars are set, it uploads the mp3 + .lrc + .beats.json
-// to R2 (the URLs consts.ts points at).
+// to R2 (the URLs consts.ts points at). media/ lives outside public/ so these
+// big source files never get bundled into dist/ and shipped to prod.
 //
-// Run:  bun run beats        (add a song: drop <name>.mp3 in public/songs,
+// Run:  bun run beats        (add a song: drop <name>.mp3 in media/songs,
 //                             add it to FILES below, then run)
 import decode from "audio-decode";
 import { readFile, writeFile, access } from "node:fs/promises";
@@ -13,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { execFileSync } from "node:child_process";
 
-const SONGS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../public/songs");
+const SONGS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../media/songs");
 const FILES = [
   "desire",
   "jar-of-love",

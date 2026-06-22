@@ -413,13 +413,77 @@
   }
 
   $effect(() => () => cancelAnimationFrame(raf));
+
+  // ── Media Session: OS-level controls (lock screen, media keys, AirPods) ──
+  const hasMediaSession = () =>
+    typeof navigator !== "undefined" && "mediaSession" in navigator;
+
+  function updatePositionState() {
+    if (!hasMediaSession() || !audio || !duration || !isFinite(duration)) return;
+    try {
+      navigator.mediaSession.setPositionState({
+        duration,
+        position: Math.min(audio.currentTime, duration),
+        playbackRate: audio.playbackRate || 1,
+      });
+    } catch {
+      /* setPositionState is strict about bounds; ignore transient throws */
+    }
+  }
+
+  // Wire the hardware/OS action buttons once.
+  $effect(() => {
+    if (!hasMediaSession()) return;
+    const ms = navigator.mediaSession;
+    ms.setActionHandler("play", () => toggle());
+    ms.setActionHandler("pause", () => toggle());
+    ms.setActionHandler("nexttrack", () => playRandom());
+    ms.setActionHandler("previoustrack", () => seekTo(0)); // restart current
+    ms.setActionHandler("seekto", (d) => {
+      if (d.seekTime != null) seekTo(d.seekTime);
+    });
+    return () => {
+      for (const a of ["play", "pause", "nexttrack", "previoustrack", "seekto"])
+        ms.setActionHandler(a as MediaSessionAction, null);
+    };
+  });
+
+  // Push track metadata (title/artist/cover) when the song changes.
+  $effect(() => {
+    if (!current || !hasMediaSession()) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: current.title,
+      artist: current.artist,
+      album: "rodney.lol",
+      artwork: current.cover
+        ? [{ src: current.cover, sizes: "512x512", type: "image/jpeg" }]
+        : [],
+    });
+  });
+
+  // Reflect play state into the OS + the browser tab title.
+  $effect(() => {
+    if (typeof document !== "undefined")
+      document.title =
+        current && playing
+          ? `▶ ${current.title} — ${current.artist}`
+          : "rodney shen";
+    if (hasMediaSession())
+      navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+  });
 </script>
 
 <audio
   bind:this={audio}
   crossorigin="anonymous"
-  onloadedmetadata={() => (duration = audio?.duration ?? 0)}
-  ontimeupdate={() => (position = audio?.currentTime ?? 0)}
+  onloadedmetadata={() => {
+    duration = audio?.duration ?? 0;
+    updatePositionState();
+  }}
+  ontimeupdate={() => {
+    position = audio?.currentTime ?? 0;
+    updatePositionState();
+  }}
   onplay={() => {
     playing = true;
     audioViz.playing = true;

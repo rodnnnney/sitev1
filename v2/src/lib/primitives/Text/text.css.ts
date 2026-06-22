@@ -44,7 +44,7 @@ export const textLinkStyles = 'text-link-animate';
 export const textHiddenMeasureStyles =
   'pointer-events-none invisible absolute left-0 top-0 -z-10 select-none whitespace-pre';
 
-export const SINS = [
+const SINS = [
   { en: 'prideful', ja: '傲慢', ko: '오만한', zh: '傲慢' },
   { en: 'greedy', ja: '貪欲', ko: '탐욕스러운', zh: '贪婪' },
   { en: 'lustful', ja: '好色', ko: '음란한', zh: '淫欲' },
@@ -54,7 +54,7 @@ export const SINS = [
   { en: 'slothful', ja: '怠惰', ko: '나태한', zh: '懒惰' },
 ] as const;
 
-export const SCRAMBLE_CHARS_CJK = [
+const SCRAMBLE_CHARS_CJK = [
   ...new Set(SINS.flatMap((s) => [...s.ja, ...s.ko, ...s.zh])),
 ].join('');
 

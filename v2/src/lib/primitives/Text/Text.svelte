@@ -30,7 +30,6 @@
     /** Total animation duration in ms - overrides animationSpeed to ensure consistent timing regardless of text length */
     duration?: number;
     cyclesPerChar?: number;
-    hovered?: boolean;
     /** IntersectionObserver threshold for animateOnView (0-1) */
     viewThreshold?: number;
     /** Charset used while scrambling. Defaults to a pixel-safe set for heading/important, full set otherwise. */
@@ -51,7 +50,6 @@
     animationSpeed = 15,
     duration = 800,
     cyclesPerChar = 3,
-    hovered = false,
     viewThreshold = 0.1,
     chars,
     links = false,
@@ -133,12 +131,6 @@
       startAnimation();
     }
   };
-
-  $effect(() => {
-    if (hovered && animateOnHover) {
-      startAnimation();
-    }
-  });
 
   onMount(() => {
     if (animate) {

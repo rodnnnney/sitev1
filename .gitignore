@@ -9,6 +9,9 @@ node_modules
 **/build
 **/dist
 
+# Source media (beat-gen inputs) — streamed from R2 at runtime, never bundled
+**/media/songs/*.mp3
+
 # OS
 .DS_Store
 Thumbs.db
