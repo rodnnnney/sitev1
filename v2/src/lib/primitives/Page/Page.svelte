@@ -1,3 +1,14 @@
+<script module lang="ts">
+  const TIME_FMT = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZoneName: "short",
+  });
+</script>
+
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { onMount } from "svelte";
@@ -40,14 +51,7 @@
   let timeString = $state("");
 
   const updateTime = () => {
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/New_York",
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      timeZoneName: "short",
-    }).formatToParts(new Date());
+    const parts = TIME_FMT.formatToParts(new Date());
     const part = (type: Intl.DateTimeFormatPartTypes) =>
       parts.find((p) => p.type === type)?.value ?? "";
     timeString = `${part("hour")}:${part("minute")}:${part("second")} ${part("timeZoneName")}`;

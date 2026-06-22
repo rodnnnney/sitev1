@@ -67,17 +67,13 @@ export class WordsFx {
       tn.replaceWith(frag);
     }
 
-    // Lock each word's footprint to its original width (one batched measure) so
-    // swapping in a different-length word never reflows the page (true per-word
-    // wrapping would re-flow the paragraph every beat). A longer swap is clipped
-    // to the original box instead of spilling over and overlapping neighbours.
     const widths = words.map((w) => w.getBoundingClientRect().width);
     words.forEach((w, i) => {
       w.style.display = "inline-block";
       w.style.width = `${widths[i]}px`;
       w.style.textAlign = "center";
       w.style.whiteSpace = "nowrap";
-      w.style.overflow = "hidden";
+      w.style.clipPath = "inset(0)";
     });
     return words;
   }

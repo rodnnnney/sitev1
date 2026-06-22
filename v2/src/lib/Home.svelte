@@ -58,8 +58,11 @@
           href={l.href}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-0.5"
-          >{l.label}<ArrowUpRight size={11} /></a
+          class="whitespace-nowrap"
+          >{l.label}<ArrowUpRight
+            size={11}
+            class="ml-0.5 inline align-middle"
+          /></a
         >
       {/each}
     </Text>
