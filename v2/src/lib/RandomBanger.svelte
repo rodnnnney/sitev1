@@ -431,7 +431,7 @@
   }}
   onended={() => {
     playing = false;
-    stopEffects();
+    playRandom();
   }}
   hidden
 ></audio>
