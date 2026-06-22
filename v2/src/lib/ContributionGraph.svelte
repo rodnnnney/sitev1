@@ -1,20 +1,29 @@
+<script module lang="ts">
+  type Day = { date: string; contributionCount: number; weekday: number };
+  type Week = { contributionDays: Day[] };
+  type Calendar = { totalContributions: number; weeks: Week[] };
+
+  // Cached across mounts so navigating away and back doesn't refetch or reflash
+  // the skeleton. Reset only on a full page reload.
+  let cached: Calendar | null = null;
+</script>
+
 <script lang="ts">
   import { onMount } from "svelte";
   import { Text } from "./primitives";
   import { audioViz } from "./audioStore.svelte";
 
-  type Day = { date: string; contributionCount: number; weekday: number };
-  type Week = { contributionDays: Day[] };
-  type Calendar = { totalContributions: number; weeks: Week[] };
-
-  let data = $state<Calendar | null>(null);
+  let data = $state<Calendar | null>(cached);
   let failed = $state(false);
 
   onMount(async () => {
+    if (data) return; // already have it from a previous mount
     try {
       const res = await fetch("/api/contributions");
       if (!res.ok) throw new Error(String(res.status));
-      data = (await res.json()) as Calendar;
+      const json = (await res.json()) as Calendar;
+      cached = json;
+      data = json;
     } catch {
       failed = true;
     }
@@ -175,6 +184,16 @@
   });
 </script>
 
+{#snippet legend()}
+  <div class="flex items-center justify-end gap-1">
+    <Text type="label" size="xs" color="muted">less</Text>
+    {#each LEVELS as c (c)}
+      <div class="h-2.5 w-2.5 rounded-sm {c}"></div>
+    {/each}
+    <Text type="label" size="xs" color="muted">more</Text>
+  </div>
+{/snippet}
+
 {#if data}
   <div class="flex flex-col gap-2">
     <div class="flex items-baseline justify-between">
@@ -222,16 +241,32 @@
       {/if}
     </div>
 
-    <div class="flex items-center justify-end gap-1">
-      <Text type="label" size="xs" color="muted">less</Text>
-      {#each LEVELS as c (c)}
-        <div class="h-2.5 w-2.5 rounded-sm {c}"></div>
-      {/each}
-      <Text type="label" size="xs" color="muted">more</Text>
-    </div>
+    {@render legend()}
   </div>
 {:else if failed}
   <Text type="paragraph" size="xs" color="muted">
     couldn't load contributions
   </Text>
+{:else}
+  <!-- Loading skeleton — mirrors the grid with pulsing hairline cells. -->
+  <div class="flex flex-col gap-2" aria-hidden="true">
+    <div class="flex items-baseline justify-between">
+      <Text type="label" size="xs" color="muted">contributions</Text>
+      <div class="h-3 w-28 animate-pulse rounded-sm bg-line"></div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <div class="flex w-max animate-pulse gap-[3px]">
+        {#each Array.from({ length: 53 }) as _, w (w)}
+          <div class="flex flex-col gap-[3px]">
+            {#each Array.from({ length: 7 }) as _, wd (wd)}
+              <div class="h-2.5 w-2.5 rounded-sm bg-line"></div>
+            {/each}
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    {@render legend()}
+  </div>
 {/if}

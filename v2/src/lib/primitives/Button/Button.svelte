@@ -8,6 +8,7 @@
     variant?: Variant;
     size?: Size;
     href?: string;
+    disabled?: boolean;
     class?: string;
     children?: Snippet;
     [key: string]: unknown;
@@ -17,6 +18,7 @@
     variant = "solid",
     size = "md",
     href,
+    disabled = false,
     class: className = "",
     children,
     ...rest
@@ -50,8 +52,9 @@
   );
 </script>
 
-{#if href}
+<!-- A disabled link isn't inert, so fall back to a real disabled <button>. -->
+{#if href && !disabled}
   <a {href} class={cls} {...rest}>{@render children?.()}</a>
 {:else}
-  <button class={cls} {...rest}>{@render children?.()}</button>
+  <button {disabled} class={cls} {...rest}>{@render children?.()}</button>
 {/if}

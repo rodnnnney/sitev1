@@ -40,7 +40,7 @@
   let audio = $state<HTMLAudioElement | null>(null);
   let playing = $state(false);
   let current = $state<(typeof bangers)[number] | null>(null);
-  let frame = $state("");
+  let bars = $state<number[]>([]); // waveform column heights, 0..1
   let position = $state(0);
   let duration = $state(0);
   let bassDb = $state(-60); // live low-end level in dBFS (top-right readout)
@@ -134,13 +134,11 @@
     return buckets;
   });
 
-  const COLS = 64;
-  const HALF = 7;
+  const COLS = 80; // number of waveform bars
   const GAIN = 1.2;
   const CURVE = 2.0; // >1 = louder bands reach the top
   const FPS = 24;
   const EASE = 0.3;
-  const TIPS = " ▁▂▃▄▅▆▇█";
 
   let ctx: AudioContext | null = null;
   let analyser: AnalyserNode | null = null;
@@ -273,22 +271,7 @@
       smooth[c] += (target - smooth[c]) * EASE;
     }
 
-    // Top half only — bottom is scaleY(-1) in the template.
-    const rows: string[] = [];
-    for (let r = 0; r < HALF; r++) {
-      const dist = HALF - r;
-      let line = "";
-      for (let c = 0; c < COLS; c++) {
-        const h = smooth[c] * HALF;
-        const full = Math.floor(h);
-        if (dist <= full) line += "█";
-        else if (dist === full + 1)
-          line += TIPS[Math.round((h - full) * 8)] ?? " ";
-        else line += " ";
-      }
-      rows.push(line);
-    }
-    frame = rows.join("\n");
+    bars = smooth.slice();
   }
 
   function startLoop() {
@@ -673,18 +656,21 @@
     data-no-rave
     class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-2"
   >
-    <!-- The large ASCII sound wave stays above the player. -->
-    {#if frame}
+    <!-- Square bars overlapped by 1px (-mr-px) so sub-pixel seams between them
+         are covered — truly gapless. 5-band vertical gradient, mirrored. -->
+    {#if bars.length}
       <div
         bind:this={waveEl}
         aria-hidden="true"
-        class="flex max-w-[40vw] select-none flex-col overflow-hidden text-accent transition-opacity duration-300"
+        class="flex h-12 max-w-[40vw] select-none items-center overflow-hidden transition-opacity duration-300"
         class:opacity-25={!playing}
       >
-        <pre
-          class="font-mono text-[8px] leading-[0.8] tracking-tighter">{frame}</pre>
-        <pre
-          class="font-mono text-[8px] leading-[0.8] tracking-tighter [transform:scaleY(-1)]">{frame}</pre>
+        {#each bars as h, c (c)}
+          <div
+            class="wave-bar -mr-px w-1 shrink-0"
+            style="height: {Math.max(3, h * 100)}%"
+          ></div>
+        {/each}
       </div>
     {/if}
 
@@ -807,3 +793,24 @@
     {/if}
   </div>
 {/if}
+
+<style>
+  /* 5-band vertical blue gradient for waveform bars: lightest on the centre
+     line, densest at the tips (mirrored). Set once here instead of as a long
+     inline style on ~80 bars every animation frame. Token-driven via the
+     accent colour (a CSS var + alpha needs color-mix). */
+  .wave-bar {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-accent) 100%, transparent) 0 10%,
+      color-mix(in srgb, var(--color-accent) 85%, transparent) 10% 20%,
+      color-mix(in srgb, var(--color-accent) 70%, transparent) 20% 30%,
+      color-mix(in srgb, var(--color-accent) 55%, transparent) 30% 40%,
+      color-mix(in srgb, var(--color-accent) 40%, transparent) 40% 60%,
+      color-mix(in srgb, var(--color-accent) 55%, transparent) 60% 70%,
+      color-mix(in srgb, var(--color-accent) 70%, transparent) 70% 80%,
+      color-mix(in srgb, var(--color-accent) 85%, transparent) 80% 90%,
+      color-mix(in srgb, var(--color-accent) 100%, transparent) 90% 100%
+    );
+  }
+</style>

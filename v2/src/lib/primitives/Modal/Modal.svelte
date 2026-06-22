@@ -8,7 +8,11 @@
     title?: string;
     /** Body content. */
     children?: Snippet;
-    /** Footer buttons. */
+    /**
+     * Footer buttons. Convention: pass the dismiss/secondary button FIRST and
+     * the primary action LAST — the row is right-aligned, so the primary action
+     * sits on the right and the dismiss to its left.
+     */
     actions?: Snippet;
     /** Called when dismissed via backdrop or Escape (not on programmatic close). */
     onclose?: () => void;
@@ -65,6 +69,8 @@
         </div>
       {/if}
       {#if actions}
+        <!-- Right-aligned: dismiss (first) on the left, primary action (last)
+             on the right. -->
         <div class="mt-6 flex justify-end gap-2">
           {@render actions()}
         </div>

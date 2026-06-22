@@ -16,7 +16,7 @@
   </Text>
 
   <div class="flex items-center gap-2">
-    <Button onclick={goBack}>← go back</Button>
     <Button variant="surface" href="/">home</Button>
+    <Button onclick={goBack}>go back</Button>
   </div>
 </Page>
