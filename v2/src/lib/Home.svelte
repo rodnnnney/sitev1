@@ -40,7 +40,8 @@
       >Chengdu/Ottawa</span
     >
     and now based out of <span class="text-accent">NYC</span>. Currently, I'm
-    putting school on "pause" (sorry mom) to maximize shareholder value at
+    putting school on <span class="text-accent">"pause"</span> (sorry mom) to
+    maximize shareholder value at
     <span class="text-accent">TextQL</span>.<br /><br />
 
     Previously, I went deep into the crypto rabbit hole, internted at a few cool
