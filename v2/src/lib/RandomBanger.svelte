@@ -232,7 +232,7 @@
             : null;
         shakeFx.beat(maxI);
         wordsFx.pulse(maxI);
-        audioViz.beat(maxI); // drives the contribution-graph rave flicker
+        if (wordsFx.enabled) audioViz.beat(maxI);
       }
       if (maxI >= DROP_INTENSITY) flashFx.drop(maxI, wordsFx, !!current?.rave);
       if (!isMobile) dancersFx.spawn(maxI);
