@@ -224,6 +224,29 @@ describe('effects/WordsFx — re-collection after navigation', () => {
     fx.scramble(0)
     expect(texts()).toEqual(['brand', 'new', 'content', 'here'])
   })
+
+  // Regression: the nav lives in a persistent Layout, so #words[0] ("home")
+  // never disconnects on SPA navigation. The old isConnected-only check then
+  // never re-scanned, so the new page's body was never wrapped — only the nav
+  // kept swapping. We now also re-scan on a route change.
+  it('wraps the new page body even when a persistent nav word stays mounted', () => {
+    document.body.innerHTML =
+      '<nav><a>home</a></nav><main id="page"><p>first page words</p></main>'
+    const fx = new WordsFx()
+    fx.scramble(0)
+    expect(texts()).toEqual(['home', 'first', 'page', 'words'])
+
+    // SPA nav: only the page region re-renders; nav stays put; path changes.
+    history.pushState({}, '', '/other')
+    try {
+      document.getElementById('page')!.innerHTML = '<p>second page text</p>'
+      fx.scramble(0)
+      // Persistent nav word survives AND the fresh body is now collected.
+      expect(texts()).toEqual(['home', 'second', 'page', 'text'])
+    } finally {
+      history.pushState({}, '', '/')
+    }
+  })
 })
 
 // Regression (prod-only): the large Ioskeley body font is `font-display: swap`,

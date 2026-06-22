@@ -13,13 +13,14 @@ export class WordsFx {
   #lit = new Set<HTMLElement>();
   #clearTimer: ReturnType<typeof setTimeout> | null = null;
   #fontsHooked = false;
+  #collectedPath = "";
 
   setEnabled(v: boolean) {
     this.enabled = v;
     saveFx("fx-words", v);
   }
 
-  #collect(): HTMLElement[] {
+  #wrapNewWords(): HTMLElement[] {
     const walker = document.createTreeWalker(
       document.body,
       NodeFilter.SHOW_TEXT,
@@ -42,7 +43,6 @@ export class WordsFx {
     while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
 
     const words: HTMLElement[] = [];
-    this.#pool = [];
     for (const tn of textNodes) {
       const frag = document.createDocumentFragment();
       for (const part of (tn.textContent ?? "").split(/(\s+)/)) {
@@ -56,14 +56,12 @@ export class WordsFx {
           s.dataset.w = part;
           frag.append(s);
           words.push(s);
-          this.#pool.push(part);
         }
       }
       tn.replaceWith(frag);
     }
 
     this.#lockWidths(words);
-    this.#hookFonts();
     return words;
   }
 
@@ -91,10 +89,22 @@ export class WordsFx {
     });
   }
 
-  // Re-wrap after navigation if cached spans were detached.
   #ensure(): HTMLElement[] {
-    if (!this.#words || !this.#words[0]?.isConnected)
-      this.#words = this.#collect();
+    const path = typeof location !== "undefined" ? location.pathname : "";
+    if (
+      !this.#words ||
+      !this.#words.length ||
+      path !== this.#collectedPath ||
+      !this.#words[0]?.isConnected
+    ) {
+      this.#wrapNewWords();
+      this.#words = Array.from(
+        document.querySelectorAll<HTMLElement>(".rave-w"),
+      );
+      this.#pool = this.#words.map((w) => w.dataset.w ?? "").filter(Boolean);
+      this.#collectedPath = path;
+      this.#hookFonts();
+    }
     return this.#words;
   }
 

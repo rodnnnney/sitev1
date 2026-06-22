@@ -569,6 +569,7 @@
           <Marquee
             text={currentLyric}
             speed={28}
+            center
             class="font-mono text-xs text-accent"
           />
         </div>

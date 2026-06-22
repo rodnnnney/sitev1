@@ -6,7 +6,14 @@
     class: className = "",
     speed = 40, // scroll speed in px/second
     gap = 32, // px between the repeated copies
-  }: { text: string; class?: string; speed?: number; gap?: number } = $props();
+    center = false, // centre the text when it fits (still scrolls left when it overflows)
+  }: {
+    text: string;
+    class?: string;
+    speed?: number;
+    gap?: number;
+    center?: boolean;
+  } = $props();
 
   let outer = $state<HTMLElement | null>(null);
   let first = $state<HTMLElement | null>(null);
@@ -55,7 +62,14 @@
 </script>
 
 <div bind:this={outer} class="overflow-hidden {className}">
-  <div class="flex w-max whitespace-nowrap" style="gap: {gap}px">
+  <!-- w-max keeps the track at content width for the scroll animation; when it
+       fits and `center` is set, go full-width + justify-center to centre it. -->
+  <div
+    class="flex whitespace-nowrap {center && !scroll
+      ? 'w-full justify-center'
+      : 'w-max'}"
+    style="gap: {gap}px"
+  >
     <span bind:this={first}>{text}</span>
     {#if scroll}<span aria-hidden="true">{text}</span>{/if}
   </div>
