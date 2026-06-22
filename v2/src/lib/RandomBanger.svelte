@@ -2,12 +2,31 @@
   import { Play, Pause, Shuffle, SlidersHorizontal } from "lucide-svelte";
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
-  import { bangers, bucketURL } from "./consts";
+  import { bangers } from "./consts";
   import { Text, Modal, Switch, toast } from "./primitives";
-  import { triggerShake } from "./shake";
+  import { ShakeFx } from "./effects/shake.svelte";
+  import { FlashFx } from "./effects/flash.svelte";
+  import { WordsFx } from "./effects/words.svelte";
+  import { DancersFx } from "./effects/dancers.svelte";
+  import {
+    ACCENT,
+    BEAT_MIN_INTENSITY,
+    DROP_INTENSITY,
+    RAVE,
+    reduceMotion,
+  } from "./effects/shared";
 
   // MediaElementSource is one-shot per <audio>; HMR would leave a dead graph.
   if (import.meta.hot) import.meta.hot.decline();
+
+  // The four beat-reactive effects, each self-contained: screen shaking,
+  // screen flashing, word replacing, anime dancing. The render loop below feeds
+  // them the per-beat intensity; everything else (toggles, persistence, DOM,
+  // reduce-motion) lives in each effect module.
+  const shakeFx = new ShakeFx();
+  const flashFx = new FlashFx();
+  const wordsFx = new WordsFx();
+  const dancersFx = new DancersFx();
 
   let audio = $state<HTMLAudioElement | null>(null);
   let playing = $state(false);
@@ -122,222 +141,13 @@
   let lastFrame = 0;
   let raf = 0;
 
-  // Beat-driven page shake, played back from a precomputed <name>.beats.json.
-  const BEAT_MIN_INTENSITY = 0.12;
-  const SHAKE_BASE = 4;
-  const SHAKE_RANGE = 36;
-  const DROP_INTENSITY = 0.45; // "drop" threshold → flash + kick
-  const DROP_SHAKE_BOOST = 14;
+  // Beat schedule, played back from a precomputed <name>.beats.json.
   let beats: { t: number; i: number }[] = [];
   let beatIdx = 0;
 
-  let flashEl: HTMLElement | null = null;
   const FADE = 0.4; // play/pause/crossfade ramp duration
-  const RAVE = [
-    "#ff2d95",
-    "#00e5ff",
-    "#7cff00",
-    "#ffe600",
-    "#ff5e00",
-    "#2200ff",
-  ];
-  let strobeGen = 0; // cancels an in-flight strobe when a new drop lands
-  let colorTick = 0;
 
-  // Dancing reaction memes — scatter across the screen on a big drop (>= 60%).
-  const DANCE_INTENSITY = 0.75;
-  const DANCE_COUNT = 10;
-  const DANCERS = [
-    `${bucketURL}/osaka-spin.gif`,
-    `${bucketURL}/anime.gif`,
-    `${bucketURL}/reze.gif`,
-    `${bucketURL}/dancing-cat.gif`,
-  ];
-
-  type Dancer = {
-    src: string;
-    x: number;
-    y: number;
-    size: number;
-    rot: number;
-  };
-  let dancers = $state<Dancer[]>([]);
-  let danceTimer: ReturnType<typeof setTimeout> | null = null;
-
-  function showDance() {
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-    const maxSize = Math.min(W, H) * 0.42;
-    const placed: Dancer[] = [];
-    for (
-      let tries = 0;
-      placed.length < DANCE_COUNT && tries < DANCE_COUNT * 40;
-      tries++
-    ) {
-      const size = Math.min(90 + Math.random() * 130, maxSize);
-      const rot = -18 + Math.random() * 36;
-      const rad = (rot * Math.PI) / 180;
-      const half =
-        (size / 2) * (Math.abs(Math.cos(rad)) + Math.abs(Math.sin(rad)));
-      if (W <= 2 * half || H <= 2 * half) continue;
-      const x = half + Math.random() * (W - 2 * half);
-      const y = half + Math.random() * (H - 2 * half);
-      const r = size / 2;
-      if (!placed.every((p) => Math.hypot(p.x - x, p.y - y) >= p.size / 2 + r))
-        continue;
-      placed.push({
-        src: DANCERS[(Math.random() * DANCERS.length) | 0],
-        x,
-        y,
-        size,
-        rot,
-      });
-    }
-    dancers = placed;
-    if (danceTimer) clearTimeout(danceTimer);
-    danceTimer = setTimeout(() => (dancers = []), 2600);
-  }
-
-  // Wrap page words in spans (data-w = original) so rave can scramble and restore.
-  let raveWords: HTMLElement[] | null = null;
-  let wordPool: string[] = [];
-  const litWords = new Set<HTMLElement>();
-
-  function collectRaveWords() {
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode(node) {
-          const p = node.parentElement;
-          if (!p || !node.textContent?.trim()) return NodeFilter.FILTER_REJECT;
-          if (
-            p.closest(
-              "[data-no-rave],[aria-hidden='true'],nav,script,style,button",
-            )
-          )
-            return NodeFilter.FILTER_REJECT;
-          if (p.classList.contains("rave-w")) return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        },
-      },
-    );
-    const textNodes: Text[] = [];
-    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
-
-    const words: HTMLElement[] = [];
-    wordPool = [];
-    for (const tn of textNodes) {
-      const frag = document.createDocumentFragment();
-      for (const part of (tn.textContent ?? "").split(/(\s+)/)) {
-        if (part === "") continue;
-        if (/^\s+$/.test(part)) {
-          frag.append(part);
-        } else {
-          const s = document.createElement("span");
-          s.className = "rave-w";
-          s.textContent = part;
-          s.dataset.w = part;
-          frag.append(s);
-          words.push(s);
-          wordPool.push(part);
-        }
-      }
-      tn.replaceWith(frag);
-    }
-
-    // Lock each word's footprint to its original width (one batched measure)
-    // so swapping in a different-length word never reflows the page. Longer
-    // swaps overflow the fixed box instead of pushing neighbours around.
-    const widths = words.map((w) => w.getBoundingClientRect().width);
-    words.forEach((w, i) => {
-      w.style.display = "inline-block";
-      w.style.width = `${widths[i]}px`;
-      w.style.textAlign = "center";
-      w.style.whiteSpace = "nowrap";
-      w.style.overflow = "visible";
-    });
-    return words;
-  }
-
-  function ensureRaveWords() {
-    // Re-wrap if uncollected or the cached spans were swapped out (navigation).
-    if (!raveWords || !raveWords[0]?.isConnected)
-      raveWords = collectRaveWords();
-    return raveWords;
-  }
-
-  let wordClearTimer: ReturnType<typeof setTimeout> | null = null;
-  const ACCENT = ["var(--color-accent)"]; // calm palette for non-rave songs
-  const reduceMotion = () =>
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-
-  // Per-effect toggles, persisted in localStorage.
-  const loadFx = (k: string, def = true) => {
-    try {
-      const v = localStorage.getItem(k);
-      return v === null ? def : v === "1";
-    } catch {
-      return def;
-    }
-  };
-  let fxShake = $state(loadFx("fx-shake"));
-  let fxFlash = $state(loadFx("fx-flash"));
-  let fxWords = $state(loadFx("fx-words"));
-  let fxDance = $state(loadFx("fx-dance"));
   let fxOpen = $state(false);
-  $effect(() => {
-    try {
-      localStorage.setItem("fx-shake", fxShake ? "1" : "0");
-      localStorage.setItem("fx-flash", fxFlash ? "1" : "0");
-      localStorage.setItem("fx-words", fxWords ? "1" : "0");
-      localStorage.setItem("fx-dance", fxDance ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  });
-
-  function clearLit() {
-    for (const w of litWords) {
-      w.style.color = "";
-      if (w.dataset.w !== undefined) w.textContent = w.dataset.w;
-    }
-    litWords.clear();
-  }
-
-  function litRandom(
-    words: HTMLElement[],
-    frac: number,
-    palette: readonly string[],
-  ) {
-    clearLit();
-    if (!words.length) return;
-    // Scramble into the line being sung now → else the whole song → else page.
-    const src = nowWords.length
-      ? nowWords
-      : lyricPool.length
-        ? lyricPool
-        : wordPool;
-    const count = Math.ceil(words.length * frac);
-    for (let k = 0; k < count; k++) {
-      const w = words[(Math.random() * words.length) | 0];
-      w.style.color = palette[(Math.random() * palette.length) | 0];
-      w.textContent = src[(Math.random() * src.length) | 0];
-      litWords.add(w);
-    }
-  }
-
-  // Per-beat word flicker; auto-restores so words don't stay scrambled.
-  function pulseWords(intensity: number) {
-    if (!fxWords || reduceMotion()) return;
-    litRandom(
-      ensureRaveWords(),
-      0.04 + intensity * 0.06,
-      current?.rave ? RAVE : ACCENT,
-    );
-    if (wordClearTimer) clearTimeout(wordClearTimer);
-    wordClearTimer = setTimeout(clearLit, 200);
-  }
 
   function rampGain(to: number, dur = FADE) {
     if (!ctx || !gain) return;
@@ -345,40 +155,6 @@
     gain.gain.cancelScheduledValues(now);
     gain.gain.setValueAtTime(gain.gain.value, now);
     gain.gain.linearRampToValueAtTime(to, now + dur);
-  }
-
-  function flashDrop(intensity: number) {
-    if (!flashEl || !current?.rave || reduceMotion()) return;
-    if (!fxFlash && !fxWords) return;
-    if (wordClearTimer) clearTimeout(wordClearTimer); // strobe owns the words now
-
-    const peak = Math.min(0.92, 0.55 + intensity * 0.5);
-    const words = ensureRaveWords();
-
-    // More strobe pulses on bigger drops.
-    const pulses = 3 + Math.round(intensity * 4); // 3..7
-    const gen = ++strobeGen;
-    let n = 0;
-    const tick = () => {
-      if (!flashEl || gen !== strobeGen) return;
-      if (n >= pulses) {
-        flashEl.style.opacity = "0";
-        clearLit();
-        return;
-      }
-      if (fxFlash) {
-        flashEl.style.background = RAVE[colorTick++ % RAVE.length];
-        flashEl.style.opacity = String(peak);
-      }
-      if (fxWords) litRandom(words, 0.18, RAVE);
-      setTimeout(() => {
-        if (!flashEl || gen !== strobeGen) return;
-        if (fxFlash) flashEl.style.opacity = "0";
-        n++;
-        setTimeout(tick, 45);
-      }, 55);
-    };
-    tick();
   }
 
   function setupAudioGraph() {
@@ -425,8 +201,8 @@
       activeLine = idx;
     }
 
-    // Beat reactions (shake + word flicker + drop flash) are rave-only — calm
-    // tracks like Jar Of Love just get the corner waveform and lyrics.
+    // Beat reactions (shake + word flicker + drop flash + dancers) are rave-only
+    // — calm tracks like Jar Of Love just get the corner waveform and lyrics.
     if (beats.length && audio && current?.rave) {
       const now = audio.currentTime;
       let maxI = 0;
@@ -435,15 +211,19 @@
         beatIdx++;
       }
       if (maxI >= BEAT_MIN_INTENSITY) {
-        if (fxShake) {
-          let amp = SHAKE_BASE + maxI * SHAKE_RANGE;
-          if (maxI >= DROP_INTENSITY) amp += DROP_SHAKE_BOOST;
-          triggerShake(amp);
-        }
-        pulseWords(maxI);
+        // Refresh the word-scramble context for this frame: scramble into the
+        // line being sung now → else the whole song → else the page's words.
+        wordsFx.palette = current?.rave ? RAVE : ACCENT;
+        wordsFx.sources = nowWords.length
+          ? nowWords
+          : lyricPool.length
+            ? lyricPool
+            : null;
+        shakeFx.beat(maxI);
+        wordsFx.pulse(maxI);
       }
-      if (maxI >= DROP_INTENSITY) flashDrop(maxI);
-      if (maxI >= DANCE_INTENSITY && fxDance && !reduceMotion()) showDance();
+      if (maxI >= DROP_INTENSITY) flashFx.drop(maxI, wordsFx, !!current?.rave);
+      dancersFx.spawn(maxI);
     }
 
     analyser.getByteFrequencyData(wave);
@@ -494,6 +274,14 @@
   function startLoop() {
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(render);
+  }
+
+  function stopEffects() {
+    bassDb = -60;
+    wordsFx.reset();
+    dancersFx.reset();
+    flashFx.reset();
+    cancelAnimationFrame(raf);
   }
 
   // Avoid repeating the last couple of tracks so the rotation feels even.
@@ -619,21 +407,11 @@
   }}
   onpause={() => {
     playing = false;
-    bassDb = -60;
-    if (wordClearTimer) clearTimeout(wordClearTimer);
-    if (danceTimer) clearTimeout(danceTimer);
-    dancers = [];
-    clearLit();
-    cancelAnimationFrame(raf);
+    stopEffects();
   }}
   onended={() => {
     playing = false;
-    bassDb = -60;
-    if (wordClearTimer) clearTimeout(wordClearTimer);
-    if (danceTimer) clearTimeout(danceTimer);
-    dancers = [];
-    clearLit();
-    cancelAnimationFrame(raf);
+    stopEffects();
   }}
   hidden
 ></audio>
@@ -657,10 +435,14 @@
 
 {#snippet fxToggles()}
   <div class="flex flex-col">
-    {@render fxRow("screen shake", fxShake, (v) => (fxShake = v))}
-    {@render fxRow("screen flashing", fxFlash, (v) => (fxFlash = v))}
-    {@render fxRow("word flashing", fxWords, (v) => (fxWords = v))}
-    {@render fxRow("dancers", fxDance, (v) => (fxDance = v))}
+    {@render fxRow("screen shake", shakeFx.enabled, (v) => shakeFx.setEnabled(v))}
+    {@render fxRow("screen flashing", flashFx.enabled, (v) =>
+      flashFx.setEnabled(v),
+    )}
+    {@render fxRow("word flashing", wordsFx.enabled, (v) =>
+      wordsFx.setEnabled(v),
+    )}
+    {@render fxRow("dancers", dancersFx.enabled, (v) => dancersFx.setEnabled(v))}
   </div>
 {/snippet}
 
@@ -705,20 +487,20 @@
 </Modal>
 
 <div
-  bind:this={flashEl}
+  bind:this={flashFx.el}
   aria-hidden="true"
   class="pointer-events-none fixed inset-0 z-[2]"
   style="opacity: 0; background: radial-gradient(circle at 50% 45%, #ffffff 0%, var(--color-accent) 55%, var(--color-accent) 100%);"
 ></div>
 
 <!-- mix-blend-multiply drops light gif backgrounds into the paper. -->
-{#if dancers.length}
+{#if dancersFx.dancers.length}
   <div
     aria-hidden="true"
     class="pointer-events-none fixed inset-0 z-20"
     transition:fade={{ duration: 150 }}
   >
-    {#each dancers as d, i (i)}
+    {#each dancersFx.dancers as d, i (i)}
       <img
         src={d.src}
         alt=""
