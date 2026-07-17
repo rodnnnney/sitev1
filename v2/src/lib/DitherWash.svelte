@@ -12,14 +12,22 @@
     color = "#2200ff",
     /** Lateral drift; 0 = static */
     speed = 0,
+    /** Fade-in duration in ms */
+    fadeMs = 2200,
+    /** Peak opacity of remapped blue (0–1) — dial down to soften dense areas */
+    strength = 0.22,
     src = hillsUrl,
   }: {
     color?: string;
     speed?: number;
+    fadeMs?: number;
+    strength?: number;
     src?: string;
   } = $props();
 
   let canvas: HTMLCanvasElement | undefined = $state();
+  let ready = $state(false);
+  const motionOk = !reduceMotion();
 
   function parseHex(hex: string): [number, number, number] {
     const h = hex.replace("#", "");
@@ -40,6 +48,7 @@
     if (!ctx) return;
 
     const [cr, cg, cb] = parseHex(color);
+    const inkA = Math.max(0, Math.min(255, Math.round(strength * 255)));
     const staticMode = reduceMotion() || speed <= 0;
     let raf = 0;
     let ro: ResizeObserver | undefined;
@@ -71,16 +80,16 @@
       const nw = plate.naturalWidth;
       const nh = plate.naturalHeight;
 
-      // Full-bleed width, keep aspect — bottom-aligned, never cropped
-      const scale = w / nw;
+      // Full-bleed width always; cap height so ultrawide doesn't tower the range.
+      // May flatten slightly when height-capped — better than tiling a non-seamless plate.
+      const maxH = h * 0.48;
       const dw = w;
-      const dh = Math.ceil(nh * scale);
+      const dh = Math.max(1, Math.min(Math.ceil(nh * (w / nw)), Math.floor(maxH)));
       const drift = staticMode
         ? 0
-        : (((tMs / 1000) * speed * 0.12 * w) % w + w) % w;
+        : ((((tMs / 1000) * speed * 0.12 * dw) % dw) + dw) % dw;
       const dx = Math.floor(-drift);
-      // Nudge below the fold a bit so the range sits lower
-      const dy = h - dh + Math.floor(h * 0.15);
+      const dy = h - dh + Math.floor(h * 0.04);
 
       octx.clearRect(0, 0, w, h);
       octx.drawImage(plate, dx, dy, dw, dh);
@@ -104,7 +113,7 @@
           data[i] = cr;
           data[i + 1] = cg;
           data[i + 2] = cb;
-          data[i + 3] = 255;
+          data[i + 3] = inkA;
         } else {
           data[i + 3] = 0;
         }
@@ -121,6 +130,10 @@
       plate = image;
       resize();
       draw(0);
+      // Next frame so the first paint lands at opacity 0 before we fade in
+      requestAnimationFrame(() => {
+        if (alive) ready = true;
+      });
     };
     image.onerror = () => console.warn("[DitherWash] failed to load", src);
     image.src = src;
@@ -153,6 +166,8 @@
 <canvas
   bind:this={canvas}
   class="pointer-events-none fixed inset-0 z-0 h-full w-full"
-  style="image-rendering: pixelated;"
+  style="image-rendering: pixelated; opacity: {ready
+    ? 1
+    : 0}; transition: opacity {motionOk ? fadeMs : 0}ms ease-out;"
   aria-hidden="true"
 ></canvas>

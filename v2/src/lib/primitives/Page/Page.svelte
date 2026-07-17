@@ -68,12 +68,21 @@
 >
   <!-- Title block — same position on every page -->
   <header class="flex flex-col">
-    {#if derivedLabel}
-      <Text type="label" size="xs" color="muted" class="leading-none"
-        >{derivedLabel}</Text
-      >
-    {/if}
-    <div class="flex flex-row items-end justify-between gap-2">
+    <div class="flex items-baseline justify-between gap-3">
+      {#if derivedLabel}
+        <Text type="label" size="xs" color="muted" class="leading-none"
+          >{derivedLabel}</Text
+        >
+      {:else}
+        <span></span>
+      {/if}
+      {#if showTime}
+        <Text type="label" size="xs" color="muted" class="leading-none"
+          >New York City, NY</Text
+        >
+      {/if}
+    </div>
+    <div class="flex flex-row items-baseline justify-between gap-2">
       <Text
         type="heading"
         size={titleSize}
@@ -85,13 +94,18 @@
         {title}
       </Text>
       {#if showTime}
-        <!-- shrink-0 keeps the clock on the title's baseline row; the title
-             wraps before it pushes the time off-screen on narrow viewports. -->
-        <div class="flex shrink-0 items-end gap-1">
-          <Text type="label" size="xs" color="muted" animate duration={200}>
-            {timeString}
-          </Text>
-        </div>
+        <!-- shrink-0 keeps the clock on the title row; the title wraps before
+             it pushes the time off-screen on narrow viewports. -->
+        <Text
+          type="label"
+          size="xs"
+          color="muted"
+          animate
+          duration={200}
+          class="shrink-0"
+        >
+          {timeString}
+        </Text>
       {/if}
     </div>
     {#if lead}
