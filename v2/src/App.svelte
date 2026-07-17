@@ -12,14 +12,11 @@
 
   let path = $state(window.location.pathname);
 
-  // Crossfade between routes via the View Transitions API where supported —
-  // pure progressive enhancement: unsupported browsers (and reduced-motion
-  // users) just get the instant swap.
   function go(to: string) {
     const swap = () => {
       path = to;
       window.scrollTo(0, 0);
-      return tick(); // let Svelte paint the new route before the snapshot
+      return tick();
     };
     if (document.startViewTransition && !reduceMotion()) {
       document.startViewTransition(swap);

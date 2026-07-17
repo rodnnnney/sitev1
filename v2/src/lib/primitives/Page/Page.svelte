@@ -66,7 +66,6 @@
     ? 'px-4 pt-12 pb-28'
     : 'px-6 py-20'}"
 >
-  <!-- Title block — same position on every page -->
   <header class="flex flex-col">
     <div class="flex items-baseline justify-between gap-3">
       {#if derivedLabel}
@@ -94,8 +93,6 @@
         {title}
       </Text>
       {#if showTime}
-        <!-- shrink-0 keeps the clock on the title row; the title wraps before
-             it pushes the time off-screen on narrow viewports. -->
         <Text
           type="label"
           size="xs"

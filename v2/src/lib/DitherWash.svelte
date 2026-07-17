@@ -1,20 +1,12 @@
 <script lang="ts">
-  /**
-   * Home wash: dither-hill.webp recolored to accent. Plate is already
-   * ordered-dithered — we only remap dark pixels → #2200ff.
-   * Full plate, bottom-aligned — no band crop on the peaks.
-   */
   import { onMount } from "svelte";
   import { reduceMotion } from "./effects/shared";
   import hillsUrl from "../assets/dither-hill.webp";
 
   let {
     color = "#2200ff",
-    /** Lateral drift; 0 = static */
     speed = 0,
-    /** Fade-in duration in ms */
     fadeMs = 2200,
-    /** Peak opacity of remapped blue (0–1) — dial down to soften dense areas */
     strength = 0.22,
     src = hillsUrl,
   }: {
@@ -43,13 +35,14 @@
   }
 
   onMount(() => {
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const el = canvas;
+    if (!el) return;
+    const ctx = el.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     const [cr, cg, cb] = parseHex(color);
     const inkA = Math.max(0, Math.min(255, Math.round(strength * 255)));
-    const staticMode = reduceMotion() || speed <= 0;
+    const staticMode = !motionOk || speed <= 0;
     let raf = 0;
     let ro: ResizeObserver | undefined;
     let alive = true;
@@ -63,13 +56,13 @@
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const cssW = canvas!.clientWidth;
-      const cssH = canvas!.clientHeight;
+      const cssW = el.clientWidth;
+      const cssH = el.clientHeight;
       if (cssW < 2 || cssH < 2) return;
       w = Math.max(1, Math.floor(cssW * dpr));
       h = Math.max(1, Math.floor(cssH * dpr));
-      canvas!.width = w;
-      canvas!.height = h;
+      el.width = w;
+      el.height = h;
       off.width = w;
       off.height = h;
     };
@@ -79,9 +72,6 @@
 
       const nw = plate.naturalWidth;
       const nh = plate.naturalHeight;
-
-      // Full-bleed width always; cap height so ultrawide doesn't tower the range.
-      // May flatten slightly when height-capped — better than tiling a non-seamless plate.
       const maxH = h * 0.48;
       const dw = w;
       const dh = Math.max(1, Math.min(Math.ceil(nh * (w / nw)), Math.floor(maxH)));
@@ -102,7 +92,6 @@
       const img = octx.getImageData(0, outY, w, outH);
       const data = img.data;
       for (let i = 0; i < data.length; i += 4) {
-        // Undrawn pixels are rgba(0,0,0,0) — don't treat as hill.
         if (data[i + 3] < 8) {
           data[i + 3] = 0;
           continue;
@@ -130,7 +119,6 @@
       plate = image;
       resize();
       draw(0);
-      // Next frame so the first paint lands at opacity 0 before we fade in
       requestAnimationFrame(() => {
         if (alive) ready = true;
       });
@@ -143,7 +131,7 @@
       resize();
       draw(0);
     });
-    ro.observe(canvas);
+    ro.observe(el);
 
     if (!staticMode) {
       const loop = (t: number) => {

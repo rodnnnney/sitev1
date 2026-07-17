@@ -22,8 +22,11 @@
   const isBlogPath = (p: string) => p === "/blog" || p.startsWith("/blog/");
 
   const updateIndicator = () => {
-    const activeLink =
-      path === "/" ? homeLink : isBlogPath(path) ? blogLink : componentsLink;
+    let activeLink: HTMLAnchorElement | null = null;
+    if (path === "/") activeLink = homeLink;
+    else if (isBlogPath(path)) activeLink = blogLink;
+    else activeLink = componentsLink;
+
     if (activeLink && navEl) {
       const linkRect = activeLink.getBoundingClientRect();
       const navRect = navEl.getBoundingClientRect();
@@ -32,7 +35,6 @@
   };
 
   $effect(() => {
-    // Re-measure whenever the path or link refs change.
     path;
     homeLink;
     blogLink;
@@ -65,18 +67,15 @@
 
 <div class="relative z-[1] min-h-screen">
   {#if $deviceType === "desktop"}
-    <!-- Desktop sidebar: fixed at 1/8 -->
     <aside
       class="fixed top-0 left-[12.5%] z-10 h-screen w-[12.5%] px-4 py-20"
     >
-      <!-- Guide rule: draws in with a brief shine, then settles to a soft fade -->
       <div class="sidebar-rule" aria-hidden="true">
         <div class="sidebar-rule__base"></div>
         <div class="sidebar-rule__shine"></div>
       </div>
 
       <nav bind:this={navEl} class="relative flex flex-col gap-0 text-right">
-        <!-- Animated active indicator -->
         <div
           class="absolute -right-3 top-0 w-0.5 bg-accent transition-all duration-300 ease-out"
           style={indicatorStyle}
@@ -128,7 +127,6 @@
       </nav>
     </aside>
   {:else}
-    <!-- Mobile/Tablet top nav -->
     <nav
       class="fixed top-0 left-0 right-0 z-10 flex items-center justify-between border-b border-line bg-paper/95 px-4 py-4 backdrop-blur"
     >
@@ -168,14 +166,12 @@
     </nav>
   {/if}
 
-  <!-- Main content: centered as if there's no sidebar -->
   <div class="relative {$deviceType === 'desktop' ? 'pt-0' : 'pt-16'}">
     {@render children?.()}
   </div>
 </div>
 
 <style>
-  /* Only as tall as the visible fade band — don't animate into empty air */
   .sidebar-rule {
     pointer-events: none;
     position: absolute;

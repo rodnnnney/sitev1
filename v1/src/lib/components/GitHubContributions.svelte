@@ -5,12 +5,11 @@
 	let contributionsUrl = '';
 	let loading = true;
 	let totalCommits = 0;
-	let currentYear = new Date().getFullYear();
 
 	const WEEKS = 53;
 	const DAYS = 7;
+	const FALLBACK_COMMITS = 965;
 
-	// Stable pseudo-levels so the skeleton reads like a real graph, not a flat grid.
 	function cellLevel(w: number, d: number): number {
 		const n = Math.sin(w * 12.9898 + d * 78.233) * 43758.5453;
 		const r = n - Math.floor(n);
@@ -22,19 +21,16 @@
 
 	async function fetchCommitCount() {
 		try {
-			// Fetch from our secure API route
 			const response = await fetch('/api/github-contributions');
-
-			if (response.ok) {
-				const data = await response.json();
-				totalCommits = data.totalContributions;
-				currentYear = data.year;
-			} else {
-				totalCommits = 965;
+			if (!response.ok) {
+				totalCommits = FALLBACK_COMMITS;
+				return;
 			}
+			const data = await response.json();
+			totalCommits = data.totalContributions;
 		} catch (error) {
 			console.error('Failed to fetch commit count:', error);
-			totalCommits = 965;
+			totalCommits = FALLBACK_COMMITS;
 		}
 	}
 
@@ -68,9 +64,6 @@
 		<div class="contributions-container" in:fade={{ duration: 280 }}>
 			<div class="mb-3 flex items-center justify-between">
 				<h4>Github</h4>
-				{#if totalCommits > 0}
-					<div class="text-right"></div>
-				{/if}
 			</div>
 			<div class="contributions-chart">
 				<img
@@ -78,7 +71,6 @@
 					alt="GitHub Contributions"
 					class="w-full rounded-lg"
 					on:error={() => {
-						// Fallback if the service is down
 						contributionsUrl =
 							'https://github-readme-stats.vercel.app/api?username=rodnnnney&show_icons=true&theme=dark&hide_border=true';
 					}}
@@ -126,63 +118,40 @@
 		aspect-ratio: 1;
 		width: 100%;
 		border-radius: 2px;
-		animation: cell-pulse-0 1.5s ease-in-out infinite;
+		animation: cell-pulse 1.5s ease-in-out infinite;
 	}
 
-	/* Blue cube ramp — close to the loaded chart so the handoff isn't a jump */
 	.loading-cell.level-0 {
-		animation-name: cell-pulse-0;
+		--c0: #0e1117;
+		--c1: #1a2332;
 	}
 	.loading-cell.level-1 {
-		animation-name: cell-pulse-1;
+		--c0: #1a3a5c;
+		--c1: #2b6cb0;
 	}
 	.loading-cell.level-2 {
-		animation-name: cell-pulse-2;
+		--c0: #2563a8;
+		--c1: #3b82f6;
 	}
 	.loading-cell.level-3 {
-		animation-name: cell-pulse-3;
+		--c0: #3b82f6;
+		--c1: #60a5fa;
 	}
 
-	@keyframes cell-pulse-0 {
+	@keyframes cell-pulse {
 		0%,
 		100% {
-			background: #0e1117;
+			background: var(--c0);
 		}
 		50% {
-			background: #1a2332;
-		}
-	}
-	@keyframes cell-pulse-1 {
-		0%,
-		100% {
-			background: #1a3a5c;
-		}
-		50% {
-			background: #2b6cb0;
-		}
-	}
-	@keyframes cell-pulse-2 {
-		0%,
-		100% {
-			background: #2563a8;
-		}
-		50% {
-			background: #3b82f6;
-		}
-	}
-	@keyframes cell-pulse-3 {
-		0%,
-		100% {
-			background: #3b82f6;
-		}
-		50% {
-			background: #60a5fa;
+			background: var(--c1);
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.loading-cell {
 			animation: none;
+			background: var(--c0);
 		}
 	}
 

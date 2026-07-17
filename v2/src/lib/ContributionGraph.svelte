@@ -3,8 +3,6 @@
   type Week = { contributionDays: Day[] };
   type Calendar = { totalContributions: number; weeks: Week[] };
 
-  // Cached across mounts so navigating away and back doesn't refetch or reflash
-  // the skeleton. Reset only on a full page reload.
   let cached: Calendar | null = null;
 </script>
 
@@ -17,7 +15,7 @@
   let failed = $state(false);
 
   onMount(async () => {
-    if (data) return; // already have it from a previous mount
+    if (data) return;
     try {
       const res = await fetch("/api/contributions");
       if (!res.ok) throw new Error(String(res.status));
@@ -40,7 +38,6 @@
       : 1,
   );
 
-  // 0 = no contributions; 1..4 = increasing intensity (quartiles of `max`).
   function level(count: number): number {
     if (count <= 0) return 0;
     const r = count / max;
@@ -74,9 +71,6 @@
     typeof window !== "undefined" &&
     (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
 
-  // Rave flicker: on each beat of a rave track, splash a small fraction of the
-  // squares with random palette colours, then restore — the same tasteful pulse
-  // the page's words do (see WordsFx.pulse).
   const RAVE = [
     "#ff2d95",
     "#00e5ff",
@@ -90,7 +84,7 @@
   let clearTimer: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => {
-    const seq = audioViz.seq; // tracked → re-runs once per beat
+    const seq = audioViz.seq;
     const total = columns.length * 7;
     if (
       prefersReduced ||
@@ -102,8 +96,6 @@
       if (Object.keys(cellColors).length) cellColors = {};
       return;
     }
-    // Scale the splash with how hard the beat hits — quiet beats flip a few
-    // squares, loud drops light up a big chunk of the grid.
     const count = Math.ceil(total * (0.03 + audioViz.intensity * 0.32));
     const next: Record<number, string> = {};
     for (let k = 0; k < count; k++) {
@@ -115,7 +107,6 @@
     clearTimer = setTimeout(() => (cellColors = {}), 200);
   });
 
-  // Clear the restore timer on unmount.
   $effect(() => () => {
     if (clearTimer) clearTimeout(clearTimer);
   });
@@ -157,12 +148,10 @@
   let tip = $state<{ text: string; x: number; y: number } | null>(null);
 
   function showTip(e: MouseEvent, day: Day) {
-    if (!wrap || day.contributionCount === 0) return; // no tooltip for empty days
+    if (!wrap || day.contributionCount === 0) return;
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const w = wrap.getBoundingClientRect();
     const text = label(day);
-    // Clamp the centred tooltip so it never spills past the graph's edges
-    // (width estimated from the mono text + horizontal padding).
     const half = (text.length * 7.2 + 16) / 2;
     const center = r.left - w.left + r.width / 2;
     tip = {
@@ -173,8 +162,6 @@
   }
   const hideTip = () => (tip = null);
 
-  // Touch: tap a square shows its tooltip; tapping anywhere off a square
-  // dismisses it, since touch has no hover/mouseleave.
   $effect(() => {
     const onDown = (e: PointerEvent) => {
       if (!(e.target as HTMLElement).closest("[data-cell]")) hideTip();
@@ -210,9 +197,6 @@
             <div class="flex flex-col gap-[3px]">
               {#each col as day, wd (wd)}
                 {#if day}
-                  <!-- Decorative heatmap cell: the click just mirrors hover to
-                       open the tooltip on touch. It's tabindex="-1" (not a
-                       focusable control), so a keyboard handler is moot. -->
                   <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <div
                     data-cell
@@ -252,7 +236,6 @@
     couldn't load contributions
   </Text>
 {:else}
-  <!-- Loading skeleton — mirrors the grid with pulsing hairline cells. -->
   <div class="flex flex-col gap-2" aria-hidden="true">
     <div class="flex items-baseline justify-between">
       <Text type="label" size="xs" color="muted">contributions</Text>

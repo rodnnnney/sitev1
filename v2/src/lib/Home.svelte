@@ -1,5 +1,4 @@
 <script module lang="ts">
-  // Cached across mounts so navigating away and back doesn't refetch the repo.
   let cachedPush = "";
 </script>
 
@@ -11,14 +10,13 @@
   import { debugStore } from "./debugStore";
   import ContributionGraph from "./ContributionGraph.svelte";
 
-  let shakeAmp = $state(14); // shake amplitude in px
+  let shakeAmp = $state(14);
 
   const LINKS = [
     { label: "x (twitter)", href: "https://x.com/992rodney" },
     { label: "github", href: "https://github.com/rodnnnney" },
   ];
 
-  // Last push date of the site's repo (dd/mm/yy), cached across remounts.
   let lastPushed = $state(cachedPush);
   onMount(async () => {
     if (lastPushed) return;
@@ -50,7 +48,8 @@
     <br /><br />
 
     In my free time, I like to stay active by playing basketball, running, and
-    working out. I also like to read and watch movies.
+    working out. I also like to read, watch movies, and listen to music (big on
+    EDM lately).
   </Text>
 
   <ContributionGraph />
