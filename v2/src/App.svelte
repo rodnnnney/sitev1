@@ -3,6 +3,7 @@
   import Home from "./lib/Home.svelte";
   import NotFound from "./lib/NotFound.svelte";
   import Showcase from "./lib/Showcase.svelte";
+  import Monkey from "./lib/Monkey.svelte";
   import { Blog, Pacing } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
   import RandomBanger from "./lib/RandomBanger.svelte";
@@ -65,6 +66,8 @@
       <Blog />
     {:else if path === "/blog/pace-factor"}
       <Pacing />
+    {:else if path === "/monkey"}
+      <Monkey />
     {:else}
       <NotFound {path} />
     {/if}
