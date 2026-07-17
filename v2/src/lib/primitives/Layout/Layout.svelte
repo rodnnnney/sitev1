@@ -63,11 +63,12 @@
   <Debug />
 {/if}
 
-<div class="relative min-h-screen">
+<div class="relative z-[1] min-h-screen">
   {#if $deviceType === "desktop"}
     <!-- Desktop sidebar: fixed at 1/8 -->
     <aside
-      class="fixed top-0 left-[12.5%] z-10 h-screen w-[12.5%] border-r border-line px-4 py-20"
+      class="fixed top-0 left-[12.5%] z-10 h-screen w-[12.5%] border-r border-transparent px-4 py-20"
+      style="border-image: linear-gradient(to bottom, var(--color-line) 0%, var(--color-line) 55%, transparent 85%) 1;"
     >
       <nav bind:this={navEl} class="relative flex flex-col gap-0 text-right">
         <!-- Animated active indicator -->
