@@ -41,15 +41,9 @@
     <span class="text-accent">TextQL</span>.<br /><br />
 
     Previously, I was fascinated by crypto, I interned at a few crypto startups
-    working on decentralized physical infrastructure and stablecoins. I also
-    founded the blockchain club at my school and even spoke at
+    working on decentralized physical infrastructure and stablecoins. I founded
+    the blockchain club at my school and even spoke at
     <span class="text-accent">Consensus HK 2025</span>.
-
-    <br /><br />
-
-    In my free time, I like to stay active by playing basketball, running, and
-    working out. I also like to read, watch movies, and listen to music (big on
-    EDM lately).
   </Text>
 
   <ContributionGraph />

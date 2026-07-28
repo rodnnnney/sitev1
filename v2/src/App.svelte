@@ -7,7 +7,6 @@
   import { Blog, Pacing } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
   import RandomBanger from "./lib/RandomBanger.svelte";
-  import DitherWash from "./lib/DitherWash.svelte";
   import { reduceMotion } from "./lib/effects/shared";
 
   let path = $state(window.location.pathname);
@@ -53,10 +52,6 @@
     };
   });
 </script>
-
-{#if path === "/"}
-  <DitherWash />
-{/if}
 
 <div id="shake-root" class="relative z-[1]">
   <Layout {path}>
