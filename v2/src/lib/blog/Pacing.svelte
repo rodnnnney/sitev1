@@ -29,12 +29,6 @@
 
 <Page title="Pace Factor" showTime>
   <div class="flex flex-col gap-8">
-    <Text type="paragraph" size="sm" color="black">
-      In the following article, I will attempt to draw similarities between my
-      change in environment from a quiet suburb in the capital of Canada to one
-      of the most vibrant and fast-moving cities in the world, New York City.
-    </Text>
-
     <img
       src="{bucketURL}/blog/aura.avif"
       alt="stats"
