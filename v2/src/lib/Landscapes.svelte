@@ -10,6 +10,6 @@
     draggable="false"
   />
   <Text type="label" size="2xs" color="muted">
-    upper east side, nyc · summer ’26
+    upper west side, nyc · summer ’26
   </Text>
 </div>
