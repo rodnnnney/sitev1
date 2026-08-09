@@ -23,6 +23,8 @@ const FILES = [
   "fuck-the-speakerz-up",
   "money-on-the-dash",
   "go-on-then-love",
+  "ocean",
+  "shadows",
 ];
 
 const R2_PREFIX = "static/songs"; // objects live under <bucket>/static/songs

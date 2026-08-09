@@ -31,13 +31,6 @@ export const bangers = [
     rave: true,
   },
   {
-    title: "Jar Of Love",
-    artist: "Wanting",
-    url: `${bucketURL}/songs/jar-of-love/jar-of-love.mp3`,
-    cover: `${bucketURL}/songs/jar-of-love/cover.jpg`,
-    rave: false,
-  },
-  {
     title: "Rock Ur World",
     artist: "Knock2 & fussy",
     url: `${bucketURL}/songs/rock-ur-world/rock-ur-world.mp3`,
@@ -52,10 +45,17 @@ export const bangers = [
     rave: true,
   },
   {
-    title: "FUCK THE SPEAKERZ UP",
-    artist: "ISOxo",
-    url: `${bucketURL}/songs/fuck-the-speakerz-up/fuck-the-speakerz-up.mp3`,
-    cover: `${bucketURL}/songs/fuck-the-speakerz-up/cover.jpg`,
+    title: "Ocean",
+    artist: "Fisher",
+    url: `${bucketURL}/songs/ocean/ocean.mp3`,
+    cover: `${bucketURL}/songs/ocean/cover.jpg`,
+    rave: true,
+  },
+  {
+    title: "SHADOWS",
+    artist: "John Summit",
+    url: `${bucketURL}/songs/shadows/shadows.mp3`,
+    cover: `${bucketURL}/songs/shadows/cover.jpg`,
     rave: true,
   },
   {
@@ -63,13 +63,6 @@ export const bangers = [
     artist: "Elley Duhé",
     url: `${bucketURL}/songs/money-on-the-dash/money-on-the-dash.mp3`,
     cover: `${bucketURL}/songs/money-on-the-dash/cover.jpg`,
-    rave: true,
-  },
-  {
-    title: "Go On Then, Love",
-    artist: "Said The Sky",
-    url: `${bucketURL}/songs/go-on-then-love/go-on-then-love.mp3`,
-    cover: `${bucketURL}/songs/go-on-then-love/cover.jpg`,
     rave: true,
   },
 ] as const;

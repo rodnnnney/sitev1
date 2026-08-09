@@ -49,7 +49,7 @@
   </Text>
 
   <Text size="sm" color="black" links data-no-rave>
-    Stick around, let me
+    Stay for a while, let me
     <button type="button" class="text-accent" onclick={requestBangerPlay}
       >play you a song</button
     >.
