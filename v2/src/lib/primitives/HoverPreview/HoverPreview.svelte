@@ -2,6 +2,7 @@
   import type { Snippet } from "svelte";
   import { onDestroy } from "svelte";
   import { fade } from "svelte/transition";
+  import { canHover } from "../../media";
 
   let {
     title,
@@ -25,11 +26,6 @@
   onDestroy(() => {
     clearTimeout(timer);
   });
-
-  /** Touch devices synthesize sticky hover/focus; only tip on fine pointers. */
-  function canHover() {
-    return window.matchMedia?.("(hover: hover) and (pointer: fine)").matches ?? false;
-  }
 
   function scheduleOpen() {
     if (!canHover()) return;

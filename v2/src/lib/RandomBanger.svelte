@@ -16,7 +16,7 @@
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
   import { audioViz } from "./audioStore.svelte";
-  import { bangerActive, bangerNow, onBangerPlayRequest } from "./bangerTrigger";
+  import { bangerNow, onBangerPlayRequest } from "./bangerTrigger";
   import { Modal, Switch, Button, Marquee, toast, Tooltip } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
@@ -493,7 +493,6 @@
       await new Promise((r) => setTimeout(r, 200));
     }
     current = song;
-    bangerActive.set(true);
     bangerNow.set({ title: song.title, artist: song.artist });
     audioViz.rave = !!song.rave;
     loadLyrics(song);
@@ -557,7 +556,6 @@
     const unsub = onBangerPlayRequest(() => toggle());
     return () => {
       unsub();
-      bangerActive.set(false);
       bangerNow.set(null);
     };
   });
