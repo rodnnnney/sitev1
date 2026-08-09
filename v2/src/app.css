@@ -60,6 +60,10 @@
   --radius-sm: 2px;
   --radius-md: 3px;
   --radius-lg: 4px;
+
+  /* Smaller than Tailwind's default xs — captions / meta under media. */
+  --text-2xs: 0.5rem;
+  --text-2xs--line-height: 0.75rem;
 }
 
 /* Blue scale — the site's single hue, light tints → deep shades, anchored on

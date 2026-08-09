@@ -8,7 +8,7 @@
   import { Text, Page, Button } from "./primitives";
   import { triggerShake } from "./shake";
   import { debugStore } from "./debugStore";
-  import { requestBangerPlay } from "./bangerTrigger";
+  import { bangerNow, requestBangerPlay } from "./bangerTrigger";
   import Landscapes from "./Landscapes.svelte";
 
   let shakeAmp = $state(14);
@@ -48,12 +48,19 @@
     <span class="text-accent">Consensus HK 2025</span>.
   </Text>
 
-  <Text size="sm" color="black" links data-no-rave>
-    Stay for a while, let me
-    <button type="button" class="text-accent" onclick={requestBangerPlay}
-      >play you a song</button
-    >.
-  </Text>
+  {#if $bangerNow}
+    <Text size="sm" color="black" data-no-rave>
+      now playing:
+      <span class="text-accent">{$bangerNow.title}</span> by {$bangerNow.artist}
+    </Text>
+  {:else}
+    <Text size="sm" color="black" links data-no-rave>
+      Stay for a while, let me
+      <button type="button" class="text-accent" onclick={requestBangerPlay}
+        >play you a song</button
+      >.
+    </Text>
+  {/if}
 
   <Landscapes />
 

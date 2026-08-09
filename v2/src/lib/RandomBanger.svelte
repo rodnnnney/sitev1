@@ -16,7 +16,7 @@
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
   import { audioViz } from "./audioStore.svelte";
-  import { bangerActive, onBangerPlayRequest } from "./bangerTrigger";
+  import { bangerActive, bangerNow, onBangerPlayRequest } from "./bangerTrigger";
   import { Modal, Switch, Button, Marquee, toast, Tooltip } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
@@ -494,6 +494,7 @@
     }
     current = song;
     bangerActive.set(true);
+    bangerNow.set({ title: song.title, artist: song.artist });
     audioViz.rave = !!song.rave;
     loadLyrics(song);
     loadBeats(song);
@@ -557,6 +558,7 @@
     return () => {
       unsub();
       bangerActive.set(false);
+      bangerNow.set(null);
     };
   });
 
@@ -704,8 +706,8 @@
   onclose={cancelWarning}
 >
   This track flashes and shakes the screen on the beat.
-  <span class="text-accent">Screen flashing is off by default</span>; toggle any
-  effect below:
+  <span class="text-accent">Screen flashing and dancers are off by default</span>;
+  toggle any effect below:
   <div class="mt-3">{@render fxToggles()}</div>
   {#snippet actions()}
     <Button variant="surface" onclick={cancelWarning}>not now</Button>

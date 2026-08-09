@@ -1,8 +1,9 @@
-export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+export type TextSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 export type TextColor = 'black' | 'muted' | 'white' | 'accent';
 export type TextType = 'paragraph' | 'label' | 'heading' | 'important';
 
 export const textSizeStyles: Record<TextSize, string> = {
+  '2xs': 'text-2xs',
   xs: 'text-xs',
   sm: 'text-sm',
   md: 'text-base',

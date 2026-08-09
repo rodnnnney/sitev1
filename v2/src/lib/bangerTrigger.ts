@@ -3,6 +3,11 @@ import { writable } from "svelte/store";
 /** True once RandomBanger has a track loaded (player visible). */
 export const bangerActive = writable(false);
 
+/** Current track metadata for home “now playing” copy; null when idle. */
+export const bangerNow = writable<{ title: string; artist: string } | null>(
+  null,
+);
+
 type Handler = () => void;
 let handler: Handler | null = null;
 

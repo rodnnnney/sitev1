@@ -26,7 +26,7 @@ const SRCS = [
  * a big drop, then clears them after a beat or two.
  */
 export class DancersFx {
-  enabled = $state(loadFx("fx-dance"));
+  enabled = $state(loadFx("fx-dance", false));
   dancers = $state<Dancer[]>([]);
   #timer: ReturnType<typeof setTimeout> | null = null;
 
