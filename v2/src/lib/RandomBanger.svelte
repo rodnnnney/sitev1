@@ -6,13 +6,15 @@
     SlidersHorizontal,
     Music,
   } from "lucide-svelte";
+  import { onMount } from "svelte";
   import { flip } from "svelte/animate";
   import { fade, fly } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
   import { audioViz } from "./audioStore.svelte";
-  import { Text, Modal, Switch, Button, Marquee, toast } from "./primitives";
+  import { bangerActive, onBangerPlayRequest } from "./bangerTrigger";
+  import { Modal, Switch, Button, Marquee, toast } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
   import { WordsFx } from "./effects/words.svelte";
@@ -365,6 +367,7 @@
       await new Promise((r) => setTimeout(r, 200));
     }
     current = song;
+    bangerActive.set(true);
     audioViz.rave = !!song.rave;
     loadLyrics(song);
     loadBeats(song);
@@ -411,6 +414,14 @@
       rampGain(1);
     } else playRandom();
   }
+
+  onMount(() => {
+    const unsub = onBangerPlayRequest(() => toggle());
+    return () => {
+      unsub();
+      bangerActive.set(false);
+    };
+  });
 
   $effect(() => () => cancelAnimationFrame(raf));
 
@@ -745,40 +756,8 @@
         {/if}
       </div>
     </div>
-  {:else}
-    <!-- Easter egg: before anything plays, the player is just a quiet prompt. -->
-    <div
-      data-no-rave
-      out:fade={{ duration: 150 }}
-      class="fixed right-4 bottom-4 z-40 font-mono text-xs transition-all duration-300 {barHidden
-        ? 'pointer-events-none translate-y-16 opacity-0'
-        : 'pointer-events-auto translate-y-0 opacity-100'}"
-    >
-      <Text type="paragraph" size="xs" color="muted" links class="leading-none">
-        <button type="button" onclick={toggle}>
-          I wonder what this button does🤔
-        </button>
-      </Text>
-    </div>
   {/if}
 {:else}
-  <!-- Pre-play prompt lives in its own fixed element (not the player's flex
-       column) so fading it out never reflows the card that flies up to replace
-       it — that reflow was cancelling the slide. -->
-  {#if !current}
-    <div
-      data-no-rave
-      out:fade={{ duration: 120 }}
-      class="pointer-events-auto fixed right-5 bottom-5 z-40 font-mono text-xs"
-    >
-      <Text type="paragraph" size="xs" color="muted" links class="leading-none">
-        <button type="button" onclick={toggle}>
-          I wonder what this button does🤔
-        </button>
-      </Text>
-    </div>
-  {/if}
-
   <div
     data-no-rave
     class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-2"

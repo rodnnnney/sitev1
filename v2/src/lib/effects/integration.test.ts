@@ -34,16 +34,19 @@ function simulateBeat(
 const PAGES: Record<string, string> = {
   '/ (Home)': `
     <p>hi i am rodney building things on the internet</p>
-    <a href="/blog">read the blog</a>`,
+    <a href="/writing">read the writing</a>`,
   '/xyz (Showcase)': `
     <h2>showcase</h2>
     <p>a wall of projects and experiments</p>`,
-  '/blog (index)': `
-    <h1>blog</h1>
+  '/writing (index)': `
+    <h1>writing</h1>
     <p>posts about basketball and startups</p>`,
-  '/blog/pace-factor (Pacing)': `
+  '/writing/pace-factor (Pacing)': `
     <h1>Pace Factor</h1>
     <p>drawing similarities between Ottawa and New York City</p>`,
+  '/writing/more-bubbles (MoreBubbles)': `
+    <h1>More Bubbles</h1>
+    <p>why we need more bubbles, not fewer</p>`,
   '/not-found (404)': `
     <h1>not found</h1>
     <p>nothing lives at this address</p>`,

@@ -48,13 +48,6 @@
 			Pacing
 		</h1>
 		<div class="flex flex-col gap-4">
-			<div class="opacity-80" in:fade={{ duration: 600, delay: 400 }}>
-				In the following article, I will attempt to draw similarities between my change in
-				environment from a quiet suburb in the capital of Canada to one of the most vibrant and
-				fast-moving cities in the world, aka the concrete jungle where dreams are made of, aka the
-				Big Apple: New York City.
-			</div>
-
 			<div class="m-8 flex justify-center" in:fade={{ duration: 600, delay: 500 }}>
 				<img
 					src="{bucketURL}/blog/aura.avif"

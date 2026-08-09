@@ -4,16 +4,32 @@
   import NotFound from "./lib/NotFound.svelte";
   import Showcase from "./lib/Showcase.svelte";
   import Monkey from "./lib/Monkey.svelte";
-  import { Blog, Pacing } from "./lib/blog";
+  import { Blog, MoreBubbles, Pacing } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
   import RandomBanger from "./lib/RandomBanger.svelte";
   import { reduceMotion } from "./lib/effects/shared";
 
-  let path = $state(window.location.pathname);
+  function toWritingPath(p: string) {
+    if (p === "/blog" || p.startsWith("/blog/")) {
+      return "/writing" + p.slice("/blog".length);
+    }
+    return p;
+  }
+
+  const initialPath = toWritingPath(window.location.pathname);
+  let path = $state(initialPath);
+  if (initialPath !== window.location.pathname) {
+    history.replaceState(
+      {},
+      "",
+      initialPath + window.location.search + window.location.hash,
+    );
+  }
 
   function go(to: string) {
+    const next = toWritingPath(to);
     const swap = () => {
-      path = to;
+      path = next;
       window.scrollTo(0, 0);
       return tick();
     };
@@ -36,14 +52,21 @@
     if (url.origin !== location.origin) return; // external link
 
     e.preventDefault();
-    if (url.pathname !== path) {
-      history.pushState({}, "", url.pathname + url.search + url.hash);
-      go(url.pathname);
+    const next = toWritingPath(url.pathname);
+    if (next !== path) {
+      history.pushState({}, "", next + url.search + url.hash);
+      go(next);
     }
   }
 
   $effect(() => {
-    const onPop = () => (path = location.pathname);
+    const onPop = () => {
+      const next = toWritingPath(location.pathname);
+      if (next !== location.pathname) {
+        history.replaceState({}, "", next + location.search + location.hash);
+      }
+      path = next;
+    };
     document.addEventListener("click", onClick);
     window.addEventListener("popstate", onPop);
     return () => {
@@ -59,10 +82,12 @@
       <Home />
     {:else if path === "/xyz"}
       <Showcase />
-    {:else if path === "/blog"}
+    {:else if path === "/writing"}
       <Blog />
-    {:else if path === "/blog/pace-factor"}
+    {:else if path === "/writing/pace-factor"}
       <Pacing />
+    {:else if path === "/writing/more-bubbles"}
+      <MoreBubbles />
     {:else if path === "/monkey"}
       <Monkey />
     {:else}

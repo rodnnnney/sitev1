@@ -8,6 +8,7 @@
   import { Text, Page, Button } from "./primitives";
   import { triggerShake } from "./shake";
   import { debugStore } from "./debugStore";
+  import { requestBangerPlay } from "./bangerTrigger";
   import ContributionGraph from "./ContributionGraph.svelte";
 
   let shakeAmp = $state(14);
@@ -15,6 +16,7 @@
   const LINKS = [
     { label: "x (twitter)", href: "https://x.com/992rodney" },
     { label: "github", href: "https://github.com/rodnnnney" },
+    { label: "email", href: "mailto:rodneyshenn@gmail.com" },
   ];
 
   let lastPushed = $state(cachedPush);
@@ -35,15 +37,22 @@
     >I'm Rodney. I was born in <span class="text-accent">Chengdu</span>, moved
     to <span class="text-accent">Ottawa</span> when I was 4, and now based out
     of
-    <span class="text-accent">NYC</span>. Currently, I'm putting school on
-    <span class="text-accent">pause</span>
-    to work on engineering at a startup called
+    <span class="text-accent">NYC</span>. Currently, I'm taking some
+    <span class="text-accent">time off</span>
+    school to work on messy infra and data problems at
     <span class="text-accent">TextQL</span>.<br /><br />
 
     Previously, I was fascinated by crypto, I interned at a few crypto startups
     working on decentralized physical infrastructure and stablecoins. I founded
     the blockchain club at my school and even spoke at
     <span class="text-accent">Consensus HK 2025</span>.
+  </Text>
+
+  <Text size="sm" color="black" links data-no-rave>
+    Stick around, let me
+    <button type="button" class="text-accent" onclick={requestBangerPlay}
+      >play you a song</button
+    >.
   </Text>
 
   <ContributionGraph />

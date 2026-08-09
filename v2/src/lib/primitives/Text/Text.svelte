@@ -193,10 +193,14 @@
   .text-link-animate :global(a),
   .text-link-animate :global(button) {
     color: inherit;
+    display: inline;
+    vertical-align: baseline;
+    line-height: inherit;
     text-decoration: none;
     background-color: transparent;
     border: 0;
     padding: 0;
+    margin: 0;
     font: inherit;
     cursor: pointer;
     background-image: linear-gradient(var(--color-accent), var(--color-accent));
@@ -204,6 +208,11 @@
     background-size: 0% 0.075em;
     background-repeat: no-repeat;
     transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .text-link-animate :global(a.text-accent),
+  .text-link-animate :global(button.text-accent) {
+    color: var(--color-accent);
   }
 
   .text-link-animate :global(a:hover),

@@ -5,30 +5,36 @@ export function isDebugEnabled(): boolean {
 
 const sectionLabels: Record<string, string> = {
   '/': 'Home',
-  '/blog': 'Blog',
+  '/writing': 'Writing',
   '/xyz': 'Components',
 };
 
-export function getRouteLabel(path: string): string {
+export type RouteCrumb = { label: string; href: string | null };
+
+/** Breadcrumb segments for a path; only ancestor segments get an `href`. */
+export function getRouteCrumbs(path: string): RouteCrumb[] {
   const normalized = path.replace(/\/$/, '') || '/';
 
-  // Exact top-level route: use the mapped section label.
-  if (sectionLabels[normalized]) return sectionLabels[normalized];
+  if (normalized === '/') {
+    return [{ label: sectionLabels['/'], href: null }];
+  }
 
-  // Nested route: build a breadcrumb from each segment, mapping the first
-  // segment to its section label if one exists.
   const segments = normalized.split('/').filter(Boolean);
-  if (segments.length === 0) return 'Home';
-
-  const mapped = segments.map((segment, index) => {
-    if (index === 0) {
-      const prefix = '/' + segment;
-      return sectionLabels[prefix] ?? capitalize(segment);
-    }
-    return capitalize(segment);
+  return segments.map((segment, index) => {
+    const href = '/' + segments.slice(0, index + 1).join('/');
+    const label =
+      index === 0
+        ? (sectionLabels[href] ?? capitalize(segment))
+        : capitalize(segment);
+    const isLast = index === segments.length - 1;
+    return { label, href: isLast ? null : href };
   });
+}
 
-  return mapped.join(' / ');
+export function getRouteLabel(path: string): string {
+  return getRouteCrumbs(path)
+    .map((c) => c.label)
+    .join(' / ');
 }
 
 function capitalize(str: string): string {

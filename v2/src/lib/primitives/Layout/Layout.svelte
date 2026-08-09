@@ -14,17 +14,18 @@
   let { children, path } = $props<{ children?: Snippet; path: string }>();
 
   let homeLink: HTMLAnchorElement | null = $state(null);
-  let blogLink: HTMLAnchorElement | null = $state(null);
+  let writingLink: HTMLAnchorElement | null = $state(null);
   let componentsLink: HTMLAnchorElement | null = $state(null);
   let navEl: HTMLElement | null = $state(null);
   let indicatorStyle = $state("top: 0px; height: 0px;");
 
-  const isBlogPath = (p: string) => p === "/blog" || p.startsWith("/blog/");
+  const isWritingPath = (p: string) =>
+    p === "/writing" || p.startsWith("/writing/");
 
   const updateIndicator = () => {
     let activeLink: HTMLAnchorElement | null = null;
     if (path === "/") activeLink = homeLink;
-    else if (isBlogPath(path)) activeLink = blogLink;
+    else if (isWritingPath(path)) activeLink = writingLink;
     else activeLink = componentsLink;
 
     if (activeLink && navEl) {
@@ -37,7 +38,7 @@
   $effect(() => {
     path;
     homeLink;
-    blogLink;
+    writingLink;
     componentsLink;
     navEl;
     updateIndicator();
@@ -98,14 +99,14 @@
         <Text
           type="paragraph"
           size="sm"
-          color={isBlogPath(path) ? "accent" : "black"}
-          links={!isBlogPath(path)}
+          color={isWritingPath(path) ? "accent" : "black"}
+          links={!isWritingPath(path)}
           class="w-full"
         >
           <a
-            bind:this={blogLink}
-            href="/blog"
-            class={isBlogPath(path) ? "no-underline" : ""}>blog</a
+            bind:this={writingLink}
+            href="/writing"
+            class={isWritingPath(path) ? "no-underline" : ""}>writing</a
           >
         </Text>
 
@@ -143,10 +144,12 @@
         <Text
           type="paragraph"
           size="sm"
-          color={isBlogPath(path) ? "accent" : "black"}
-          links={!isBlogPath(path)}
+          color={isWritingPath(path) ? "accent" : "black"}
+          links={!isWritingPath(path)}
         >
-          <a href="/blog" class={isBlogPath(path) ? "no-underline" : ""}>blog</a
+          <a
+            href="/writing"
+            class={isWritingPath(path) ? "no-underline" : ""}>writing</a
           >
         </Text>
 

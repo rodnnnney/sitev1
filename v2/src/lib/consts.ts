@@ -3,10 +3,17 @@ export const bucketURL =
 
 export const blog = [
   {
+    title: "More Bubbles",
+    slug: "more-bubbles",
+    date: "14/10/25",
+    description: "Why we need more bubbles, not fewer.",
+    cover: `${bucketURL}/blog/aura.avif`,
+  },
+  {
     title: "Pace Factor",
     slug: "pace-factor",
     date: "06/06/25",
-    description: "Crazy effects of environments on people.",
+    description: "Slow cities, fast cities, and the cost of each.",
     cover: `${bucketURL}/blog/aura.avif`,
   },
 ] as const;
@@ -69,6 +76,11 @@ export const bangers = [
 
 // External works worth reading — not mine, just ones I like.
 export const reading = [
+  {
+    title: "Boom: Bubbles and the End of Stagnation",
+    author: "Byrne Hobart & Tobias Huber",
+    href: "https://press.stripe.com/boom",
+  },
   {
     title: "The Inner Ring",
     author: "C.S. Lewis",

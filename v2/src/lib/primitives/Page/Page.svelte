@@ -12,15 +12,16 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { onMount } from "svelte";
+  import CopyLink from "../../blog/CopyLink.svelte";
   import { Text, type TextSize } from "../Text";
   import { deviceType } from "../../deviceStore";
-  import { getRouteLabel } from "../../utils";
+  import { getRouteCrumbs, type RouteCrumb } from "../../utils";
 
   let {
     title,
     label,
     lead,
-    titleSize = "lg",
+    titleSize = "xl",
     contentClass = "flex flex-col gap-8",
     showTime = false,
     children,
@@ -42,7 +43,12 @@
     return () => window.removeEventListener("popstate", onPop);
   });
 
-  const derivedLabel = $derived(label ?? getRouteLabel(currentPath));
+  const crumbs = $derived<RouteCrumb[]>(
+    label ? [{ label, href: null }] : getRouteCrumbs(currentPath),
+  );
+
+  // Parent crumb for nested routes (e.g. back to /writing from a post).
+  const backHref = $derived(crumbs.findLast((c) => c.href)?.href ?? null);
 
   let timeString = $state("");
 
@@ -67,11 +73,32 @@
     : 'px-6 py-20'}"
 >
   <header class="flex flex-col">
+    {#if backHref}
+      <a
+        href={backHref}
+        class="mb-6 w-fit font-mono text-xs text-muted transition-colors hover:text-ink"
+      >
+        ← back
+      </a>
+    {/if}
     <div class="flex items-baseline justify-between gap-3">
-      {#if derivedLabel}
-        <Text type="label" size="xs" color="muted" class="leading-none"
-          >{derivedLabel}</Text
-        >
+      {#if crumbs.length > 0}
+        <Text type="label" size="xs" color="muted" class="leading-none">
+          <span class="inline-flex items-baseline gap-1.5">
+            {#each crumbs as crumb, i (crumb.label + (crumb.href ?? ""))}
+              {#if i > 0}<span class="tracking-normal">/</span>{/if}
+              {#if crumb.href}
+                <a
+                  href={crumb.href}
+                  class="transition-colors hover:text-ink"
+                >{crumb.label}</a
+                >
+              {:else}
+                <span>{crumb.label}</span>
+              {/if}
+            {/each}
+          </span>
+        </Text>
       {:else}
         <span></span>
       {/if}
@@ -113,4 +140,10 @@
   <div class={contentClass}>
     {@render children?.()}
   </div>
+
+  {#if backHref}
+    <div class="mt-12 flex justify-end">
+      <CopyLink />
+    </div>
+  {/if}
 </main>
