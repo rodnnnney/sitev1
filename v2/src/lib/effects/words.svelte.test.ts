@@ -225,13 +225,13 @@ describe('effects/WordsFx — re-collection after navigation', () => {
     expect(texts()).toEqual(['brand', 'new', 'content', 'here'])
   })
 
-  // Regression: the nav lives in a persistent Layout, so #words[0] ("home")
-  // never disconnects on SPA navigation. The old isConnected-only check then
-  // never re-scanned, so the new page's body was never wrapped — only the nav
-  // kept swapping. We now also re-scan on a route change.
+  // Regression: chrome that survives SPA nav (Layout) can leave #words[0]
+  // connected, so an isConnected-only check never re-scans and the new page
+  // body stays unwrapped. We also re-scan when the path changes.
+  // Use a non-<a> persistent word — links are excluded from the collector.
   it('wraps the new page body even when a persistent nav word stays mounted', () => {
     document.body.innerHTML =
-      '<nav><a>home</a></nav><main id="page"><p>first page words</p></main>'
+      '<nav><span>home</span></nav><main id="page"><p>first page words</p></main>'
     const fx = new WordsFx()
     fx.scramble(0)
     expect(texts()).toEqual(['home', 'first', 'page', 'words'])
