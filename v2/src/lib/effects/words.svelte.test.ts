@@ -69,6 +69,7 @@ describe('effects/WordsFx — what gets excluded across pages', () => {
       <div id="shake-root">
         <p class="article">visible text here</p>
         <button>play me</button>
+        <a href="/">nav link</a>
         <div data-no-rave>player title</div>
         <div aria-hidden="true">lyrics line</div>
         <script>var x = 1</script>
@@ -84,6 +85,7 @@ describe('effects/WordsFx — what gets excluded across pages', () => {
   it('leaves the excluded subtrees untouched', () => {
     new WordsFx().scramble(0)
     expect(document.querySelector('button')!.querySelector('.rave-w')).toBeNull()
+    expect(document.querySelector('a')!.querySelector('.rave-w')).toBeNull()
     expect(
       document.querySelector('[data-no-rave]')!.querySelector('.rave-w'),
     ).toBeNull()
@@ -225,23 +227,23 @@ describe('effects/WordsFx — re-collection after navigation', () => {
     expect(texts()).toEqual(['brand', 'new', 'content', 'here'])
   })
 
-  // Regression: chrome that survives SPA nav (Layout) can leave #words[0]
-  // connected, so an isConnected-only check never re-scans and the new page
-  // body stays unwrapped. We also re-scan when the path changes.
-  // Use a non-<a> persistent word — links are excluded from the collector.
+  // Regression: layout chrome (e.g. a brand mark) can stay mounted across SPA
+  // navigations, so #words[0] never disconnects. The old isConnected-only check
+  // then never re-scanned, and the new page body was never wrapped. We also
+  // re-scan when the route path changes. (Links are excluded from wrapping.)
   it('wraps the new page body even when a persistent nav word stays mounted', () => {
     document.body.innerHTML =
-      '<nav><span>home</span></nav><main id="page"><p>first page words</p></main>'
+      '<header><span>home</span></header><main id="page"><p>first page words</p></main>'
     const fx = new WordsFx()
     fx.scramble(0)
     expect(texts()).toEqual(['home', 'first', 'page', 'words'])
 
-    // SPA nav: only the page region re-renders; nav stays put; path changes.
+    // SPA nav: only the page region re-renders; header stays put; path changes.
     history.pushState({}, '', '/other')
     try {
       document.getElementById('page')!.innerHTML = '<p>second page text</p>'
       fx.scramble(0)
-      // Persistent nav word survives AND the fresh body is now collected.
+      // Persistent header word survives AND the fresh body is now collected.
       expect(texts()).toEqual(['home', 'second', 'page', 'text'])
     } finally {
       history.pushState({}, '', '/')
