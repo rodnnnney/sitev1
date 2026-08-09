@@ -5,7 +5,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ArrowUpRight } from "lucide-svelte";
-  import { Text, Page, Button } from "./primitives";
+  import { Text, Page, Button, HoverPreview } from "./primitives";
   import { triggerShake } from "./shake";
   import { debugStore } from "./debugStore";
   import { requestBangerPlay } from "./bangerTrigger";
@@ -34,24 +34,54 @@
 
 <Page title="rodney shen" showTime>
   <Text size="sm" color="black"
-    >I'm Rodney. I was born in <span class="text-accent">Chengdu</span>, moved
-    to <span class="text-accent">Ottawa</span> when I was 4, and now based out
-    of
-    <span class="text-accent">NYC</span>. Currently, I'm taking some
-    <span class="text-accent">time off</span>
+    >I'm Rodney. I was born in
+    <HoverPreview
+      title="Chengdu"
+      description="Where I was born — Sichuan, spicy food, and the start of the story."
+      >Chengdu</HoverPreview
+    >, moved to
+    <HoverPreview
+      title="Ottawa"
+      description="Moved here at 4. Quieter pace, cold winters, the place that raised me."
+      >Ottawa</HoverPreview
+    >
+    when I was 4, and now based out of
+    <HoverPreview
+      title="NYC"
+      description="Current base. High-pace city — more possessions per game, for better or worse."
+      >NYC</HoverPreview
+    >. Currently, I'm taking some
+    <HoverPreview
+      title="Gap year"
+      description="School on pause so I can ship infra and data work at a startup."
+      >time off</HoverPreview
+    >
     school to work on messy infra and data problems at
-    <span class="text-accent">TextQL</span>.<br /><br />
+    <HoverPreview
+      title="TextQL"
+      description="The startup I work at — messy infra and data problems, every day."
+      href="https://textql.com"
+      >TextQL</HoverPreview
+    >.<br /><br />
 
     Previously, I was fascinated by crypto, I interned at a few crypto startups
     working on decentralized physical infrastructure and stablecoins. I founded
     the blockchain club at my school and even spoke at
-    <span class="text-accent">Consensus HK 2025</span>.
+    <HoverPreview
+      title="Consensus Hong Kong 2025"
+      description="Spoke there with the blockchain club I founded at school."
+      href="https://consensus.coindesk.com/"
+      >Consensus HK 2025</HoverPreview
+    >.
   </Text>
 
   <Text size="sm" color="black" links data-no-rave>
     Stick around, let me
-    <button type="button" class="text-accent" onclick={requestBangerPlay}
-      >play you a song</button
+    <HoverPreview
+      title="A song"
+      description="Picks a random track from my playlist and plays it."
+      onclick={requestBangerPlay}
+      >play you a song</HoverPreview
     >.
   </Text>
 
