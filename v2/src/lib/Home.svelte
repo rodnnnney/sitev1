@@ -9,7 +9,7 @@
   import { triggerShake } from "./shake";
   import { debugStore } from "./debugStore";
   import { requestBangerPlay } from "./bangerTrigger";
-  import ContributionGraph from "./ContributionGraph.svelte";
+  import Landscapes from "./Landscapes.svelte";
 
   let shakeAmp = $state(14);
 
@@ -55,7 +55,7 @@
     >.
   </Text>
 
-  <ContributionGraph />
+  <Landscapes />
 
   <div class="flex items-end justify-between">
     <Text type="paragraph" size="xs" color="black" links class="leading-none">

@@ -4,7 +4,6 @@
     Pause,
     Shuffle,
     SlidersHorizontal,
-    Music,
     ListMusic,
     ChevronDown,
     Eye,
@@ -605,9 +604,13 @@
       title: "rodney shen",
       artist: `${current.title} — ${current.artist}`,
       album: "rodney.lol",
-      artwork: current.cover
-        ? [{ src: current.cover, sizes: "512x512", type: "image/jpeg" }]
-        : [],
+      artwork: [
+        {
+          src: current.cover || "/default-cover.jpg",
+          sizes: "512x512",
+          type: "image/jpeg",
+        },
+      ],
     });
   });
 
@@ -686,21 +689,13 @@
   </div>
 {/snippet}
 
-{#snippet coverArt(src: string | undefined, box: string, icon: number)}
-  {#if src}
-    <img
-      src={src}
-      alt=""
-      class="{box} rounded-sm object-cover"
-      draggable="false"
-    />
-  {:else}
-    <div
-      class="grid {box} shrink-0 place-items-center rounded-sm bg-line/50 text-accent"
-    >
-      <Music size={icon} />
-    </div>
-  {/if}
+{#snippet coverArt(src: string | undefined, box: string)}
+  <img
+    src={src || "/default-cover.jpg"}
+    alt=""
+    class="{box} shrink-0 rounded-sm object-cover"
+    draggable="false"
+  />
 {/snippet}
 
 <Modal
@@ -834,7 +829,7 @@
           : 'translate-y-0'}"
       >
         <div class="flex items-center gap-3 px-4 py-2.5">
-          {@render coverArt(current.cover, "size-10 shrink-0", 18)}
+          {@render coverArt(current.cover, "size-10")}
 
           <button
             onclick={toggle}
@@ -1004,7 +999,7 @@
                   ? 'bg-line/50 text-accent'
                   : 'text-ink'}"
               >
-                {@render coverArt(song.cover, "size-8 shrink-0", 14)}
+                {@render coverArt(song.cover, "size-8")}
                 <span class="min-w-0 flex-1">
                   <span class="block truncate text-xs font-medium"
                     >{song.title}</span
@@ -1044,7 +1039,7 @@
             class="shrink-0 cursor-pointer transition-transform hover:opacity-90"
           >
             <span class="pointer-events-none block">
-              {@render coverArt(current?.cover, "size-11", 18)}
+              {@render coverArt(current?.cover, "size-11")}
             </span>
           </button>
         </Tooltip>

@@ -26,7 +26,13 @@
     clearTimeout(timer);
   });
 
+  /** Touch devices synthesize sticky hover/focus; only tip on fine pointers. */
+  function canHover() {
+    return window.matchMedia?.("(hover: hover) and (pointer: fine)").matches ?? false;
+  }
+
   function scheduleOpen() {
+    if (!canHover()) return;
     clearTimeout(timer);
     if (root) {
       const rect = root.getBoundingClientRect();

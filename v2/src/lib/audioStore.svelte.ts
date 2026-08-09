@@ -1,5 +1,5 @@
-// Beat signal published by RandomBanger so other components (the contribution
-// graph) can react in lockstep with the page's rave effects.
+// Beat signal published by RandomBanger so other components can react in
+// lockstep with the page's rave effects.
 class AudioViz {
   playing = $state(false);
   rave = $state(false); // is the current track a rave (EDM) track?

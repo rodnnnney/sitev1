@@ -109,7 +109,13 @@
     place(tipEl.offsetWidth || 140, tipEl.offsetHeight || 28);
   }
 
+  /** Touch devices synthesize sticky hover/focus; only tip on fine pointers. */
+  function canHover() {
+    return window.matchMedia?.("(hover: hover) and (pointer: fine)").matches ?? false;
+  }
+
   function scheduleOpen() {
+    if (!canHover()) return;
     clearTimeout(timer);
     timer = setTimeout(() => {
       place();
