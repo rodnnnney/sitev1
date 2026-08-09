@@ -4,6 +4,12 @@
 
 <Page title="More Bubbles" showTime>
   <div class="flex flex-col gap-8">
+    <img
+      src="/blog/bubbles.png"
+      alt="Halftone blue bubbles"
+      class="w-full rounded-sm object-cover"
+    />
+
     <Text type="paragraph" size="sm" color="black">
       Something I believe about the future that others don't: we need more
       bubbles, not fewer.

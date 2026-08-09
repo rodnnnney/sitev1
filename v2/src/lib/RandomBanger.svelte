@@ -5,16 +5,20 @@
     Shuffle,
     SlidersHorizontal,
     Music,
+    ListMusic,
+    ChevronDown,
+    Eye,
+    EyeOff,
   } from "lucide-svelte";
   import { onMount } from "svelte";
   import { flip } from "svelte/animate";
   import { fade, fly } from "svelte/transition";
-  import { backOut } from "svelte/easing";
+  import { backOut, cubicOut } from "svelte/easing";
   import { bangers } from "./consts";
   import { deviceType, scrollDirection } from "./deviceStore";
   import { audioViz } from "./audioStore.svelte";
   import { bangerActive, onBangerPlayRequest } from "./bangerTrigger";
-  import { Modal, Switch, Button, Marquee, toast } from "./primitives";
+  import { Modal, Switch, Button, Marquee, toast, Tooltip } from "./primitives";
   import { ShakeFx } from "./effects/shake.svelte";
   import { FlashFx } from "./effects/flash.svelte";
   import { WordsFx } from "./effects/words.svelte";
@@ -24,7 +28,9 @@
     BEAT_MIN_INTENSITY,
     DROP_INTENSITY,
     RAVE,
+    loadFx,
     reduceMotion,
+    saveFx,
   } from "./effects/shared";
 
   // MediaElementSource is one-shot per <audio>; HMR would leave a dead graph.
@@ -134,21 +140,6 @@
     }));
   });
 
-  // Bass/energy profile across the whole track — drives the progress meter.
-  const ENERGY_BARS = 56;
-  const energyBars = $derived.by(() => {
-    if (!beats.length || !duration) return [];
-    const buckets = new Array(ENERGY_BARS).fill(0);
-    for (const b of beats) {
-      const idx = Math.min(
-        ENERGY_BARS - 1,
-        Math.floor((b.t / duration) * ENERGY_BARS),
-      );
-      if (b.i > buckets[idx]) buckets[idx] = b.i; // peak energy per time-bucket
-    }
-    return buckets;
-  });
-
   const COLS = 80; // number of waveform bars
   const GAIN = 1.2;
   const CURVE = 2.0; // >1 = louder bands reach the top
@@ -169,17 +160,151 @@
   let beatIdx = 0;
 
   const FADE = 0.4; // play/pause/crossfade ramp duration
+  const TIP_MS = 400;
 
   let fxOpen = $state(false);
+  let listOpen = $state(false);
+  const queueTip = $derived(listOpen ? "Collapse queue" : "Open queue");
+  // Karaoke visibility (persisted). Word-scramble is the separate wordsFx toggle.
+  let showLyrics = $state(loadFx("banger-lyrics", true));
 
-  let waveEl = $state<HTMLElement | null>(null);
-  let waveW = $state(0);
+  function setShowLyrics(v: boolean) {
+    showLyrics = v;
+    saveFx("banger-lyrics", v);
+  }
+
+  // Mini-player dock: left + bottom so the queue expands upward.
+  // null = CSS bottom-right until first layout/drag adopts concrete coords.
+  const DOCK_PAD = 20;
+  const DOCK_KEY = "banger-dock";
+  let dockEl = $state<HTMLElement | null>(null);
+  let dockLeft = $state<number | null>(null);
+  let dockBottom = $state<number | null>(null);
+  let dragging = $state(false);
+  let dockMoved = false;
+  let dragOrigin = { px: 0, py: 0, oLeft: 0, oBottom: 0, w: 352, h: 72 };
+
+  try {
+    const raw = localStorage.getItem(DOCK_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw) as { left?: unknown; bottom?: unknown };
+      if (typeof saved.left === "number" && typeof saved.bottom === "number") {
+        dockLeft = saved.left;
+        dockBottom = saved.bottom;
+      }
+    }
+  } catch {
+    /* private mode / bad JSON */
+  }
+
+  function clampDock(left: number, bottom: number, w: number, h: number) {
+    const maxL = Math.max(DOCK_PAD, window.innerWidth - w - DOCK_PAD);
+    const maxB = Math.max(DOCK_PAD, window.innerHeight - h - DOCK_PAD);
+    return {
+      left: Math.min(Math.max(DOCK_PAD, left), maxL),
+      bottom: Math.min(Math.max(DOCK_PAD, bottom), maxB),
+    };
+  }
+
+  function saveDock() {
+    if (dockLeft == null || dockBottom == null) return;
+    try {
+      localStorage.setItem(
+        DOCK_KEY,
+        JSON.stringify({ left: dockLeft, bottom: dockBottom }),
+      );
+    } catch {
+      /* private mode / quota */
+    }
+  }
+
+  function syncDockFromEl() {
+    if (!dockEl || dragging) return;
+    const w = dockEl.offsetWidth;
+    const h = dockEl.offsetHeight;
+    if (dockLeft == null || dockBottom == null) {
+      const r = dockEl.getBoundingClientRect();
+      dockLeft = r.left;
+      dockBottom = window.innerHeight - r.bottom;
+      return;
+    }
+    const next = clampDock(dockLeft, dockBottom, w, h);
+    if (next.left !== dockLeft || next.bottom !== dockBottom) {
+      dockLeft = next.left;
+      dockBottom = next.bottom;
+    }
+  }
+
+  function onDockPointerDown(e: PointerEvent) {
+    if (e.button !== 0 || isMobile) return;
+    const t = e.target as HTMLElement | null;
+    if (t?.closest("button, input, a, [role='option'], [data-no-drag]")) return;
+    if (dockLeft == null || dockBottom == null) syncDockFromEl();
+    if (dockLeft == null || dockBottom == null || !dockEl) return;
+    dragOrigin = {
+      px: e.clientX,
+      py: e.clientY,
+      oLeft: dockLeft,
+      oBottom: dockBottom,
+      w: dockEl.offsetWidth,
+      h: dockEl.offsetHeight,
+    };
+    dockMoved = false;
+    dragging = true;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onDockPointerMove(e: PointerEvent) {
+    if (!dragging) return;
+    const dx = e.clientX - dragOrigin.px;
+    const dy = e.clientY - dragOrigin.py;
+    if (!dockMoved && Math.hypot(dx, dy) < 4) return;
+    dockMoved = true;
+    const next = clampDock(
+      dragOrigin.oLeft + dx,
+      dragOrigin.oBottom - dy,
+      dragOrigin.w,
+      dragOrigin.h,
+    );
+    dockLeft = next.left;
+    dockBottom = next.bottom;
+  }
+
+  function onDockPointerUp(e: PointerEvent) {
+    if (!dragging) return;
+    dragging = false;
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      /* already released */
+    }
+    if (dockMoved) saveDock();
+  }
+
+  // Reclamp when the dock or viewport changes size (queue open, window resize).
   $effect(() => {
-    if (!waveEl) return;
-    const ro = new ResizeObserver((e) => (waveW = e[0].contentRect.width));
-    ro.observe(waveEl);
-    return () => ro.disconnect();
+    if (!dockEl || isMobile) return;
+    syncDockFromEl();
+    const ro = new ResizeObserver(() => syncDockFromEl());
+    ro.observe(dockEl);
+    const onWin = () => syncDockFromEl();
+    window.addEventListener("resize", onWin);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", onWin);
+    };
   });
+
+  // Height + fade + rise; margin tweened so gap doesn't pop at the end.
+  function queuePanel(node: HTMLElement, { duration = 380 } = {}) {
+    const h = node.getBoundingClientRect().height;
+    return {
+      duration: reduceMotion() ? 0 : duration,
+      easing: cubicOut,
+      css: (t: number) =>
+        `overflow:hidden;opacity:${t};height:${t * h}px;margin-bottom:${t * 8}px;transform:translateY(${(1 - t) * 10}px);`,
+    };
+  }
 
   function rampGain(to: number, dur = FADE) {
     if (!ctx || !gain) return;
@@ -329,7 +454,9 @@
     try {
       await audio.play();
       rampGain(1);
-      toast.success(song.title, { description: song.artist });
+      toast.success("Now playing", {
+        description: `${song.title} — ${song.artist}`,
+      });
     } catch (err) {
       if ((err as DOMException)?.name === "AbortError") return; // src swap during pending play()
       // CDN sometimes 404s the first ranged request; retry once.
@@ -374,15 +501,26 @@
     await attemptPlay(song);
   }
 
-  async function playRandom() {
+  async function playSong(song: (typeof bangers)[number]) {
     if (!audio) return;
-    const song = pickRandom();
     if (song.rave && !flashAck && !reduceMotion()) {
       pendingSong = song;
       warnOpen = true;
       return;
     }
     await startSong(song);
+  }
+
+  async function playRandom() {
+    await playSong(pickRandom());
+  }
+
+  async function pickSong(song: (typeof bangers)[number]) {
+    if (current === song) {
+      toggle();
+      return;
+    }
+    await playSong(song);
   }
 
   function confirmWarning() {
@@ -459,12 +597,13 @@
     };
   });
 
-  // Push track metadata (title/artist/cover) when the song changes.
+  // Push track metadata when the song changes. Title stays the site name so
+  // browser/OS media chrome doesn't hijack the header with the track.
   $effect(() => {
     if (!current || !hasMediaSession()) return;
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: current.title,
-      artist: current.artist,
+      title: "rodney shen",
+      artist: `${current.title} — ${current.artist}`,
       album: "rodney.lol",
       artwork: current.cover
         ? [{ src: current.cover, sizes: "512x512", type: "image/jpeg" }]
@@ -472,13 +611,8 @@
     });
   });
 
-  // Reflect play state into the OS + the browser tab title.
+  // Reflect play state into the OS media session (tab title stays "rodney shen").
   $effect(() => {
-    if (typeof document !== "undefined")
-      document.title =
-        current && playing
-          ? `▶ ${current.title} — ${current.artist}`
-          : "rodney shen";
     if (hasMediaSession())
       navigator.mediaSession.playbackState = playing ? "playing" : "paused";
   });
@@ -511,6 +645,12 @@
   hidden
 ></audio>
 
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === "Escape" && listOpen) listOpen = false;
+  }}
+/>
+
 <!-- Live bass level (dBFS) — pinned top-right, steady (outside #shake-root). -->
 {#if current && !isMobile}
   <div
@@ -530,6 +670,7 @@
 
 {#snippet fxToggles()}
   <div class="flex flex-col">
+    {@render fxRow("karaoke lyrics", showLyrics, setShowLyrics)}
     {@render fxRow("screen shake", shakeFx.enabled, (v) =>
       shakeFx.setEnabled(v),
     )}
@@ -543,6 +684,23 @@
       dancersFx.setEnabled(v),
     )}
   </div>
+{/snippet}
+
+{#snippet coverArt(src: string | undefined, box: string, icon: number)}
+  {#if src}
+    <img
+      src={src}
+      alt=""
+      class="{box} rounded-sm object-cover"
+      draggable="false"
+    />
+  {:else}
+    <div
+      class="grid {box} shrink-0 place-items-center rounded-sm bg-line/50 text-accent"
+    >
+      <Music size={icon} />
+    </div>
+  {/if}
 {/snippet}
 
 <Modal
@@ -594,7 +752,7 @@
   </div>
 {/if}
 
-{#if view.length && !isMobile}
+{#if view.length && !isMobile && showLyrics}
   <div
     aria-hidden="true"
     class="pointer-events-none fixed top-1/2 right-6 z-30 flex max-w-[42vw] -translate-y-1/2 flex-col items-end gap-2 text-right font-mono transition-opacity duration-300"
@@ -622,7 +780,7 @@
 
 <!-- Mobile now-singing banner: the desktop karaoke panel has no room on a phone,
      so the current line scrolls as a marquee pinned just under the top nav. -->
-{#if isMobile && currentLyric}
+{#if isMobile && currentLyric && showLyrics}
   <div
     data-no-rave
     aria-hidden="true"
@@ -676,20 +834,7 @@
           : 'translate-y-0'}"
       >
         <div class="flex items-center gap-3 px-4 py-2.5">
-          <!-- Cover art, with a music glyph as the fallback. -->
-          {#if current.cover}
-            <img
-              src={current.cover}
-              alt=""
-              class="size-10 shrink-0 rounded-sm object-cover"
-            />
-          {:else}
-            <div
-              class="grid size-10 shrink-0 place-items-center rounded-sm bg-line/50 text-accent"
-            >
-              <Music size={18} />
-            </div>
-          {/if}
+          {@render coverArt(current.cover, "size-10 shrink-0", 18)}
 
           <button
             onclick={toggle}
@@ -706,31 +851,37 @@
           </button>
 
           <div class="flex shrink-0 items-center gap-4 text-muted">
-            <button
-              onclick={playRandom}
-              aria-label="Play another"
-              class="transition-colors hover:text-accent"
-            >
-              <Shuffle size={18} />
-            </button>
-            <button
-              onclick={toggle}
-              aria-label={playing ? "Pause" : "Play"}
-              class="text-ink transition-colors hover:text-accent"
-            >
-              {#if playing}
-                <Pause size={22} />
-              {:else}
-                <Play size={22} />
-              {/if}
-            </button>
-            <button
-              onclick={() => (fxOpen = true)}
-              aria-label="Effects"
-              class="transition-colors hover:text-accent"
-            >
-              <SlidersHorizontal size={18} />
-            </button>
+            <Tooltip content="Play another" delay={TIP_MS}>
+              <button
+                onclick={playRandom}
+                aria-label="Play another"
+                class="transition-colors hover:text-accent"
+              >
+                <Shuffle size={18} />
+              </button>
+            </Tooltip>
+            <Tooltip content={playing ? "Pause" : "Play"} delay={TIP_MS}>
+              <button
+                onclick={toggle}
+                aria-label={playing ? "Pause" : "Play"}
+                class="text-ink transition-colors hover:text-accent"
+              >
+                {#if playing}
+                  <Pause size={22} />
+                {:else}
+                  <Play size={22} />
+                {/if}
+              </button>
+            </Tooltip>
+            <Tooltip content="Effects" delay={TIP_MS}>
+              <button
+                onclick={() => (fxOpen = true)}
+                aria-label="Effects"
+                class="transition-colors hover:text-accent"
+              >
+                <SlidersHorizontal size={18} />
+              </button>
+            </Tooltip>
           </div>
         </div>
 
@@ -758,18 +909,30 @@
     </div>
   {/if}
 {:else}
+  <!-- Desktop mini player (YouTube / Spotify corner style): compact dock with
+       optional queue panel that expands upward. Drag the chrome (not buttons)
+       to park it anywhere; position persists. -->
   <div
+    bind:this={dockEl}
     data-no-rave
-    class="pointer-events-none fixed right-5 bottom-5 z-40 flex flex-col items-end gap-2"
+    class="pointer-events-auto fixed z-40 flex w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col items-stretch gap-0"
+    class:cursor-grabbing={dragging}
+    class:cursor-grab={!dragging}
+    style="{dockLeft != null && dockBottom != null
+      ? `left:${dockLeft}px;bottom:${dockBottom}px;right:auto;top:auto;`
+      : 'right:1.25rem;bottom:1.25rem;left:auto;top:auto;'}{dragging
+      ? 'touch-action:none;'
+      : ''}"
+    onpointerdown={onDockPointerDown}
+    onpointermove={onDockPointerMove}
+    onpointerup={onDockPointerUp}
+    onpointercancel={onDockPointerUp}
   >
-    <!-- Square bars overlapped by 1px (-mr-px) so sub-pixel seams between them
-         are covered — truly gapless. 5-band vertical gradient, mirrored. -->
-    {#if bars.length}
+    {#if bars.length && current}
       <div
-        bind:this={waveEl}
         aria-hidden="true"
         in:fly={{ y: 48, duration: reduceMotion() ? 0 : 520, easing: backOut }}
-        class="flex h-12 max-w-[40vw] select-none items-center overflow-hidden transition-opacity duration-300"
+        class="pointer-events-none mb-2 flex h-10 w-full select-none items-center overflow-hidden transition-opacity duration-300"
         class:opacity-25={!playing}
       >
         {#each bars as h, c (c)}
@@ -781,107 +944,193 @@
       </div>
     {/if}
 
-    {#if current}
-      <!-- Structured player card, mirroring the mobile bar's layout. Width is
-           matched to the soundwave above it (falls back to w-64 pre-measure). -->
+    {#if listOpen}
       <div
-        class="pointer-events-auto flex w-64 flex-col gap-2 rounded-sm border border-line bg-paper/95 px-3 py-2.5 font-mono backdrop-blur"
-        style={waveW ? `width: ${waveW}px` : undefined}
-        in:fly={{
-          y: 48,
-          duration: reduceMotion() ? 0 : 520,
-          easing: backOut,
-        }}
+        class="flex max-h-[min(50vh,22rem)] flex-col overflow-hidden rounded-sm border border-line bg-paper/95 font-mono shadow-sm backdrop-blur"
+        transition:queuePanel
       >
-        <div class="flex items-center gap-3">
-          {#if current.cover}
-            <img
-              src={current.cover}
-              alt=""
-              class="size-10 shrink-0 rounded-sm object-cover"
-            />
-          {:else}
-            <div
-              class="grid size-10 shrink-0 place-items-center rounded-sm bg-line/50 text-accent"
-            >
-              <Music size={18} />
-            </div>
-          {/if}
-
-          <button
-            onclick={toggle}
-            class="flex min-w-0 flex-1 flex-col text-left"
-            aria-label={playing ? "Pause" : "Play"}
+        <div
+          class="flex items-center justify-between border-b border-line px-3 py-2"
+        >
+          <span class="text-[10px] font-medium tracking-wide text-muted uppercase"
+            >queue</span
           >
+          <div class="flex items-center gap-2.5 text-muted">
+            <Tooltip
+              content={showLyrics ? "Hide lyrics" : "Show lyrics"}
+              delay={TIP_MS}
+            >
+              <button
+                type="button"
+                onclick={() => setShowLyrics(!showLyrics)}
+                aria-label={showLyrics ? "Hide lyrics" : "Show lyrics"}
+                aria-pressed={showLyrics}
+                class="cursor-pointer transition-colors hover:text-accent"
+              >
+                {#if showLyrics}
+                  <Eye size={13} />
+                {:else}
+                  <EyeOff size={13} />
+                {/if}
+              </button>
+            </Tooltip>
+            <Tooltip content={queueTip} delay={TIP_MS}>
+              <button
+                type="button"
+                onclick={() => (listOpen = false)}
+                aria-label={queueTip}
+                class="cursor-pointer transition-colors hover:text-accent"
+              >
+                <ChevronDown size={14} />
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+        <ul
+          data-no-drag
+          class="overflow-y-auto py-1"
+          role="listbox"
+          aria-label="Songs"
+        >
+          {#each bangers as song (song.url)}
+            {@const active = current === song}
+            <li>
+              <button
+                type="button"
+                role="option"
+                aria-selected={active}
+                onclick={() => pickSong(song)}
+                class="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left transition-colors hover:bg-line/40 {active
+                  ? 'bg-line/50 text-accent'
+                  : 'text-ink'}"
+              >
+                {@render coverArt(song.cover, "size-8 shrink-0", 14)}
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate text-xs font-medium"
+                    >{song.title}</span
+                  >
+                  <span class="block truncate text-[10px] text-muted"
+                    >{song.artist}</span
+                  >
+                </span>
+                {#if active && playing}
+                  <span
+                    class="size-1.5 shrink-0 rounded-full bg-accent"
+                    aria-hidden="true"
+                  ></span>
+                {/if}
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
+
+    <div
+      class="overflow-hidden rounded-sm border border-line bg-paper/95 font-mono shadow-sm backdrop-blur select-none"
+      in:fly={{
+        y: 48,
+        duration: reduceMotion() ? 0 : 520,
+        easing: backOut,
+      }}
+    >
+      <div class="flex items-center gap-2.5 px-2.5 py-2">
+        <Tooltip content={queueTip} delay={TIP_MS}>
+          <button
+            type="button"
+            onclick={() => (listOpen = !listOpen)}
+            aria-label={queueTip}
+            aria-expanded={listOpen}
+            class="shrink-0 cursor-pointer transition-transform hover:opacity-90"
+          >
+            <span class="pointer-events-none block">
+              {@render coverArt(current?.cover, "size-11", 18)}
+            </span>
+          </button>
+        </Tooltip>
+
+        <div class="flex min-w-0 flex-1 flex-col text-left">
+          {#if current}
             <Marquee
               text={current.title}
               class="text-xs font-medium text-ink"
             />
-            <span class="truncate text-[10px] text-muted">
-              {current.artist}
-            </span>
-          </button>
+            <span class="truncate text-[10px] text-muted">{current.artist}</span>
+          {:else}
+            <span class="text-xs font-medium text-ink">Play a song</span>
+            <span class="truncate text-[10px] text-muted">drag me · pick from queue</span>
+          {/if}
+        </div>
 
-          <div class="flex shrink-0 items-center gap-3 text-muted">
+        <div class="flex shrink-0 items-center gap-2.5 text-muted">
+          <Tooltip content={queueTip} delay={TIP_MS}>
             <button
+              type="button"
+              onclick={() => (listOpen = !listOpen)}
+              aria-label={queueTip}
+              aria-expanded={listOpen}
+              class="cursor-pointer transition-colors hover:text-accent"
+              class:text-accent={listOpen}
+            >
+              <ListMusic size={14} />
+            </button>
+          </Tooltip>
+          <Tooltip content="Play another" delay={TIP_MS}>
+            <button
+              type="button"
               onclick={playRandom}
               aria-label="Play another"
-              class="transition-colors hover:text-accent"
+              class="cursor-pointer transition-colors hover:text-accent"
             >
               <Shuffle size={14} />
             </button>
+          </Tooltip>
+          <Tooltip content={playing ? "Pause" : "Play"} delay={TIP_MS}>
             <button
+              type="button"
               onclick={toggle}
               aria-label={playing ? "Pause" : "Play"}
-              class="text-ink transition-colors hover:text-accent"
+              class="cursor-pointer text-ink transition-colors hover:text-accent"
             >
               {#if playing}
-                <Pause size={18} />
+                <Pause size={14} />
               {:else}
-                <Play size={18} />
+                <Play size={14} />
               {/if}
             </button>
+          </Tooltip>
+          <Tooltip content="Effects" delay={TIP_MS}>
             <button
+              type="button"
               onclick={() => (fxOpen = true)}
               aria-label="Effects"
-              class="transition-colors hover:text-accent"
+              class="cursor-pointer transition-colors hover:text-accent"
             >
               <SlidersHorizontal size={14} />
             </button>
-          </div>
+          </Tooltip>
         </div>
-
-        {#if duration}
-          <!-- Energy meter: per-bucket beat intensity, filled to the playhead.
-               A transparent range input on top handles seek/keyboard. -->
-          <div class="relative h-5 w-full">
-            <div class="flex h-full items-center gap-px">
-              {#each energyBars as v, i (i)}
-                <div
-                  class="flex-1 transition-colors"
-                  style="height: {Math.max(12, v * 100)}%; background: {(i +
-                    0.5) /
-                    ENERGY_BARS <=
-                  position / duration
-                    ? 'var(--color-accent)'
-                    : 'var(--color-line)'};"
-                ></div>
-              {/each}
-            </div>
-            <input
-              type="range"
-              min="0"
-              max={duration}
-              step="0.1"
-              value={position}
-              oninput={seek}
-              aria-label="Seek"
-              class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-            />
-          </div>
-        {/if}
       </div>
-    {/if}
+
+      {#if current && duration}
+        <div data-no-drag class="relative h-1 w-full bg-line">
+          <div
+            class="absolute inset-y-0 left-0 bg-accent"
+            style="width: {(position / duration) * 100}%;"
+          ></div>
+          <input
+            type="range"
+            min="0"
+            max={duration}
+            step="0.1"
+            value={position}
+            oninput={seek}
+            aria-label="Seek"
+            class="absolute inset-x-0 -top-1 h-3 w-full cursor-pointer opacity-0"
+          />
+        </div>
+      {/if}
+    </div>
   </div>
 {/if}
 

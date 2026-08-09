@@ -5,6 +5,7 @@
     Page,
     Button,
     HoverPreview,
+    Tooltip,
     toast,
     textSizeStyles,
     textColorStyles,
@@ -194,6 +195,21 @@
             onclick={() => toast.success("Would play a song")}
             >play you a song</HoverPreview
           >.
+        </Text>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tooltip ─────────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">Tooltip</Text>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      <div class={rowGrid("10rem")}>
+        <Text type="label" size="xs" color="muted">1.5s hover</Text>
+        <Text type="paragraph" size="lg" color="black">
+          Hover
+          <Tooltip content="shows after a beat">this word</Tooltip>
+          and wait — a short tip fades in.
         </Text>
       </div>
     </div>

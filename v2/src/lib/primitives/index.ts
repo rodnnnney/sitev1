@@ -9,3 +9,4 @@ export * from './Toaster';
 export * from './Modal';
 export * from './Switch';
 export * from './HoverPreview';
+export * from './Tooltip';

@@ -58,13 +58,6 @@ export const bangers = [
     cover: `${bucketURL}/songs/shadows/cover.jpg`,
     rave: true,
   },
-  {
-    title: "MONEY ON THE DASH (sped up)",
-    artist: "Elley Duhé",
-    url: `${bucketURL}/songs/money-on-the-dash/money-on-the-dash.mp3`,
-    cover: `${bucketURL}/songs/money-on-the-dash/cover.jpg`,
-    rave: true,
-  },
 ] as const;
 
 // External works worth reading — not mine, just ones I like.
