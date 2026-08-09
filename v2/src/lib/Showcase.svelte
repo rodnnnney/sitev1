@@ -4,6 +4,7 @@
     Text,
     Page,
     Button,
+    HoverPreview,
     toast,
     textSizeStyles,
     textColorStyles,
@@ -151,6 +152,48 @@
         <Text type="label" size="xs" color="muted">links</Text>
         <Text type="paragraph" size="lg" color="black" links>
           Hover over <a href="/">this link</a> to see the underline.
+        </Text>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HoverPreview ────────────────────────────────────── -->
+  <section class="flex flex-col gap-4">
+    <Text type="label" size="xs" color="muted">HoverPreview</Text>
+    <div class="flex flex-col gap-3 border-t border-line pt-4">
+      <div class={rowGrid("10rem")}>
+        <Text type="label" size="xs" color="muted">plain</Text>
+        <Text type="paragraph" size="lg" color="black">
+          Born in
+          <HoverPreview
+            title="Chengdu"
+            description="Where I was born — Sichuan, spicy food, and the start of the story."
+            >Chengdu</HoverPreview
+          >.
+        </Text>
+      </div>
+      <div class={rowGrid("10rem")}>
+        <Text type="label" size="xs" color="muted">with href</Text>
+        <Text type="paragraph" size="lg" color="black">
+          Work at
+          <HoverPreview
+            title="TextQL"
+            description="The startup I work at — messy infra and data problems, every day."
+            href="https://textql.com"
+            >TextQL</HoverPreview
+          >.
+        </Text>
+      </div>
+      <div class={rowGrid("10rem")}>
+        <Text type="label" size="xs" color="muted">with onclick</Text>
+        <Text type="paragraph" size="lg" color="black" links>
+          Let me
+          <HoverPreview
+            title="A song"
+            description="Picks a random track from my playlist and plays it."
+            onclick={() => toast.success("Would play a song")}
+            >play you a song</HoverPreview
+          >.
         </Text>
       </div>
     </div>
