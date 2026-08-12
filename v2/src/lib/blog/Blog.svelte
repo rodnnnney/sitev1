@@ -9,15 +9,12 @@
     {#each blog as post (post.slug)}
       <a
         href="/writing/{post.slug}"
-        class="group flex flex-col gap-1 border-b border-line py-6 transition-colors hover:bg-line/20"
+        class="group flex items-baseline justify-between gap-6 border-b border-line py-6 transition-colors hover:bg-line/20"
       >
-        <div class="flex items-baseline justify-between gap-6">
-          <Text type="paragraph" size="md" color="black">{post.title}</Text>
-          <Text type="label" size="xs" color="muted" class="shrink-0"
-            >{post.date}</Text
-          >
-        </div>
-        <Text type="paragraph" size="sm" color="muted">{post.description}</Text>
+        <Text type="paragraph" size="md" color="black">{post.title}</Text>
+        <Text type="label" size="xs" color="muted" class="shrink-0"
+          >{post.date}</Text
+        >
       </a>
     {/each}
   </div>

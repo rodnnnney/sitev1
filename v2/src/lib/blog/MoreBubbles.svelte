@@ -2,7 +2,7 @@
   import { Text, Page } from "../primitives";
 </script>
 
-<Page title="More Bubbles" showTime>
+<Page title="Bubbleologist" showTime>
   <div class="flex flex-col gap-8">
     <img
       src="/blog/bubbles.jpg"

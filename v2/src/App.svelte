@@ -11,8 +11,9 @@
 
   function toWritingPath(p: string) {
     if (p === "/blog" || p.startsWith("/blog/")) {
-      return "/writing" + p.slice("/blog".length);
+      p = "/writing" + p.slice("/blog".length);
     }
+    if (p === "/writing/more-bubbles") return "/writing/bubbleologist";
     return p;
   }
 
@@ -86,7 +87,7 @@
       <Blog />
     {:else if path === "/writing/pace-factor"}
       <Pacing />
-    {:else if path === "/writing/more-bubbles"}
+    {:else if path === "/writing/bubbleologist"}
       <MoreBubbles />
     {:else if path === "/monkey"}
       <Monkey />

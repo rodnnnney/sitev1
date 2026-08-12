@@ -3,18 +3,14 @@ export const bucketURL =
 
 export const blog = [
   {
-    title: "More Bubbles",
-    slug: "more-bubbles",
+    title: "Bubbleologist",
+    slug: "bubbleologist",
     date: "14/10/25",
-    description: "Why we need more bubbles, not fewer.",
-    cover: `${bucketURL}/blog/aura.avif`,
   },
   {
     title: "Pace Factor",
     slug: "pace-factor",
     date: "06/06/25",
-    description: "Slow cities, fast cities, and the cost of each.",
-    cover: `${bucketURL}/blog/aura.avif`,
   },
 ] as const;
 

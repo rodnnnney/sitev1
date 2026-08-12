@@ -44,9 +44,8 @@ const PAGES: Record<string, string> = {
   '/writing/pace-factor (Pacing)': `
     <h1>Pace Factor</h1>
     <p>drawing similarities between Ottawa and New York City</p>`,
-  '/writing/more-bubbles (MoreBubbles)': `
-    <h1>More Bubbles</h1>
-    <p>why we need more bubbles, not fewer</p>`,
+  '/writing/bubbleologist (MoreBubbles)': `
+    <h1>Bubbleologist</h1>`,
   '/not-found (404)': `
     <h1>not found</h1>
     <p>nothing lives at this address</p>`,
