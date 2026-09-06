@@ -19,7 +19,7 @@
       I recently read
       <em>Boom: Bubbles and the End of Stagnation</em>, and it completely
       changed how I think about risk. Everyone sees bubbles as these
-      catastrophic market failures—dot-com crash, housing crisis, all that. But
+      catastrophic market failures: dot-com crash, housing crisis, all that. But
       what about what they leave behind?
     </Text>
 

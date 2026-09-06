@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "lucide-svelte": "^0.523.0",
+    "pinyin-pro": "^3.29.3",
     "svelte-sonner": "^1.1.1"
   }
 }

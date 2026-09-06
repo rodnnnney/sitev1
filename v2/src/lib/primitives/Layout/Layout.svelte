@@ -14,6 +14,7 @@
   let { children, path } = $props<{ children?: Snippet; path: string }>();
 
   let homeLink: HTMLAnchorElement | null = $state(null);
+  let likesLink: HTMLAnchorElement | null = $state(null);
   let writingLink: HTMLAnchorElement | null = $state(null);
   let componentsLink: HTMLAnchorElement | null = $state(null);
   let navEl: HTMLElement | null = $state(null);
@@ -21,12 +22,14 @@
 
   const isWritingPath = (p: string) =>
     p === "/writing" || p.startsWith("/writing/");
+  const isLikesPath = (p: string) => p === "/likes" || p.startsWith("/likes/");
 
   const updateIndicator = () => {
     let activeLink: HTMLAnchorElement | null = null;
     if (path === "/") activeLink = homeLink;
+    else if (isLikesPath(path)) activeLink = likesLink;
     else if (isWritingPath(path)) activeLink = writingLink;
-    else activeLink = componentsLink;
+    else if (path === "/xyz") activeLink = componentsLink;
 
     if (activeLink && navEl) {
       const linkRect = activeLink.getBoundingClientRect();
@@ -38,6 +41,7 @@
   $effect(() => {
     path;
     homeLink;
+    likesLink;
     writingLink;
     componentsLink;
     navEl;
@@ -110,6 +114,20 @@
           >
         </Text>
 
+        <Text
+          type="paragraph"
+          size="sm"
+          color={isLikesPath(path) ? "accent" : "black"}
+          links={!isLikesPath(path)}
+          class="w-full"
+        >
+          <a
+            bind:this={likesLink}
+            href="/likes"
+            class={isLikesPath(path) ? "no-underline" : ""}>likes</a
+          >
+        </Text>
+
         {#if $debugStore}
           <Text
             type="paragraph"
@@ -150,6 +168,17 @@
           <a
             href="/writing"
             class={isWritingPath(path) ? "no-underline" : ""}>writing</a
+          >
+        </Text>
+
+        <Text
+          type="paragraph"
+          size="sm"
+          color={isLikesPath(path) ? "accent" : "black"}
+          links={!isLikesPath(path)}
+        >
+          <a href="/likes" class={isLikesPath(path) ? "no-underline" : ""}
+            >likes</a
           >
         </Text>
 

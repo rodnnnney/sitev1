@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import tailwindcss from '@tailwindcss/vite'
@@ -51,6 +52,13 @@ function githubContributionsDev(token: string): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
+    resolve: {
+      alias: {
+        "pinyin-pro": fileURLToPath(
+          new URL("../node_modules/pinyin-pro", import.meta.url),
+        ),
+      },
+    },
     plugins: [
       tailwindcss(),
       svelte(),

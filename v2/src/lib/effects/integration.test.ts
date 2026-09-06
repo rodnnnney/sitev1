@@ -41,6 +41,8 @@ const PAGES: Record<string, string> = {
   '/writing (index)': `
     <h1>writing</h1>
     <p>posts about basketball and startups</p>`,
+  '/likes (Likes)': `
+    <h1>likes</h1>`,
   '/writing/pace-factor (Pacing)': `
     <h1>Pace Factor</h1>
     <p>drawing similarities between Ottawa and New York City</p>`,

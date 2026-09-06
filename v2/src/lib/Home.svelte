@@ -33,7 +33,7 @@
 </script>
 
 <Page title="rodney shen" showTime>
-  <Text size="sm" color="black"
+  <Text size="sm" color="black" links
     >I'm an engineer in NYC, taking some time off school to work at TextQL. I'm
     interested in <span class="text-accent">sandboxes</span> and
     <span class="text-accent">efficient compute allocation</span>. Before that I
@@ -42,6 +42,7 @@
     <br /><br />
 
     I've lived in Ottawa, Toronto, and Chengdu. I like to run, read, and cook.
+    More likes <a href="/likes" class="text-accent">here</a>.
   </Text>
 
   <Landscapes />

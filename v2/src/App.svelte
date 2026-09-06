@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tick } from "svelte";
   import Home from "./lib/Home.svelte";
+  import Likes from "./lib/Likes.svelte";
   import NotFound from "./lib/NotFound.svelte";
   import Showcase from "./lib/Showcase.svelte";
   import Monkey from "./lib/Monkey.svelte";
@@ -81,6 +82,8 @@
   <Layout {path}>
     {#if path === "/"}
       <Home />
+    {:else if path === "/likes"}
+      <Likes />
     {:else if path === "/xyz"}
       <Showcase />
     {:else if path === "/writing"}

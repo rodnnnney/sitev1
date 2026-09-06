@@ -5,6 +5,7 @@ export function isDebugEnabled(): boolean {
 
 const sectionLabels: Record<string, string> = {
   '/': 'Home',
+  '/likes': 'Likes',
   '/writing': 'Writing',
   '/xyz': 'Components',
 };
