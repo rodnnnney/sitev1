@@ -34,35 +34,30 @@
 
 <Page title="rodney shen" showTime>
   <Text size="sm" color="black"
-    >I'm Rodney. I was born in <span class="text-accent">Chengdu</span>, moved
-    to <span class="text-accent">Ottawa</span> when I was 4, and now based out
-    of
-    <span class="text-accent">NYC</span>. Currently, I'm taking some
-    <span class="text-accent">time off</span>
-    school to work on messy infra and data problems at
-    <span class="text-accent">TextQL</span>.<br /><br />
+    >I'm an engineer in NYC, taking some time off school to work at TextQL. I'm
+    interested in <span class="text-accent">sandboxes</span> and
+    <span class="text-accent">efficient compute allocation</span>. Before that I
+    worked with stablecoins.
 
-    Previously, I was fascinated by crypto, I interned at a few crypto startups
-    working on decentralized physical infrastructure and stablecoins. I founded
-    the blockchain club at my school and even spoke at
-    <span class="text-accent">Consensus HK 2025</span>.
+    <br /><br />
+
+    I've lived in Ottawa, Toronto, and Chengdu. I like to run, read, and cook.
   </Text>
+
+  <Landscapes />
 
   {#if $bangerNow}
     <Text size="sm" color="black" data-no-rave>
-      now playing:
+      Now playing:
       <span class="text-accent">{$bangerNow.title}</span> by {$bangerNow.artist}
     </Text>
   {:else}
     <Text size="sm" color="black" links data-no-rave>
-      Stay for a while, let me
       <button type="button" class="text-accent" onclick={requestBangerPlay}
-        >play you a song</button
+        >Play a song</button
       >.
     </Text>
   {/if}
-
-  <Landscapes />
 
   <div class="flex items-end justify-between">
     <Text type="paragraph" size="xs" color="black" links class="leading-none">
