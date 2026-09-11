@@ -41,8 +41,8 @@
 
     <br /><br />
 
-    I've lived in Ottawa, Toronto, and Chengdu. I like to run, read, and cook.
-    More likes <a href="/likes" class="text-accent">here</a>.
+    I've lived in Ottawa, Toronto, and Chengdu. I
+    <a href="/likes" class="text-accent">like</a> to run, read, and cook.
   </Text>
 
   <Landscapes />
