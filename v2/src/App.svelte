@@ -5,7 +5,7 @@
   import NotFound from "./lib/NotFound.svelte";
   import Showcase from "./lib/Showcase.svelte";
   import Monkey from "./lib/Monkey.svelte";
-  import { Blog, MoreBubbles, Pacing } from "./lib/blog";
+  import { Blog, MoreBubbles, Pacing, Parquet } from "./lib/blog";
   import { Layout, Toaster } from "./lib/primitives";
   import RandomBanger from "./lib/RandomBanger.svelte";
   import { reduceMotion } from "./lib/effects/shared";
@@ -92,6 +92,8 @@
       <Pacing />
     {:else if path === "/writing/bubbleologist"}
       <MoreBubbles />
+    {:else if path === "/writing/parquet"}
+      <Parquet />
     {:else if path === "/monkey"}
       <Monkey />
     {:else}
