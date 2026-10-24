@@ -3,6 +3,11 @@ export const bucketURL =
 
 export const blog = [
   {
+    title: "Parquet",
+    slug: "parquet",
+    date: "11/10/26",
+  },
+  {
     title: "Bubbleologist",
     slug: "bubbleologist",
     date: "14/10/25",
