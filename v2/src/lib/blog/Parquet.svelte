@@ -11,15 +11,15 @@
   <div class="flex flex-col gap-8">
     <Text type="paragraph" size="sm" color="black">
       If there is one file format that has laid the foundation for the modern
-      data stack, it would be Parquet. The idea originates from a paper
+      data stack, it is Parquet. The idea originates from a paper
       published in 2010 at Google that proposed a columnar storage format for
       data in the cloud. Like many research papers that come out of Google, it
       intentionally/unintentionally shaped the future of data storage. Today,
-      Parquet is file format of choice for big data companies in the world.
-      Excluding the major cloud providers, some of the most successful companies
-      such as Snowflake, Databricks and Palantir are built on top of Parquet.
-      Their combined fortunes sum up to around ~$800 billion dollars as of Oct
-      23 2026. Here is a deeper dive into the internals on how Parquet is built
+      Parquet is the file format of choice for big data companies in the world.
+      Excluding the major cloud providers, some of the most successful companies,
+      such as Snowflake, Databricks, and Palantir, are built on top of Parquet.
+      Their combined fortunes sum up to around $800 billion as of Oct.
+      23, 2026. Here is a deeper dive into how Parquet is built
       and solves the problem of data storage and retrieval at the largest of
       scales.
     </Text>

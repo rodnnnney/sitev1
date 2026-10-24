@@ -102,11 +102,6 @@
       {:else}
         <span></span>
       {/if}
-      {#if showTime}
-        <Text type="label" size="xs" color="muted" class="leading-none"
-          >New York City, NY</Text
-        >
-      {/if}
     </div>
     <div class="flex flex-row items-baseline justify-between gap-2">
       <Text

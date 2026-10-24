@@ -35,7 +35,7 @@
 <Page title="rodney shen" showTime>
   <Text size="sm" color="black" links
     >I'm an engineer in NYC, taking some time off school to work at TextQL. I'm
-    interested in <span class="text-accent">sandboxes</span> and
+    interested in <span class="text-accent">big data</span> and
     <span class="text-accent">efficient compute allocation</span>. Before that I
     worked with stablecoins.
 
