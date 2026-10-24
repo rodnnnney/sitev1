@@ -167,7 +167,7 @@
             label: "row_groups[0]",
             note: "1000000 rows · 128 MB",
             children: [
-              { key: "colmeta", label: "city", note: 'offset 4 · 0.4 MB · "Lagos"–"Toronto"', kind: "meta" },
+              { key: "colmeta", label: "city", note: 'offset 4 · 0.4 MB · "Cairo"–"Tokyo"', kind: "meta" },
               { label: "temp", note: "offset 419434 · 4 MB · -12.4–41.7", kind: "meta" },
               { label: "description", note: "offset 4613738 · 124 MB", kind: "meta" },
             ],
@@ -181,7 +181,7 @@
 
   const TREE: Node = {
     key: "file",
-    label: "data.parquet",
+    label: "weather.parquet",
     note: "1 GB",
     bytes: PARTS_OF_FILE.reduce((t, n) => t + (n.bytes ?? 0), 0),
     children: PARTS_OF_FILE,

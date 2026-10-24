@@ -1,12 +1,10 @@
-import { reduceMotion } from "../../effects/shared";
-
 /**
- * Drives a stepped animation off one clock: plays while on screen, loops, and
- * can be paused or jumped. Attach `observe` and `run` to the figure element.
+ * Drives a stepped animation off one clock: starts paused, plays on demand
+ * while on screen, and loops. Attach `observe` and `run` to the figure element.
  */
 export class StepClock {
   elapsed = $state(0);
-  playing = $state(!reduceMotion());
+  playing = $state(false);
   visible = $state(false);
   readonly starts: number[];
   readonly total: number;
@@ -40,7 +38,6 @@ export class StepClock {
 
   restart = () => {
     this.elapsed = 0;
-    this.playing = true;
   };
 
   observe = (node: HTMLElement) => {

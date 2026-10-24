@@ -61,6 +61,9 @@
   --radius-md: 3px;
   --radius-lg: 4px;
 
+  /* Compact body copy, between xs (12px) and base (16px). */
+  --text-sm: 0.8125rem;
+
   /* Smaller than Tailwind's default xs — captions / meta under media. */
   --text-2xs: 0.5rem;
   --text-2xs--line-height: 0.75rem;

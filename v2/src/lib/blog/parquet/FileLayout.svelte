@@ -25,7 +25,7 @@
     {
       title: "as a csv",
       ms: 5500,
-      body: "On disk a file is one long run of bytes. CSV writes it row by row, so every temp is wedged between an id and a city. Reading one column means reading all of them.",
+      body: "On disk a file is one long run of bytes. CSV writes it row by row, so every temp is wedged between a city and a description. Reading one column means reading all of them.",
     },
     {
       title: "row groups",
@@ -82,7 +82,7 @@
     switch (el.kind) {
       case "cell": {
         const row = ROWS[el.r!];
-        if (el.col === "id") return String(row.id);
+        if (el.col === "description") return row.description;
         if (el.col === "temp") return row.temp.toFixed(1);
         return stage >= Stage.Pages ? String(cityCode(el.r!)) : row.city;
       }
@@ -103,7 +103,7 @@
       case "footer":
         return stage >= Stage.Footer ? "" : "footer";
       case "schema":
-        return "schema  id:int64  city:string  temp:float";
+        return "schema  city:string  temp:float  description:string";
       case "ptr":
         return `rg${el.g} ${el.col} @${OFFSETS[`${el.g}-${el.col}`]}`;
       case "badge":
@@ -117,9 +117,9 @@
 
   // Light tints keep the three columns apart; strong blue is saved for highlights.
   const COL_STYLE: Record<string, string> = {
-    id: "bg-paper border-line",
     city: "bg-blue-50 border-blue-100",
     temp: "bg-blue-100 border-blue-200",
+    description: "bg-paper border-line",
   };
 
   function style(el: El): string {

@@ -1,18 +1,20 @@
 // Positions for the "parquet on disk" animation. Every block on screen is a
 // fixed element; each stage just assigns it a box. Pure so it can be tested.
 
-export type Col = "id" | "city" | "temp";
-export const COLS: Col[] = ["id", "city", "temp"];
+export type Col = "city" | "temp" | "description";
+export const COLS: Col[] = ["city", "temp", "description"];
 
+// The post's running example: weather readings. Same first 8 cities as the
+// chunk writer (chunk.ts), same columns as the 1 GB file in the other figures.
 export const ROWS = [
-  { id: 0, city: "NYC", temp: 21.4 },
-  { id: 1, city: "TOR", temp: 18.0 },
-  { id: 2, city: "NYC", temp: 22.1 },
-  { id: 3, city: "LDN", temp: 15.3 },
-  { id: 4, city: "TOR", temp: 17.6 },
-  { id: 5, city: "NYC", temp: 23.0 },
-  { id: 6, city: "LDN", temp: 14.8 },
-  { id: 7, city: "NYC", temp: 20.5 },
+  { city: "Oslo", temp: 12.4, description: "fog" },
+  { city: "Paris", temp: 15.1, description: "rain" },
+  { city: "Oslo", temp: 11.8, description: "mist" },
+  { city: "Oslo", temp: 9.6, description: "snow" },
+  { city: "Lima", temp: 24.3, description: "sunny" },
+  { city: "Paris", temp: 16.0, description: "clear" },
+  { city: "Oslo", temp: 10.9, description: "rain" },
+  { city: "Oslo", temp: 8.7, description: "windy" },
 ];
 
 export const GROUPS = [
@@ -28,7 +30,7 @@ export const cityCode = (r: number) => {
 };
 
 // Rough byte sizes, only used to print believable offsets in the footer.
-const BYTES = { magic: 4, header: 20, id: 8, cityCode: 1, temp: 4 };
+const BYTES = { magic: 4, header: 20, cityCode: 1, temp: 4, description: 9 };
 const dictBytes = (g: number) => BYTES.header + DICTS[g].reduce((n, s) => n + 4 + s.length, 0);
 
 /** Byte offset where each column chunk starts, keyed "g-col". */
@@ -39,7 +41,7 @@ export const OFFSETS: Record<string, number> = (() => {
     for (const col of COLS) {
       out[`${g}-${col}`] = pos;
       if (col === "city") pos += dictBytes(g);
-      const per = col === "id" ? BYTES.id : col === "city" ? BYTES.cityCode : BYTES.temp;
+      const per = col === "city" ? BYTES.cityCode : col === "temp" ? BYTES.temp : BYTES.description;
       pos += BYTES.header + per * rows.length;
     }
   });

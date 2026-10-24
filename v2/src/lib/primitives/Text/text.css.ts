@@ -1,6 +1,6 @@
 export type TextSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 export type TextColor = 'black' | 'muted' | 'white' | 'accent';
-export type TextType = 'paragraph' | 'label' | 'heading' | 'important';
+export type TextType = 'paragraph' | 'label' | 'heading' | 'important' | 'footnote';
 
 export const textSizeStyles: Record<TextSize, string> = {
   '2xs': 'text-2xs',
@@ -26,6 +26,8 @@ export const textTypeStyles: Record<TextType, string> = {
   label: 'font-mono uppercase tracking-wider',
   heading: 'font-pixel tracking-tight',
   important: 'font-pixel',
+  /** Asides under a figure or section: caveats, sources. Pair with size="xs" color="muted". */
+  footnote: 'font-mono font-normal border-l-2 border-line pl-3',
 };
 
 /** Whether a type renders in the pixel font (drives the default scramble charset). */
@@ -34,6 +36,7 @@ export const textTypeIsPixel: Record<TextType, boolean> = {
   label: false,
   heading: true,
   important: true,
+  footnote: false,
 };
 
 export const textDefaultStyles = 'leading-relaxed w-fit';

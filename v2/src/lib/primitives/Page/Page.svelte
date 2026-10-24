@@ -114,7 +114,6 @@
         size={titleSize}
         color="black"
         animate
-        animateOnHover
         class="leading-tight"
       >
         {title}
